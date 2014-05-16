@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+Welcome to UniBoard
+
+<!-- enable the facetview here <div id="facetview"></div> -->
+
+{% endblock %}
+
+{% block extra_js_bottom %}
+
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+
+    var record_url = '{{api_base_url}}/query?';
+    var record_datatype = 'JSONP';
+    var record_resdisplay = []
+    
+    var record_facets = [
+        {'field': 'price', 'display': 'Price'}
+    ];
+    
+    var sortby = [
+        {'display':'Date added','field':'created_date'}
+    ]
+    
+    var searchfield = [
+        {'display':'Title','field':'title'}
+    ]
+
+    function discoveryRecordView(index) {
+        var options = $("#facetview").facetview.options
+        var record = options.data['records'][index];
+        var result = options.resultwrap_start;
+
+        // build the result
+        
+        result += options.resultwrap_end;
+        return result;
+    }
+
+    function postSearch() {
+
+    }
+    
+    var opts = {
+        search_url: record_url,
+        datatype: record_datatype,
+        facets: record_facets,
+        searchbox_shade: "#fff",
+        result_display: record_resdisplay,
+        sharesave_link: false,
+        paging: {
+            size: 25
+        },
+        display_images: false,
+        pager_on_top: true,
+        post_search_callback: postSearch,
+        buildrecord: discoveryRecordView,
+        search_sortby: sortby,
+        searchbox_fieldselect: searchfield
+    };
+
+    $('#facetview').facetview(opts);
+
+});
+
+</script>
+
+{% endblock %}

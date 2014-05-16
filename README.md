@@ -1,5 +1,11 @@
 # UniBoard
 
+## Installation
+
+UniBoard depends on esprit, which must be installed before this package will install:
+
+https://github.com/richard-jones/esprit
+
 ## Data Models
 
 ### Account Data Model
