@@ -22,10 +22,12 @@ https://github.com/richard-jones/esprit
         },
         "phone" : "<user's preferred phone number>",
         "graduation" : <year of graduation>,
+        "password" : "<hashed password>",
         "admin" : {
             "deleted" : True/False,
             "banned" : True/False
         },
+        "role" : ["<user role>"],
         "reset_token" : "<password reset token>",
         "reset_expires" : "<password reset token expiration timestamp>",
         "activation_token" : "<account activation token>",

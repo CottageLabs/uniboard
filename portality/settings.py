@@ -1,4 +1,5 @@
 import os
+from esprit import mappings
 
 # ========================
 # MAIN SETTINGS
@@ -68,6 +69,8 @@ SUPER_USER_ROLE = "admin"
 # a dict of the ES mappings. identify by name, and include name as first object name
 # and identifier for how non-analyzed fields for faceting are differentiated in the mappings
 FACET_FIELD = ".exact"
+
+"""
 MAPPINGS = {
     "account" : {
         "account" : {
@@ -90,6 +93,30 @@ MAPPINGS = {
     }
 }
 MAPPINGS['advert'] = {'advert':MAPPINGS['account']['account']}
+"""
+
+MAPPINGS = {
+    "account" : mappings.for_type(
+        "account",
+            mappings.properties(mappings.type_mapping("loc", "geo_point")),
+            mappings.dynamic_templates(
+            [
+                mappings.EXACT,
+                mappings.dynamic_type_template("geo", "loc", mappings.make_mapping("geo_point"))
+            ]
+        )
+    ),
+    "advert" : mappings.for_type(
+        "advert",
+            mappings.properties(mappings.type_mapping("loc", "geo_point")),
+            mappings.dynamic_templates(
+            [
+                mappings.EXACT,
+                mappings.dynamic_type_template("geo", "loc", mappings.make_mapping("geo_point"))
+            ]
+        )
+    )
+}
 
 
 # ========================

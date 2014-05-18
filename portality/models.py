@@ -7,7 +7,40 @@ from datetime import datetime, timedelta
 from werkzeug import generate_password_hash, check_password_hash
 from flask.ext.login import UserMixin
 
+class ModelException(Exception):
+    pass
+
 class Account(dao.AccountDAO, UserMixin):
+    """
+    {
+        "id" : "<opaque id for the user>",
+        "email" : "<institutional email address>",
+        "name" : "<user's full name>",
+        "degree" : "<degree name>",
+        "postcode" : "<uk postcode>",
+        "loc" : {
+            "lat" : <latitude>,
+            "lon" : <longitude>
+        },
+        "phone" : "<user's preferred phone number>",
+        "graduation" : <year of graduation>,
+        "password" : "<hashed password>",
+        "admin" : {
+            "deleted" : True/False,
+            "banned" : True/False
+        },
+        "role" : ["<user role>"],
+        "reset_token" : "<password reset token>",
+        "reset_expires" : "<password reset token expiration timestamp>",
+        "activation_token" : "<account activation token>",
+        "activation_expires" : "<account activation token expiration timestamp>",
+        "created_date" : "<date account was created>",
+        "last_updated" : "<date account was last modified>"
+    }
+    """
+    # FIXME: this method needs to be re-written as part of the user registration work
+    # we are not having usernames (people are identified by email address), so we either
+    # want to use their email address as their id, or mint them an opaque id.
     @classmethod
     def make_account(cls, username, name=None, email=None, roles=[]):
         a = cls.pull(username)
@@ -29,24 +62,95 @@ class Account(dao.AccountDAO, UserMixin):
     def name(self):
         return self.data.get("name")
     
-    def set_name(self, name):
-        self.data["name"] = name
+    def set_name(self, val):
+        self.data["name"] = val
     
     @property
     def email(self):
         return self.data.get("email")
 
-    def set_email(self, email):
-        self.data["email"] = email
+    def set_email(self, val):
+        self.data["email"] = val
 
     def set_password(self, password):
         self.data['password'] = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.data['password'], password)
-        
+
     @property
-    def reset_token(self): return self.data.get('reset_token')
+    def degree(self):
+        return self.data.get("degree")
+
+    def set_degree(self, val):
+        self.data["degree"] = val
+
+    @property
+    def postcode(self):
+        return self.data.get("postcode")
+
+    def set_postcode(self, val):
+        self.data["postcode"] = val
+
+    @property
+    def location(self):
+        loc = self.data.get("loc")
+        return (loc.get("lat"), loc.get("lon"))
+
+    def set_location(self, lat, lon):
+        if "loc" not in self.data:
+            self.data["loc"] = {}
+        try:
+            lat = float(lat)
+            lon = float(lon)
+        except:
+            raise ModelException("Unable to set lat and lon - must be floats or cast to float: " + str(lat) + ", " + str(lon))
+        self.data["loc"]["lat"] = lat
+        self.data["loc"]["lon"] = lon
+
+    @property
+    def phone(self):
+        return self.data.get("phone")
+
+    def set_phone(self, val):
+        self.data["phone"] = val
+
+    @property
+    def graduation(self):
+        return self.data.get("graduation")
+
+    def set_graduation(self, val):
+        try:
+            val = int(val)
+        except:
+            raise ModelException("Unable to set graduation year - must be int or cast to int: " + str(val))
+        if len(str(val)) != 4:
+            raise ModelException("Unable to set graduation year - must be 4 digit format: " + str(val))
+        self.data["graduation"] = val
+
+    def is_deleted(self):
+        return self.data.get("admin", {}).get("deleted", False)
+
+    def set_deleted(self, val):
+        if type(val) != bool:
+            raise ModelException("Unable to set deleted - must be boolean value")
+        if "admin" not in self.data:
+            self.data["admin"] = {}
+        self.data["admin"]["deleted"] = val
+
+    def is_banned(self):
+        return self.data.get("admin", {}).get("banned", False)
+
+    def set_banned(self, val):
+        if type(val) != bool:
+            raise ModelException("Unable to set banned - must be boolean value")
+        if "admin" not in self.data:
+            self.data["admin"] = {}
+        self.data["admin"]["banned"] = val
+
+    @property
+    def reset_token(self):
+        return self.data.get('reset_token')
 
     def set_reset_token(self, token, timeout):
         expires = datetime.now() + timedelta(0, timeout)
@@ -58,6 +162,21 @@ class Account(dao.AccountDAO, UserMixin):
             del self.data["reset_token"]
         if "reset_expires" in self.data:
             del self.data["reset_expires"]
+
+    @property
+    def activation_token(self):
+        return self.data.get('activation_token')
+
+    def set_activation_token(self, token, timeout):
+        expires = datetime.now() + timedelta(0, timeout)
+        self.data["activation_token"] = token
+        self.data["activation_expires"] = expires.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    def remove_activation_token(self):
+        if "activation_token" in self.data:
+            del self.data["activation_token"]
+        if "activation_expires" in self.data:
+            del self.data["activation_expires"]
     
     @property
     def is_super(self):
@@ -80,7 +199,5 @@ class Account(dao.AccountDAO, UserMixin):
         if not isinstance(role, list):
             role = [role]
         self.data["role"] = role
-            
-    def prep(self):
-        self.data['last_updated'] = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+
 
