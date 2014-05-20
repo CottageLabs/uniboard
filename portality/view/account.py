@@ -233,40 +233,118 @@ def logout():
 
 
 def existscheck(form, field):
-    test = models.Account.pull(form.w.data)
+    test = models.Account.pull(form.name.data)
     if test:
         raise ValidationError('Taken! Please try another.')
 
 class RegisterForm(Form):
-    w = TextField('Username', [validators.Length(min=3, max=25),existscheck])
-    n = TextField('Email Address', [
+    #username = TextField('Username', [validators.Length(min=3, max=25),existscheck])
+    name = TextField('Full name', [validators.Required()])
+    email = TextField('Email Address', [
         validators.Length(min=3, max=35), 
         validators.Email(message='Must be a valid email address')
     ])
-    s = PasswordField('Password', [
+    degree = TextField('Degree')
+    postcode = TextField('Postcode')
+    phone = TextField('Phone number')
+    graduation = TextField('Graduation Year')
+
+class SetPasswordForm(Form):
+    password = PasswordField('Password', [
         validators.Required(),
-        validators.EqualTo('c', message='Passwords must match')
+        validators.EqualTo('confirm_password', message='Passwords must match')
     ])
-    c = PasswordField('Repeat Password')
+    confirm_password = PasswordField('Repeat Password')
+
+
+email_list = open('/home/nevelina/programming/uniboard/uniboard/portality/view/email_list.txt', 'rb') #TODO this has to be relative
 
 @blueprint.route('/register', methods=['GET', 'POST'])
-@login_required
+#@login_required
 @ssl_required
 def register():
-    if not app.config.get('PUBLIC_REGISTER',False) and not current_user.has_role("create_user"):
-        abort(401)
+    #if not app.config.get('PUBLIC_REGISTER',False) and not current_user.has_role("create_user"):
+        #abort(401)
     form = RegisterForm(request.form, csrf_enabled=False)
     if request.method == 'POST' and form.validate():
         # api_key = str(uuid.uuid4())
         account = models.Account()
-        account.id = form.w.data
-        account.set_email(form.n.data)
-        account.set_password(form.s.data)
-        account.save()
+        account.id = form.email.data
+
+        #TODO needs to become a validator
+        for line in email_list.readline():
+            if line in form.email.data:
+                account.email(form.email.data)
+            else:
+                flash('This email is not on our list of permitted emails', 'error')
+        account.set_name(form.name.data)
+        account.set_degree(form.degree.data)
+        account.set_postcode(form.postcode.data)
+        account.set_phone(form.phone.data)
+        account.set_graduation(form.graduation.data)
+
+        activation_token = uuid.uuid4().hex
+        account.set_activation_token(activation_token, app.config.get("PASSWORD_ACTIVATE_TIMEOUT", 86400))
         account.refresh() # refresh the index
         flash('Account created for ' + account.id + '.  You may wish to edit the roles next.', 'success')
-        return redirect('/account')
+
+        #sending the email with the activation link
+
+        sep = "/"
+        if request.url_root.endswith("/"):
+            sep = ""
+        activation_url = request.url_root + sep + "account/activate/" + activation_token
+
+        #TODO fix this email with the correct text and variables
+        to = [account.data['email'],app.config['ADMIN_EMAIL']]
+        fro = app.config['ADMIN_EMAIL']
+        subject = app.config.get("SERVICE_NAME","") + " - new password"
+        text = "A new password request for account '" + account.id + "' has been received and processed.\n\n"
+        text += "Please visit " + activation_url + " and enter your new password.\n\n"
+        text += "Regards, The UniBoard Team"
+        try:
+            util.send_mail(to=to, fro=fro, subject=subject, text=text)
+            flash('Instructions to reset your password have been sent to you. Please check your emails.')
+            if app.config.get('DEBUG',False):
+                flash('Debug mode - url for activation is ' + activation_url)
+        except Exception as e:
+            magic = str(uuid.uuid1())
+            util.flash_with_url('Hm, sorry - sending the password reset email didn\'t work.' + CONTACT_INSTR + ' It would help us if you also quote this magic number: ' + magic + ' . Thank you!', 'error')
+            if app.config.get('DEBUG',False):
+                flash('Debug mode - url for reset is' + activation_url)
+            app.logger.error(magic + "\n" + repr(e))
+
+        return redirect('/account') #TODO should be redirecting to somewhere else
     if request.method == 'POST' and not form.validate():
         flash('Please correct the errors', 'error')
     return render_template('account/register.html', form=form)
+
+@blueprint.route("/activate/<activation_token>", methods=["GET", "POST"])
+@ssl_required
+def activate(activation_token):
+    account = models.Account.get_by_activation_token(activation_token)
+    if account is None:
+        abort(404)
+    form = SetPasswordForm()
+    if request.method == "GET":
+        return render_template("account/activate.html", account=account, form=form)
+
+    elif request.method == "POST":
+        # check that the passwords match, and bounce if not
+        pw = request.values.get("password")
+        conf = request.values.get("confirm_password")
+        if pw != conf:
+            flash("Passwords do not match - please try again", "error")
+            return render_template("account/activate.html", account=account, form=form)
+
+        # update the user's account
+        account.set_password(pw)
+        account.remove_activation_token()
+        account.save()
+        flash("Password has been set", "success")
+
+        # log the user in
+        login_user(account, remember=True)
+        return redirect(url_for('uniboard.home'))
+
 

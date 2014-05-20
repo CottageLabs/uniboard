@@ -31,10 +31,12 @@ jQuery(document).ready(function($) {
     <div class="row">
         <div class="span5">
             <form id="signupform" method="post" action="{{url_for('account.register')}}">
-                {{ render_field(form.w) }}
-                {{ render_field(form.n) }}
-                {{ render_field(form.s, placeholder="********") }}
-                {{ render_field(form.c, placeholder="********") }}
+                {{ render_field(form.email) }}
+                {{ render_field(form.name) }}
+                {{ render_field(form.degree) }}
+                {{ render_field(form.postcode) }}
+                {{ render_field(form.phone) }}
+                {{ render_field(form.graduation) }}
                 <div class="actions">
                     <input id="signup" type="submit" value="Create User" class="btn btn-primary" />
                     {#<br /><br /><br /><br /><br /><br /><input id="m" type="text" name="m" />#}

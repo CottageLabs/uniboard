@@ -42,20 +42,24 @@ class Account(dao.AccountDAO, UserMixin):
     # we are not having usernames (people are identified by email address), so we either
     # want to use their email address as their id, or mint them an opaque id.
     @classmethod
-    def make_account(cls, username, name=None, email=None, roles=[]):
+    def make_account(cls, username, name=None, email=None, degree=None, postcode=None, phone=None, graduation=None, roles=[]):
         a = cls.pull(username)
         if a:
             return a
 
-        a = Account(id=username)
+        a = Account(id=email)
         a.set_name(name) if name else None
-        a.set_email(email) if email else None
+        #a.set_email(email) if email else None
+        a.set_degree(degree) if degree else None
+        a.set_location(lat,lon) if postcode else None
+        a.set_phone(phone) if phone else None
+        a.set_graduation(graduation) if graduation else None
         for role in roles:
             a.add_role(role)
         
-        reset_token = uuid.uuid4().hex
+        activation_token = uuid.uuid4().hex
         # give them 14 days to create their first password if timeout not specified in config
-        a.set_reset_token(reset_token, app.config.get("PASSWORD_CREATE_TIMEOUT", app.config.get('PASSWORD_RESET_TIMEOUT', 86400) * 14))
+        a.set_activation_token(activation_token, app.config.get("PASSWORD_CREATE_TIMEOUT", app.config.get('PASSWORD_RESET_TIMEOUT', 86400) * 14))
         return a
     
     @property
@@ -177,6 +181,24 @@ class Account(dao.AccountDAO, UserMixin):
             del self.data["activation_token"]
         if "activation_expires" in self.data:
             del self.data["activation_expires"]
+
+    @classmethod
+    def get_by_activation_token(cls, activation_token, not_expired=True):
+        res = cls.query(q='activation_token.exact:"' + activation_token + '"')
+        obs = [hit.get("_source") for hit in res.get("hits", {}).get("hits", [])]
+        if len(obs) == 0 or len(obs) > 1:
+            return None
+        expires = obs[0].get("activation_expires")
+        if expires is None:
+            return None
+        if not_expired:
+            try:
+                ed = datetime.strptime(expires, "%Y-%m-%dT%H:%M:%SZ")
+                if ed < datetime.now():
+                    return None
+            except:
+                return None
+        return cls(**obs[0])
     
     @property
     def is_super(self):
