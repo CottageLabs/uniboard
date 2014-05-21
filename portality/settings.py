@@ -49,7 +49,7 @@ SMTP_PASS = None
 
 # amount of time a reset token is valid for (86400 is 24 hours)
 PASSWORD_RESET_TIMEOUT = 86400
-PASSWORD_ACTIVATE_TIMEOUT = 86400
+PASSWORD_ACTIVATE_TIMEOUT = PASSWORD_RESET_TIMEOUT * 14
 
 # ========================
 # authorisation settings

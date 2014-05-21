@@ -12,6 +12,7 @@ from portality import util
 
 blueprint = Blueprint('account', __name__)
 
+
 @blueprint.route('/')
 @login_required
 @ssl_required
@@ -24,20 +25,21 @@ def index():
     users = []
     for acc in accs:
         # explicitly mapped to ensure no leakage of sensitive data. augment as necessary
-        user = {'id':acc.id, "email":acc.email, "role" : acc.role}
+        user = {'id': acc.id, "email": acc.email, "role": acc.role}
         if 'created_date' in acc.data:
             user['created_date'] = acc.data['created_date']
         users.append(user)
-    print users
+    print
+    users
     if util.request_wants_json():
-        resp = make_response( json.dumps(users, sort_keys=True, indent=4) )
+        resp = make_response(json.dumps(users, sort_keys=True, indent=4))
         resp.mimetype = "application/json"
         return resp
     else:
         return render_template('account/users.html', users=users)
 
 
-@blueprint.route('/<username>', methods=['GET','POST', 'DELETE'])
+@blueprint.route('/<username>', methods=['GET', 'POST', 'DELETE'])
 @login_required
 @ssl_required
 def username(username):
@@ -45,9 +47,9 @@ def username(username):
 
     if acc is None:
         abort(404)
-    elif ( request.method == 'DELETE' or 
-            ( request.method == 'POST' and 
-            request.values.get('submit',False) == 'Delete' ) ):
+    elif ( request.method == 'DELETE' or
+               ( request.method == 'POST' and
+                         request.values.get('submit', False) == 'Delete' ) ):
         if current_user.id != acc.id and not current_user.is_super:
             abort(401)
         else:
@@ -62,13 +64,13 @@ def username(username):
         if current_user.id != acc.id and not current_user.is_super:
             abort(401)
         newdata = request.json if request.json else request.values
-        if newdata.get('id',False):
+        if newdata.get('id', False):
             if newdata['id'] != username:
                 acc = models.Account.pull(newdata['id'])
             else:
                 newdata['api_key'] = acc.data['api_key']
         for k, v in newdata.items():
-            if k not in ['submit','password', 'role', 'confirm']:
+            if k not in ['submit', 'password', 'role', 'confirm']:
                 acc.data[k] = v
         if 'password' in newdata and not newdata['password'].startswith('sha1'):
             if "confirm" in newdata and newdata["password"] == newdata["confirm"]:
@@ -80,14 +82,14 @@ def username(username):
         if "role" in newdata and current_user.is_super:
             new_roles = [r.strip() for r in newdata.get("role").split(",")]
             acc.set_role(new_roles)
-            
+
         acc.save()
         flash("Account updated", "success")
         return render_template('account/view.html', account=acc)
     else:
         if util.request_wants_json():
-            resp = make_response( 
-                json.dumps(acc.data, sort_keys=True, indent=4) )
+            resp = make_response(
+                json.dumps(acc.data, sort_keys=True, indent=4))
             resp.mimetype = "application/json"
             return resp
         else:
@@ -100,12 +102,13 @@ def get_redirect_target(form=None):
     if form and hasattr(form, 'next') and getattr(form, 'next'):
         form_target = form.next.data
 
-    for target in form_target, request.args.get('next',[]):
+    for target in form_target, request.args.get('next', []):
         if not target:
             continue
         if target == util.is_safe_url(target):
             return target
     return url_for('admin.index')
+
 
 class RedirectForm(Form):
     next = HiddenField()
@@ -121,14 +124,16 @@ class RedirectForm(Form):
         target = get_redirect_target()
         return redirect(target or url_for(endpoint, **values))
 
+
 class LoginForm(RedirectForm):
     username = TextField('Username', [validators.Required()])
     password = PasswordField('Password', [validators.Required()])
 
+
 @blueprint.route('/login', methods=['GET', 'POST'])
 @ssl_required
 def login():
-    current_info = {'next':request.args.get('next', '')}
+    current_info = {'next': request.args.get('next', '')}
     form = LoginForm(request.form, csrf_enabled=False, **current_info)
     if request.method == 'POST' and form.validate():
         password = form.password.data
@@ -148,19 +153,20 @@ def login():
         flash('Invalid credentials', 'error')
     return render_template('account/login.html', form=form)
 
+
 @blueprint.route('/forgot', methods=['GET', 'POST'])
 @ssl_required
 def forgot():
     if request.method == 'POST':
         # get hold of the user account
-        un = request.form.get('un',"")
+        un = request.form.get('un', "")
         account = models.Account.pull(un)
-        if account is None: 
+        if account is None:
             account = models.Account.pull_by_email(un)
         if account is None:
             util.flash_with_url('Hm, sorry, your account username / email address is not recognised.', 'error')
             return render_template('account/forgot.html')
-        
+
         if not account.data.get('email'):
             util.flash_with_url('Hm, sorry, your account does not have an associated email address.', 'error')
             return render_template('account/forgot.html')
@@ -169,15 +175,15 @@ def forgot():
         reset_token = uuid.uuid4().hex
         account.set_reset_token(reset_token, app.config.get("PASSWORD_RESET_TIMEOUT", 86400))
         account.save()
-        
+
         sep = "/"
         if request.url_root.endswith("/"):
             sep = ""
         reset_url = request.url_root + sep + "account/reset/" + reset_token
-        
-        to = [account.data['email'],app.config['ADMIN_EMAIL']]
+
+        to = [account.data['email'], app.config['ADMIN_EMAIL']]
         fro = app.config['ADMIN_EMAIL']
-        subject = app.config.get("SERVICE_NAME","") + " - password reset"
+        subject = app.config.get("SERVICE_NAME", "") + " - password reset"
         text = "A password reset request for account '" + account.id + "' has been received and processed.\n\n"
         text += "Please visit " + reset_url + " and enter your new password.\n\n"
         text += "If you are the user '" + account.id + "' and you requested this change, please visit that link now and set the password to something of your preference.\n\n"
@@ -186,15 +192,16 @@ def forgot():
         try:
             util.send_mail(to=to, fro=fro, subject=subject, text=text)
             flash('Instructions to reset your password have been sent to you. Please check your emails.')
-            if app.config.get('DEBUG',False):
+            if app.config.get('DEBUG', False):
                 flash('Debug mode - url for reset is ' + reset_url)
         except Exception as e:
             flash('Hm, sorry - sending the password reset email didn\'t work.', 'error')
-            if app.config.get('DEBUG',False):
+            if app.config.get('DEBUG', False):
                 flash('Debug mode - url for reset is' + reset_url)
-            # app.logger.error(magic + "\n" + repr(e))
+                # app.logger.error(magic + "\n" + repr(e))
 
     return render_template('account/forgot.html')
+
 
 @blueprint.route("/reset/<reset_token>", methods=["GET", "POST"])
 @ssl_required
@@ -202,10 +209,10 @@ def reset(reset_token):
     account = models.Account.get_by_reset_token(reset_token)
     if account is None:
         abort(404)
-    
+
     if request.method == "GET":
         return render_template("account/reset.html", account=account)
-        
+
     elif request.method == "POST":
         # check that the passwords match, and bounce if not
         pw = request.values.get("password")
@@ -213,16 +220,17 @@ def reset(reset_token):
         if pw != conf:
             flash("Passwords do not match - please try again", "error")
             return render_template("account/reset.html", account=account)
-            
+
         # update the user's account
         account.set_password(pw)
         account.remove_reset_token()
         account.save()
         flash("Password has been reset", "success")
-        
+
         # log the user in
         login_user(account, remember=True)
         return redirect(url_for('root'))
+
 
 @blueprint.route('/logout')
 @ssl_required
@@ -237,17 +245,32 @@ def existscheck(form, field):
     if test:
         raise ValidationError('Taken! Please try another.')
 
+email_file = open('/home/nevelina/programming/uniboard/uniboard/portality/view/email_list.txt',
+                  'rb')  #TODO this has to be relative and the file will be better off as a module where all the list conversion is done
+email_list = []
+for line in email_file.readlines():
+    line = line.rstrip('\n')
+    email_list.append(line)
+
+#TODO write tests for this
+def valid_email(self, field):
+        l = self.email.data.split('@')
+        if l[-1] not in email_list:
+            raise ValidationError('This email is not on our list of permitted emails')
+
 class RegisterForm(Form):
-    #username = TextField('Username', [validators.Length(min=3, max=25),existscheck])
     name = TextField('Full name', [validators.Required()])
-    email = TextField('Email Address', [
-        validators.Length(min=3, max=35), 
-        validators.Email(message='Must be a valid email address')
+    email = TextField('Email Address',
+    [
+        validators.Length(min=3, max=35),
+        validators.Email(message='Must be a valid email address'),
+        valid_email
     ])
     degree = TextField('Degree')
     postcode = TextField('Postcode')
     phone = TextField('Phone number')
     graduation = TextField('Graduation Year')
+
 
 class SetPasswordForm(Form):
     password = PasswordField('Password', [
@@ -257,26 +280,17 @@ class SetPasswordForm(Form):
     confirm_password = PasswordField('Repeat Password')
 
 
-email_list = open('/home/nevelina/programming/uniboard/uniboard/portality/view/email_list.txt', 'rb') #TODO this has to be relative
-
 @blueprint.route('/register', methods=['GET', 'POST'])
 #@login_required
 @ssl_required
 def register():
     #if not app.config.get('PUBLIC_REGISTER',False) and not current_user.has_role("create_user"):
-        #abort(401)
+    #abort(401)
     form = RegisterForm(request.form, csrf_enabled=False)
     if request.method == 'POST' and form.validate():
         # api_key = str(uuid.uuid4())
         account = models.Account()
-        account.id = form.email.data
-
-        #TODO needs to become a validator
-        for line in email_list.readline():
-            if line in form.email.data:
-                account.email(form.email.data)
-            else:
-                flash('This email is not on our list of permitted emails', 'error')
+        account.set_email(form.email.data)
         account.set_name(form.name.data)
         account.set_degree(form.degree.data)
         account.set_postcode(form.postcode.data)
@@ -285,8 +299,9 @@ def register():
 
         activation_token = uuid.uuid4().hex
         account.set_activation_token(activation_token, app.config.get("PASSWORD_ACTIVATE_TIMEOUT", 86400))
-        account.refresh() # refresh the index
-        flash('Account created for ' + account.id + '.  You may wish to edit the roles next.', 'success')
+        account.save()
+        account.refresh()  # refresh the index
+        flash('Account created for ' + account.email + '.  You may wish to edit the roles next.', 'success')
 
         #sending the email with the activation link
 
@@ -296,28 +311,31 @@ def register():
         activation_url = request.url_root + sep + "account/activate/" + activation_token
 
         #TODO fix this email with the correct text and variables
-        to = [account.data['email'],app.config['ADMIN_EMAIL']]
+        to = [account.data['email'], app.config['ADMIN_EMAIL']]
         fro = app.config['ADMIN_EMAIL']
-        subject = app.config.get("SERVICE_NAME","") + " - new password"
-        text = "A new password request for account '" + account.id + "' has been received and processed.\n\n"
+        subject = app.config.get("SERVICE_NAME", "") + " - new password"
+        text = "A new password request for account '" + account.email + "' has been received and processed.\n\n"
         text += "Please visit " + activation_url + " and enter your new password.\n\n"
         text += "Regards, The UniBoard Team"
         try:
             util.send_mail(to=to, fro=fro, subject=subject, text=text)
-            flash('Instructions to reset your password have been sent to you. Please check your emails.')
-            if app.config.get('DEBUG',False):
+            flash('Instructions to set up your password have been sent to you. Please check your emails.')
+            if app.config.get('DEBUG', False):
                 flash('Debug mode - url for activation is ' + activation_url)
         except Exception as e:
             magic = str(uuid.uuid1())
-            util.flash_with_url('Hm, sorry - sending the password reset email didn\'t work.' + CONTACT_INSTR + ' It would help us if you also quote this magic number: ' + magic + ' . Thank you!', 'error')
-            if app.config.get('DEBUG',False):
-                flash('Debug mode - url for reset is' + activation_url)
+            #util.flash_with_url(
+                #'Hm, sorry - sending the password reset email didn\'t work.' + CONTACT_INSTR + ' It would help us if you also quote this magic number: ' + magic + ' . Thank you!',
+                #'error')
+            if app.config.get('DEBUG', False):
+                flash('Debug mode - url for reset is ' + activation_url)
             app.logger.error(magic + "\n" + repr(e))
 
-        return redirect('/account') #TODO should be redirecting to somewhere else
+        return redirect('/account/register')  #TODO should be redirecting somewhere else
     if request.method == 'POST' and not form.validate():
         flash('Please correct the errors', 'error')
     return render_template('account/register.html', form=form)
+
 
 @blueprint.route("/activate/<activation_token>", methods=["GET", "POST"])
 @ssl_required
@@ -346,5 +364,4 @@ def activate(activation_token):
         # log the user in
         login_user(account, remember=True)
         return redirect(url_for('uniboard.home'))
-
 
