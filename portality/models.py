@@ -198,7 +198,7 @@ class Account(dao.AccountDAO, UserMixin):
                     return None
             except:
                 return None
-        return cls(**obs[0])
+        return cls(obs[0])
     
     @property
     def is_super(self):

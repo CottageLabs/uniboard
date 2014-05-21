@@ -1,4 +1,5 @@
 import uuid, json
+import os
 
 from flask import Blueprint, request, url_for, flash, redirect, make_response
 from flask import render_template, abort
@@ -245,8 +246,7 @@ def existscheck(form, field):
     if test:
         raise ValidationError('Taken! Please try another.')
 
-email_file = open('/home/nevelina/programming/uniboard/uniboard/portality/view/email_list.txt',
-                  'rb')  #TODO this has to be relative and the file will be better off as a module where all the list conversion is done
+email_file = open(os.path.join(app.config['BASE_FILE_PATH'], 'resources', 'email_list.txt'), 'rb')
 email_list = []
 for line in email_file.readlines():
     line = line.rstrip('\n')
@@ -310,26 +310,25 @@ def register():
             sep = ""
         activation_url = request.url_root + sep + "account/activate/" + activation_token
 
-        #TODO fix this email with the correct text and variables
-        to = [account.data['email'], app.config['ADMIN_EMAIL']]
-        fro = app.config['ADMIN_EMAIL']
-        subject = app.config.get("SERVICE_NAME", "") + " - new password"
-        text = "A new password request for account '" + account.email + "' has been received and processed.\n\n"
-        text += "Please visit " + activation_url + " and enter your new password.\n\n"
-        text += "Regards, The UniBoard Team"
-        try:
-            util.send_mail(to=to, fro=fro, subject=subject, text=text)
-            flash('Instructions to set up your password have been sent to you. Please check your emails.')
-            if app.config.get('DEBUG', False):
-                flash('Debug mode - url for activation is ' + activation_url)
-        except Exception as e:
-            magic = str(uuid.uuid1())
-            #util.flash_with_url(
-                #'Hm, sorry - sending the password reset email didn\'t work.' + CONTACT_INSTR + ' It would help us if you also quote this magic number: ' + magic + ' . Thank you!',
-                #'error')
-            if app.config.get('DEBUG', False):
-                flash('Debug mode - url for reset is ' + activation_url)
-            app.logger.error(magic + "\n" + repr(e))
+        # to = [account.data['email'], app.config['ADMIN_EMAIL']]
+        # fro = app.config['ADMIN_EMAIL']
+        # subject = app.config.get("SERVICE_NAME", "") + " - new password"
+        # text = "A new password request for account '" + account.email + "' has been received and processed.\n\n"
+        # text += "Please visit " + activation_url + " and enter your new password.\n\n"
+        # text += "Regards, The UniBoard Team"
+        # try:
+        #     util.send_mail(to=to, fro=fro, subject=subject, text=text)
+        #     flash('Instructions to set up your password have been sent to you. Please check your emails.')
+        #     if app.config.get('DEBUG', False):
+        #         flash('Debug mode - url for activation is ' + activation_url)
+        # except Exception as e:
+        #     magic = str(uuid.uuid1())
+        #     #util.flash_with_url(
+        #         #'Hm, sorry - sending the password reset email didn\'t work.' + CONTACT_INSTR + ' It would help us if you also quote this magic number: ' + magic + ' . Thank you!',
+        #         #'error')
+        #     if app.config.get('DEBUG', False):
+        #         flash('Debug mode - url for reset is ' + activation_url)
+        #     app.logger.error(magic + "\n" + repr(e))
 
         return redirect('/account/register')  #TODO should be redirecting somewhere else
     if request.method == 'POST' and not form.validate():
@@ -345,7 +344,7 @@ def activate(activation_token):
         abort(404)
     form = SetPasswordForm()
     if request.method == "GET":
-        return render_template("account/activate.html", account=account, form=form)
+        return render_template("account/activate.html", account=account, form=form, activation_token=activation_token)
 
     elif request.method == "POST":
         # check that the passwords match, and bounce if not
@@ -363,5 +362,5 @@ def activate(activation_token):
 
         # log the user in
         login_user(account, remember=True)
-        return redirect(url_for('uniboard.home'))
+        return redirect('/')
 
