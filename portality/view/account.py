@@ -10,6 +10,7 @@ from flask.ext.wtf import Form, PasswordField, validators, ValidationError
 from portality.core import app, ssl_required
 from portality import models
 from portality import util
+from pygeocoder import Geocoder
 
 blueprint = Blueprint('account', __name__)
 
@@ -294,6 +295,11 @@ def register():
         account.set_name(form.name.data)
         account.set_degree(form.degree.data)
         account.set_postcode(form.postcode.data)
+
+        results = Geocoder.geocode(form.postcode.data + ', United Kingdom')
+        lat, lng = results[0].coordinates
+        account.set_location(lat, lng)
+
         account.set_phone(form.phone.data)
         account.set_graduation(form.graduation.data)
 
@@ -316,19 +322,19 @@ def register():
         # text = "A new password request for account '" + account.email + "' has been received and processed.\n\n"
         # text += "Please visit " + activation_url + " and enter your new password.\n\n"
         # text += "Regards, The UniBoard Team"
-        # try:
-        #     util.send_mail(to=to, fro=fro, subject=subject, text=text)
-        #     flash('Instructions to set up your password have been sent to you. Please check your emails.')
-        #     if app.config.get('DEBUG', False):
-        #         flash('Debug mode - url for activation is ' + activation_url)
-        # except Exception as e:
-        #     magic = str(uuid.uuid1())
-        #     #util.flash_with_url(
-        #         #'Hm, sorry - sending the password reset email didn\'t work.' + CONTACT_INSTR + ' It would help us if you also quote this magic number: ' + magic + ' . Thank you!',
-        #         #'error')
-        #     if app.config.get('DEBUG', False):
-        #         flash('Debug mode - url for reset is ' + activation_url)
-        #     app.logger.error(magic + "\n" + repr(e))
+        try:
+            util.send_mail(to=to, fro=fro, subject=subject, text=text)
+            flash('Instructions to set up your password have been sent to you. Please check your emails.')
+            if app.config.get('DEBUG', False):
+                flash('Debug mode - url for activation is ' + activation_url)
+        except Exception as e:
+            magic = str(uuid.uuid1())
+            #util.flash_with_url(
+                #'Hm, sorry - sending the password reset email didn\'t work.' + CONTACT_INSTR + ' It would help us if you also quote this magic number: ' + magic + ' . Thank you!',
+                #'error')
+            if app.config.get('DEBUG', False):
+                flash('Debug mode - url for reset is ' + activation_url)
+            app.logger.error(magic + "\n" + repr(e))
 
         return redirect('/account/register')  #TODO should be redirecting somewhere else
     if request.method == 'POST' and not form.validate():
@@ -344,7 +350,7 @@ def activate(activation_token):
         abort(404)
     form = SetPasswordForm()
     if request.method == "GET":
-        return render_template("account/activate.html", account=account, form=form, activation_token=activation_token)
+        return render_template("account/activate.html", account=account, form=form)
 
     elif request.method == "POST":
         # check that the passwords match, and bounce if not

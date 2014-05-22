@@ -7,7 +7,7 @@
 <div class="hero-unit">
     <div class="row">
         <div class="span5">
-            <form id="activationform" method="post" action="{{url_for('account.activate', activation_token=activation_token)}}">
+            <form id="activationform" method="post" action="{{url_for('account.activate', account.activation_token)}}">
                 {{ render_field(form.password, placeholder="********") }}
                 {{ render_field(form.confirm_password, placeholder="********") }}
                 <div class="actions">

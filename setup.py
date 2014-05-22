@@ -16,6 +16,7 @@ setup(
         "gitpython",
         "lxml",
         "nose",
+        "pygeocoder",
         "futures==2.1.6",
         # for deployment
         "gunicorn",
