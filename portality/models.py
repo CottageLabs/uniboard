@@ -1,3 +1,4 @@
+import sys
 from portality.authorise import Authorise
 from portality import dao
 from portality.core import app
@@ -6,6 +7,15 @@ from datetime import datetime, timedelta
 
 from werkzeug import generate_password_hash, check_password_hash
 from flask.ext.login import UserMixin
+
+
+def lookup_model(name='', capitalize=True):
+    if capitalize:
+        name = name.capitalize()
+    try:
+        return getattr(sys.modules[__name__], name)
+    except:
+        return None
 
 class ModelException(Exception):
     pass
@@ -47,11 +57,12 @@ class Account(dao.AccountDAO, UserMixin):
         if a:
             return a
 
-        a = Account(id=email)
+        a = Account()
+        a.id = email
         a.set_name(name) if name else None
         #a.set_email(email) if email else None
         a.set_degree(degree) if degree else None
-        a.set_location(lat,lon) if postcode else None
+        #a.set_location(lat,lon) if postcode else None
         a.set_phone(phone) if phone else None
         a.set_graduation(graduation) if graduation else None
         for role in roles:

@@ -1,4 +1,4 @@
-from flask import Flask, request, abort, render_template, redirect, make_response
+from flask import Flask, request, abort, render_template, redirect, make_response, jsonify
 from flask.views import View
 from flask.ext.login import login_user, current_user
 
@@ -38,6 +38,23 @@ app.register_blueprint(account, url_prefix='/account')
 def root():
     return render_template("index.html", api_base_url="")
 
+@app.route('/autocomplete/<doc_type>/<field_name>', methods=["GET", "POST"])
+def autocomplete(doc_type, field_name):
+    prefix = request.args.get('q','').lower()
+    if not prefix:
+        return jsonify({'suggestions':[{"id":"", "text": "No results found"}]})  # select2 does not understand 400, which is the correct code here...
+
+    m = models.lookup_model(doc_type)
+    if not m:
+        return jsonify({'suggestions':[{"id":"", "text": "No results found"}]})  # select2 does not understand 404, which is the correct code here...
+
+    size = request.args.get('size', 5)
+    return jsonify({'suggestions': m.autocomplete(field_name, prefix, size=size)})
+    # you shouldn't return lists top-level in a JSON response:
+    # http://flask.pocoo.org/docs/security/#json-security
+
+
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=app.config['DEBUG'], port=app.config['PORT'])
+
 

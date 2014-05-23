@@ -31,3 +31,44 @@ class AccountDAO(esprit.dao.DomainObject):
             except:
                 return None
         return cls(obs[0])
+
+    @classmethod
+    def prefix_query(cls, field, prefix, size=5):
+        # example of a prefix query
+        # {
+        #     "query": {"prefix" : { "bibjson.publisher" : "ope" } },
+        #     "size": 0,
+        #     "facets" : {
+        #       "publisher" : { "terms" : {"field" : "bibjson.publisher.exact", "size": 5} }
+        #     }
+        # }
+        if field.endswith(app.config['FACET_FIELD']):
+            # strip .exact (or whatever it's configured as) off the end
+            query_field = field[:field.rfind(app.config['FACET_FIELD'])]
+        else:
+            query_field = field
+
+        # the actual terms should come from the .exact version of the
+        # field - we are suggesting whole values, not fragments
+        facet_field = query_field + app.config['FACET_FIELD']
+
+        q = {
+            "query": {"prefix" : { query_field : prefix } },
+            "size": 0,
+            "facets" : {
+              field : { "terms" : {"field" : facet_field, "size": size} }
+            }
+        }
+
+        r = esprit.raw.search(cls.__conn__, cls.__type__, q)
+        return r.json()
+
+    @classmethod
+    def autocomplete(cls, field, prefix, size=5):
+        res = cls.prefix_query(field, prefix, size=size)
+        result = []
+        for term in res['facets'][field]['terms']:
+            # keep ordering - it's by count by default, so most frequent
+            # terms will now go to the front of the result list
+            result.append({"id": term['term'], "text": term['term']})
+        return result

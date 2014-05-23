@@ -261,8 +261,9 @@ def valid_email(self, field):
 
 class RegisterForm(Form):
     name = TextField('Full name', [validators.Required()])
-    email = TextField('Email Address',
+    email = TextField('Institutional Email Address',
     [
+        validators.Required(),
         validators.Length(min=3, max=35),
         validators.Email(message='Must be a valid email address'),
         valid_email
@@ -288,10 +289,27 @@ def register():
     #if not app.config.get('PUBLIC_REGISTER',False) and not current_user.has_role("create_user"):
     #abort(401)
     form = RegisterForm(request.form, csrf_enabled=False)
+
     if request.method == 'POST' and form.validate():
+        existing_account = models.Account.pull(form.email.data)
+        if existing_account:
+            flash('This account already exists.')
+            return redirect(url_for('.forgot'))
+
         # api_key = str(uuid.uuid4())
         account = models.Account()
+        account.id = form.email.data
+
+        #if form.email.data in
         account.set_email(form.email.data)
+
+        if account.is_banned():
+            raise ValidationError('You have been banned from using this service.')
+
+        if account.is_deleted():
+            account.set_deleted(False)
+            flash('Your account has been restored. Welcome back!')
+
         account.set_name(form.name.data)
         account.set_degree(form.degree.data)
         account.set_postcode(form.postcode.data)
@@ -316,12 +334,12 @@ def register():
             sep = ""
         activation_url = request.url_root + sep + "account/activate/" + activation_token
 
-        # to = [account.data['email'], app.config['ADMIN_EMAIL']]
-        # fro = app.config['ADMIN_EMAIL']
-        # subject = app.config.get("SERVICE_NAME", "") + " - new password"
-        # text = "A new password request for account '" + account.email + "' has been received and processed.\n\n"
-        # text += "Please visit " + activation_url + " and enter your new password.\n\n"
-        # text += "Regards, The UniBoard Team"
+        to = [account.data['email'], app.config['ADMIN_EMAIL']]
+        fro = app.config['ADMIN_EMAIL']
+        subject = app.config.get("SERVICE_NAME", "") + " - new password"
+        text = "A new password request for account '" + account.email + "' has been received and processed.\n\n"
+        text += "Please visit " + activation_url + " and enter your new password.\n\n"
+        text += "Regards, The UniBoard Team"
         try:
             util.send_mail(to=to, fro=fro, subject=subject, text=text)
             flash('Instructions to set up your password have been sent to you. Please check your emails.')
