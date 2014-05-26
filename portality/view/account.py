@@ -319,7 +319,9 @@ def register():
         account.set_location(lat, lng)
 
         account.set_phone(form.phone.data)
-        account.set_graduation(form.graduation.data)
+
+        if form.graduation.data:
+            account.set_graduation(form.graduation.data)
 
         activation_token = uuid.uuid4().hex
         account.set_activation_token(activation_token, app.config.get("PASSWORD_ACTIVATE_TIMEOUT", 86400))

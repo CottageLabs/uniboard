@@ -13,9 +13,7 @@
             <form id="signupform" method="post" action="{{url_for('account.register')}}">
                 {{ render_field(form.email) }}
                 {{ render_field(form.name) }}
-                <div class="row">
-                    {{ render_field(form.degree, class="span3") }}
-                </div>
+                {{ render_field(form.degree, class="input-large") }}
                 {{ render_field(form.postcode) }}
                 {{ render_field(form.phone) }}
                 {{ render_field(form.graduation) }}
