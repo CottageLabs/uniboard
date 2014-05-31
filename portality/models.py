@@ -110,6 +110,8 @@ class Account(dao.AccountDAO, UserMixin):
     @property
     def location(self):
         loc = self.data.get("loc")
+        if loc is None:
+            return None
         return (loc.get("lat"), loc.get("lon"))
 
     def set_location(self, lat, lon):
@@ -193,24 +195,6 @@ class Account(dao.AccountDAO, UserMixin):
         if "activation_expires" in self.data:
             del self.data["activation_expires"]
 
-    @classmethod
-    def get_by_activation_token(cls, activation_token, not_expired=True):
-        res = cls.query(q='activation_token.exact:"' + activation_token + '"')
-        obs = [hit.get("_source") for hit in res.get("hits", {}).get("hits", [])]
-        if len(obs) == 0 or len(obs) > 1:
-            return None
-        expires = obs[0].get("activation_expires")
-        if expires is None:
-            return None
-        if not_expired:
-            try:
-                ed = datetime.strptime(expires, "%Y-%m-%dT%H:%M:%SZ")
-                if ed < datetime.now():
-                    return None
-            except:
-                return None
-        return cls(obs[0])
-    
     @property
     def is_super(self):
         # return not self.is_anonymous() and self.id in app.config['SUPER_USER']
@@ -234,3 +218,192 @@ class Account(dao.AccountDAO, UserMixin):
         self.data["role"] = role
 
 
+class Advert(dao.AdvertDAO):
+    """
+    {
+        "id" : "<opaque identifier for the advert>",
+        "owner" : "<user who created the ad>",
+        "isbn" : ["<isbn-10>", "<isbn-13>"],
+        "title" : "<book title>",
+        "edition" : "<edition of book>",
+        "authors" : "<authors>",
+        "year" : <year of publication>,
+        "publisher" : "<publisher of book>",
+        "image_id" : "<id of book image in image library>",
+        "subject" : ["<subject classification>"],
+        "condition" : "<condition of the book>",
+        "loc" : {
+            "lat" : <latitude>,
+            "lon" : <longitude>
+        },
+        "keywords" : ["<keyword>"],
+        "price" : <price in GBP>,
+        "admin" : {
+            "deleted" : True/False,
+            "reactivate_token" : "<reactivate token>",
+            "reactivate_expires" : "<ractivate token expiration timestamp>",
+            "expires" : "<date the advert expires>",
+            "abuse" : <number of times abuse reported>
+        },
+        "created_date" : "<date advert was created>",
+        "last_updated" : "<date advert was last modified>",
+    }
+    """
+
+    @property
+    def owner(self): return self.data.get("owner")
+    def set_owner(self, val): self.data["owner"] = val
+
+    @property
+    def isbn(self): return self.data.get("isbn")
+    def set_isbn(self, val): self.data["isbn"] = val
+
+    @property
+    def title(self): return self.data.get("title")
+    def set_title(self, val): self.data["title"] = val
+
+    @property
+    def edition(self): return self.data.get("edition")
+    def set_edition(self, val): self.data["edition"] = val
+
+    @property
+    def authors(self): return self.data.get("authors")
+    def set_authors(self, val): self.data["authors"] = val
+
+    @property
+    def year(self): return self.data.get("year")
+    def set_year(self, val):
+        try:
+            val = int(val)
+        except:
+            raise ModelException("Unable to set publication year - must be int or cast to int: " + str(val))
+        self.data["year"] = val
+
+    @property
+    def publisher(self): return self.data.get("publisher")
+    def set_publisher(self, val): self.data["publisher"] = val
+
+    @property
+    def image_id(self): return self.data.get("image_id")
+    def set_image_id(self, val): self.data["image_id"] = val
+
+    @property
+    def subject(self): return self.data.get("subject", [])
+
+    def add_subject(self, val):
+        if "subject" not in self.data:
+            self.data["subject"] = []
+        self.data["subject"].append(val)
+
+    def set_subjects(self, val):
+        if not isinstance(val, list):
+            val = [val]
+        self.data["subject"] = val
+
+    @property
+    def condition(self): return self.data.get("condition")
+    def set_condition(self, val): self.data["condition"] = val
+
+    @property
+    def location(self):
+        loc = self.data.get("loc")
+        if loc is None:
+            return None
+        return (loc.get("lat"), loc.get("lon"))
+
+    def set_location(self, lat, lon):
+        if "loc" not in self.data:
+            self.data["loc"] = {}
+        try:
+            lat = float(lat)
+            lon = float(lon)
+        except:
+            raise ModelException("Unable to set lat and lon - must be floats or cast to float: " + str(lat) + ", " + str(lon))
+        self.data["loc"]["lat"] = lat
+        self.data["loc"]["lon"] = lon
+
+    @property
+    def keywords(self): return self.data.get("keywords", [])
+
+    def add_keyword(self, val):
+        if "keywords" not in self.data:
+            self.data["keywords"] = []
+        self.data["keywords"].append(val)
+
+    def set_keywords(self, val):
+        if not isinstance(val, list):
+            val = [val]
+        self.data["keywords"] = val
+
+    @property
+    def price(self):
+        p = self.data.get("price")
+        if p is None:
+            return None
+        return "%.2f" % p
+
+    def set_price(self, val):
+        try:
+            val = float(val)
+        except:
+            raise ModelException("Unable to set price - must be float or cast to float: " + str(val))
+        self.data["price"] = val
+
+    def _admin(self, key, default=None):
+        return self.data.get("admin", {}).get(key, default)
+
+    def _set_admin(self, key, value):
+        if "admin" not in self.data:
+            self.data["admin"] = {}
+        self.data["admin"][key] = value
+
+    @property
+    def is_deleted(self):
+        return self._admin("deleted", False)
+
+    def mark_deleted(self, val=True):
+        if type(val) != bool:
+            raise ModelException("Unable to mark deleted - must be bool: " + str(val))
+        self._set_admin("deleted", val)
+
+    @property
+    def reactivate_token(self):
+        return self._admin('reactivate_token')
+
+    def set_reactivate_token(self, token, timeout):
+        expires = datetime.now() + timedelta(0, timeout)
+        self._set_admin("reactivate_token", token)
+        self._set_admin("reactivate_expires", expires.strftime("%Y-%m-%dT%H:%M:%SZ"))
+
+    def remove_reactivate_token(self):
+        if "reactivate_token" in self.data.get("admin", {}):
+            del self.data["admin"]["reactivate_token"]
+        if "reactivate_expires" in self.data.get("admin", {}):
+            del self.data["admin"]["reactivate_expires"]
+
+    @property
+    def expires(self): return self._admin("expires")
+
+    def set_expires(self, val):
+        try:
+            dt = datetime.strptime(val, "%Y-%m-%dT%H:%M:%SZ")
+        except:
+            raise ModelException("Unable to parse date " + str(val) + " - must be of the form %Y-%m-%dT%H:%M:%SZ")
+        self._set_admin("expires", val)
+
+    def expires_in(self, timeout):
+        expires = datetime.now() + timedelta(0, timeout)
+        self._set_admin("expires", expires.strftime("%Y-%m-%dT%H:%M:%SZ"))
+
+    @property
+    def is_expired(self):
+        dt = datetime.strptime(self.expires, "%Y-%m-%dT%H:%M:%SZ")
+        return dt <= datetime.now()
+
+    @property
+    def abuse(self): return self._admin("abuse", 0)
+
+    def increment_abuse(self, by=1):
+        ab = self._admin("abuse", 0)
+        ab += by
+        self._set_admin("abuse", ab)
