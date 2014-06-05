@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% from "_formhelpers.html" import render_field %}
+
+<h1>Create a new advert</h1>
+<div class="hero-unit">
+    <div class="row">
+        <div class="span5">
+            <form id="adsubmitform" method="POST" enctype="multipart/form-data" action="">
+
+                {{ render_field(form.csrf_token) }}
+
+                {{ render_field(form.isbn) }}
+                {{ render_field(form.title) }}
+                {{ render_field(form.edition) }}
+                {{ render_field(form.authors) }}
+                {{ render_field(form.year) }}
+                {{ render_field(form.publisher) }}
+                {{ render_field(form.subjects, class="input-large") }}
+                {{ render_field(form.condition, class="input-large") }}
+                {{ render_field(form.location, class="input-large") }}
+                {{ render_field(form.postcode) }}
+                {{ render_field(form.keywords) }}
+                {{ render_field(form.price) }}
+
+
+
+                <div class="actions">
+                    <input type="file" name="upload" id="take-picture" accept="image/*;capture=camera">
+                    <div id="preview">
+                        <img style="width: 300px;" src="about:blank" alt="" id="show-picture">
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <input id="adsubmit" type="submit" value="Create Advert" class="btn btn-primary" />
+                    {#<br /><br /><br /><br /><br /><br /><input id="m" type="text" name="m" />#}
+                </div>
+            </form>
+        </div>
+        <div class="span5">
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js_bottom %}
+{{super()}}
+<script type="text/javascript" src="/static/uniboard/js/adsubmit.js"></script>
+{% endblock extra_js_bottom %}

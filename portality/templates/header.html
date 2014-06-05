@@ -21,8 +21,11 @@
                 {% endif %}
 
                 <ul class="nav pull-right" id="main-nav-first-menu" style="margin-bottom: 10px">
+                    <li><a href="{{ url_for('advert.adsubmit') }}">New Advert</a></li>
                     <li{% if request.path == url_for('root') %} class="active"{% endif %}><a href="{{ url_for('root') }}">Search UniBoard</a></li>
+                    <li><a href="{{ url_for('account.login') }}">Login</a></li>
                     <li><a href="{{ url_for('account.register') }}">Register</a></li>
+
                 </ul>
             </div>
         </div>

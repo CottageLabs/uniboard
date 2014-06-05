@@ -6,6 +6,8 @@ from esprit import mappings
 
 # base path, to the directory where this settings file lives
 BASE_FILE_PATH = os.path.dirname(os.path.realpath(__file__))
+IMAGES_FOLDER = os.path.join(BASE_FILE_PATH, 'static', 'images')
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 
 # make this something secret in your overriding app.cfg
 SECRET_KEY = "default-key"

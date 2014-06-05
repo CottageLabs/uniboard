@@ -128,7 +128,7 @@ class RedirectForm(Form):
 
 
 class LoginForm(RedirectForm):
-    username = TextField('Username', [validators.Required()])
+    email = TextField('Email', [validators.Required()])
     password = PasswordField('Password', [validators.Required()])
 
 
@@ -139,10 +139,10 @@ def login():
     form = LoginForm(request.form, csrf_enabled=False, **current_info)
     if request.method == 'POST' and form.validate():
         password = form.password.data
-        username = form.username.data
-        user = models.Account.pull(username)
+        email = form.email.data
+        user = models.Account.pull(email)
         if user is None:
-            user = models.Account.pull_by_email(username)
+            user = models.Account.pull_by_email(email)
         if user is not None and user.check_password(password):
             login_user(user, remember=True)
             flash('Welcome back.', 'success')
@@ -268,7 +268,7 @@ class RegisterForm(Form):
         validators.Email(message='Must be a valid email address'),
         valid_email
     ])
-    degree = TextField('Degree')
+    degree = TextField('Course')
     postcode = TextField('Postcode')
     phone = TextField('Phone number')
     graduation = TextField('Graduation Year')
@@ -339,8 +339,8 @@ def register():
         to = [account.data['email'], app.config['ADMIN_EMAIL']]
         fro = app.config['ADMIN_EMAIL']
         subject = app.config.get("SERVICE_NAME", "") + " - new password"
-        text = "A new password request for account '" + account.email + "' has been received and processed.\n\n"
-        text += "Please visit " + activation_url + " and enter your new password.\n\n"
+        text = "Welcome to UniBoard, '" + account.email + "'!\n\n"
+        text += "Please visit " + activation_url + " to set a password for your account.\n\n"
         text += "Regards, The UniBoard Team"
         try:
             util.send_mail(to=to, fro=fro, subject=subject, text=text)
