@@ -414,6 +414,24 @@ class Advert(dao.AdvertDAO):
         ab += by
         self._set_admin("abuse", ab)
 
+    def prep(self):
+        d = self._admin("deleted")
+        if d is None:
+            self.mark_deleted(False)
+
+        e = self._admin("expires")
+        if e is None:
+            timeout = app.config.get("ADVERT_TIMEOUT", 604800)
+            self.expires_in(timeout)
+
+        a = self._admin("abuse")
+        if a is None:
+            self._set_admin("abuse", 0)
+
+    def save(self, conn=None, makeid=True, created=True, updated=True):
+        self.prep()
+        super(Advert, self).save(conn, makeid, created, updated)
+
 # NOTE: this is a workaround for auto-mapping from the url scheme to an object
 # which does not contain the word "advert" as this messes with AdBlock Plus's
 # ad detection
