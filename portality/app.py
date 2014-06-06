@@ -8,6 +8,7 @@ from portality import settings
 
 from portality.view.admin import blueprint as admin
 from portality.view.account import blueprint as account
+from portality.view.query import blueprint as query
 
 @login_manager.user_loader
 def load_account_for_login_manager(userid):
@@ -33,10 +34,11 @@ def standard_authentication():
 
 app.register_blueprint(admin, url_prefix='/admin')
 app.register_blueprint(account, url_prefix='/account')
+app.register_blueprint(query, url_prefix='/public_query')
 
 @app.route("/")
 def root():
-    return render_template("index.html", api_base_url="")
+    return render_template("index.html", search_base_url="")
 
 @app.route('/autocomplete/<doc_type>/<field_name>', methods=["GET", "POST"])
 def autocomplete(doc_type, field_name):

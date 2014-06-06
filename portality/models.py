@@ -407,3 +407,9 @@ class Advert(dao.AdvertDAO):
         ab = self._admin("abuse", 0)
         ab += by
         self._set_admin("abuse", ab)
+
+# NOTE: this is a workaround for auto-mapping from the url scheme to an object
+# which does not contain the word "advert" as this messes with AdBlock Plus's
+# ad detection
+class SearchableAd(Advert):
+    pass
