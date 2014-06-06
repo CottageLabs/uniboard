@@ -48,8 +48,7 @@
                             {% endif %}
 
                             <div class="alert alert-{{category}} fade in" data-alert="alert">
-                                {# FIXME: something funny is going on with the close class.  probably a stylesheet missing somewhere; patched with a margin-right, but needs proper fix #}
-                                <a class="close" data-dismiss="alert" href="#" style="margin-right: -120px">&times;</a>
+                                <a class="close" data-dismiss="alert" href="#">&times;</a>
                                 {% if message_has_url %}
                                     {{ message | safe }}
                                 {% else %}
