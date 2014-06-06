@@ -8,11 +8,8 @@ from portality import settings
 
 from portality.view.admin import blueprint as admin
 from portality.view.account import blueprint as account
-<<<<<<< HEAD
 from portality.view.query import blueprint as query
-=======
 from portality.view.advert import blueprint as advert
->>>>>>> d49ba22a6e63e7b96014bf22fc64336030fa8b75
 
 @login_manager.user_loader
 def load_account_for_login_manager(userid):
