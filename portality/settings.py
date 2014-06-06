@@ -145,7 +145,7 @@ DEFAULT_SORT = {
 }
 
 QUERY_ROUTE = {
-    "public_query" : {"role": None, "default_filter": True},
+    "user_query" : {"role": "user", "default_filter": True},
 #    "admin_query" : {"role" : "admin", "default_filter": False},
 #    "publisher_query" : {"role" : "publisher", "default_filter" : False, "owner_filter" : True}
 }

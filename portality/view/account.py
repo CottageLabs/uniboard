@@ -109,7 +109,7 @@ def get_redirect_target(form=None):
             continue
         if target == util.is_safe_url(target):
             return target
-    return url_for('admin.index')
+    return url_for('root')
 
 
 class RedirectForm(Form):
@@ -323,11 +323,14 @@ def register():
         if form.graduation.data:
             account.set_graduation(form.graduation.data)
 
+        # automatically set the user role to be "user"
+        account.add_role("user")
+
         activation_token = uuid.uuid4().hex
         account.set_activation_token(activation_token, app.config.get("PASSWORD_ACTIVATE_TIMEOUT", 86400))
         account.save()
         account.refresh()  # refresh the index
-        flash('Account created for ' + account.email + '.  You may wish to edit the roles next.', 'success')
+        # flash('Account created for ' + account.email + '.  You may wish to edit the roles next.', 'success')
 
         #sending the email with the activation link
 

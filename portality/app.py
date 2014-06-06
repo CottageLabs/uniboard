@@ -35,12 +35,15 @@ def standard_authentication():
 
 app.register_blueprint(admin, url_prefix='/admin')
 app.register_blueprint(account, url_prefix='/account')
-app.register_blueprint(query, url_prefix='/public_query')
+app.register_blueprint(query, url_prefix='/user_query')
 app.register_blueprint(advert, url_prefix='/advert')
 
 @app.route("/")
 def root():
-    return render_template("index.html", search_base_url="")
+    if current_user.is_authenticated() and current_user.has_role("user"):
+        return render_template("search.html", search_base_url="")
+    else:
+        return render_template("welcome.html")
 
 @app.route('/autocomplete/<doc_type>/<field_name>', methods=["GET", "POST"])
 def autocomplete(doc_type, field_name):
