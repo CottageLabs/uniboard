@@ -256,7 +256,16 @@ class Advert(dao.AdvertDAO):
 
     @property
     def isbn(self): return self.data.get("isbn")
-    def set_isbn(self, val): self.data["isbn"] = val
+
+    def set_isbn(self, val):
+        if not isinstance(val, list):
+            val = [val]
+        self.data["isbn"] = val
+
+    def add_isbn(self, val):
+        if "isbn" not in self.data:
+            self.data["isbn"] = []
+        self.data["isbn"].append(val)
 
     @property
     def title(self): return self.data.get("title")
