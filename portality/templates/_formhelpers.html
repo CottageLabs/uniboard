@@ -161,6 +161,10 @@
             {% endif %}
         </div>
     {% endif %}
+
+    {% if field.type == 'CSRFTokenField' %}
+        {{ field(class=class, **kwargs) }}
+    {% endif %}
 {% endmacro %}
 
 {% macro __render_radio(field,

@@ -33,8 +33,7 @@ def initialise_index(app):
         if not esprit.raw.has_mapping(conn, key):
             r = esprit.raw.put_mapping(conn, key, mapping)
             print key, r.status_code
-        else:
-            print key
+
 
 def setup_error_email(app):
     ADMINS = app.config.get('ADMINS', '')

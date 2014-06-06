@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% from "_formhelpers.html" import render_field %}
+
+<script type="text/javascript">
+</script>
+
+<h1>Advert details</h1>
+<div class="hero-unit">
+    <div class="row">
+        <div class="span5">
+            <p>Owner:
+            {{ advert.owner }}</p>
+
+            <p>ISBN:
+            {{ advert.isbn }}</p>
+
+            <p>Title:
+            {{ advert.title }}</p>
+
+            <p>Edition:
+            {{ advert.edition}}</p>
+
+            <p>Authors:
+            {{ advert.authors}}</p>
+
+            <p>Year:
+            {{ advert.year}}</p>
+
+            <p>Publisher:
+            {{ advert.publisher}}</p>
+
+            <p>Subjects:
+            {{ advert.subject|join(', ')}}</p>
+
+            <p>Condition:
+            {{ advert.condition}}</p>
+
+            <p>Location:
+            {{ advert.location}}</p>
+
+
+            <p>Keywords:
+            {{ advert.keywords|join(', ')}}</p>
+
+            <p>Price:
+            {{ advert.price}}</p>
+
+            <p><img src = "/static/images/{{ advert.image_id }}"></p>
+
+            <div class="actions">
+                    <input id="abuse" type="abuse" value="Report Abuse" class="btn btn-primary" />
+                    <input id="contact" type="contact" value="Contact seller" class="btn btn-primary" />
+            </div>
+        </div>
+        <div class="span5">
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js_bottom %}
+{{super()}}
+
+{% endblock extra_js_bottom %}
