@@ -999,7 +999,7 @@ is missing.
         var viewrecord = function(event) {
             event.preventDefault();
             var record = options.data['records'][$(this).attr('href')];
-            alert(JSON.stringify(record,"","    "));
+            // alert(JSON.stringify(record,"","    "));
             
         }
 
