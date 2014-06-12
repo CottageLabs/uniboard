@@ -10,11 +10,20 @@
 <div class="hero-unit">
     <div class="row">
         <div class="span5">
+            {% if owner %}
+                <div class="actions">
+                        <a href="{{url_for('advert.adsubmit', ad_id=ad_id)}}" class="btn btn-large">Edit</a>
+                </div>
+            <br>
+
+            {% endif %}
+
+
             <p>Owner:
             {{ advert.owner }}</p>
 
             <p>ISBN:
-            {{ advert.isbn }}</p>
+            {{ advert.isbn|join(', ') }}</p>
 
             <p>Title:
             {{ advert.title }}</p>
@@ -38,16 +47,21 @@
             {{ advert.condition}}</p>
 
             <p>Location:
-            {{ advert.location}}</p>
+            {{ advert.spot}}</p>
 
 
             <p>Keywords:
             {{ advert.keywords|join(', ')}}</p>
 
             <p>Price:
-            {{ advert.price}}</p>
+            {{ advert.price if advert.price != None}}</p>
 
-            <p><img src = "/static/images/{{ advert.image_id }}"></p>
+            {% if advert.image_id %}
+
+                <p>Photo:</p>
+                <p><img src = "/static/images/{{ advert.image_id }}"></p>
+
+            {% endif %}
 
             <div class="actions">
                     <input id="abuse" type="abuse" value="Report Abuse" class="btn btn-primary" />

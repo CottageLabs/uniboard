@@ -9,6 +9,7 @@ from flask.ext.wtf import Form, PasswordField, validators, ValidationError
 
 from portality.core import app, ssl_required
 from portality import models
+from portality.datasets import domain_uni_lookup
 from portality import util
 from pygeocoder import Geocoder
 
@@ -247,16 +248,10 @@ def existscheck(form, field):
     if test:
         raise ValidationError('Taken! Please try another.')
 
-email_file = open(os.path.join(app.config['BASE_FILE_PATH'], 'resources', 'email_list.txt'), 'rb')
-email_list = []
-for line in email_file.readlines():
-    line = line.rstrip('\n')
-    email_list.append(line)
-
 #TODO write tests for this
 def valid_email(self, field):
         l = self.email.data.split('@')
-        if l[-1] not in email_list:
+        if l[-1] not in domain_uni_lookup:
             raise ValidationError('This email is not on our list of permitted emails')
 
 class RegisterForm(Form):
@@ -311,14 +306,19 @@ def register():
             flash('Your account has been restored. Welcome back!')
 
         account.set_name(form.name.data)
-        account.set_degree(form.degree.data)
-        account.set_postcode(form.postcode.data)
 
-        results = Geocoder.geocode(form.postcode.data + ', United Kingdom')
-        lat, lng = results[0].coordinates
-        account.set_location(lat, lng)
+        if form.degree.data:
+            account.set_degree(form.degree.data)
 
-        account.set_phone(form.phone.data)
+        if form.postcode.data:
+            account.set_postcode(form.postcode.data)
+
+            results = Geocoder.geocode(form.postcode.data + ', United Kingdom')
+            lat, lng = results[0].coordinates
+            account.set_location(lat, lng)
+
+        if form.phone.data:
+            account.set_phone(form.phone.data)
 
         if form.graduation.data:
             account.set_graduation(form.graduation.data)

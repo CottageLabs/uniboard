@@ -58,6 +58,7 @@ https://github.com/richard-jones/esprit
             "lat" : <latitude>,
             "lon" : <longitude>
         },
+        "spot" : "<location of sale>"
         "keywords" : ["<keyword>"],
         "price" : <price in GBP>,
         "admin" : {
@@ -145,3 +146,7 @@ Report abuse can go ahead if
 
 * user is authenticated
 * user has "report_abuse" role
+
+### Resources
+
+The institutional emails are checked against a JSON file. The same file is used for mapping university domains to university addresses.

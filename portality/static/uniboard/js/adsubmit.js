@@ -1,5 +1,4 @@
 jQuery(document).ready(function($) {
-        $('#subjects').select2();
         $('#condition').select2();
         $('#location').select2();
     });
@@ -64,3 +63,28 @@ $('#location').change(function(e){
         };
     }
 })();
+
+function autocomplete(selector, doc_field, doc_type) {
+        $(selector).select2({
+            minimumInputLength: 3,
+            ajax: {
+                url: current_scheme + "//" + current_domain + "/autocomplete/" + doc_type + "/" + doc_field,
+                dataType: 'json',
+                data: function (term, page) {
+                    return {
+                        q: term
+                    };
+                },
+                results: function (data, page) {
+                    return { results: data["suggestions"] };
+                }
+            },
+            createSearchChoice: function(term) {return {"id":term, "text": term};},
+            initSelection : function (element, callback) {
+                var data = {id: element.val(), text: element.val()};
+                callback(data);
+            }
+        });
+    };
+
+    autocomplete('#subjects', 'subjects', 'advert');

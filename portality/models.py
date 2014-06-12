@@ -255,7 +255,7 @@ class Advert(dao.AdvertDAO):
     def set_owner(self, val): self.data["owner"] = val
 
     @property
-    def isbn(self): return self.data.get("isbn")
+    def isbn(self): return self.data.get("isbn", [])
 
     def set_isbn(self, val):
         if not isinstance(val, list):
@@ -268,21 +268,21 @@ class Advert(dao.AdvertDAO):
         self.data["isbn"].append(val)
 
     @property
-    def title(self): return self.data.get("title")
+    def title(self): return self.data.get("title", "")
     def set_title(self, val): self.data["title"] = val
 
     @property
-    def edition(self): return self.data.get("edition")
+    def edition(self): return self.data.get("edition", "")
 
     def set_edition(self, val): self.data["edition"] = val
 
     @property
-    def authors(self): return self.data.get("authors")
+    def authors(self): return self.data.get("authors", "")
 
     def set_authors(self, val): self.data["authors"] = val
 
     @property
-    def year(self): return self.data.get("year")
+    def year(self): return self.data.get("year", "")
 
     def set_year(self, val):
         try:
@@ -292,7 +292,7 @@ class Advert(dao.AdvertDAO):
         self.data["year"] = val
 
     @property
-    def publisher(self): return self.data.get("publisher")
+    def publisher(self): return self.data.get("publisher", "")
 
     def set_publisher(self, val): self.data["publisher"] = val
 
@@ -315,9 +315,16 @@ class Advert(dao.AdvertDAO):
         self.data["subject"] = val
 
     @property
-    def condition(self): return self.data.get("condition")
+    def condition(self): return self.data.get("condition", "")
 
     def set_condition(self, val): self.data["condition"] = val
+
+    @property
+    def spot(self):
+        return self.data.get("spot")
+
+    def set_spot(self, val):
+        self.data["spot"] = val
 
     @property
     def location(self):

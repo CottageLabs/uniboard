@@ -11,6 +11,7 @@ from werkzeug.utils import secure_filename
 
 from portality.core import app, ssl_required
 from portality import models
+from portality.datasets import domain_uni_lookup
 from portality import util
 from pygeocoder import Geocoder
 
@@ -54,13 +55,13 @@ class TagListField(Field):
 
 
 class SubmitAd(Form):
-    isbn = TextField('ISBN')
+    isbn = TagListField('ISBN')
     title = TextField('Title', [validators.Required()])
     edition = TextField('Edition')
     authors = TextField('Author(s)', [validators.Required()])
-    year = IntegerField('Year')
+    year = IntegerField('Year', [validators.Optional()])
     publisher = TextField('Publisher')
-    subjects = SelectField('Subject', choices=subjects)
+    subjects = TextField('Subject')
     condition = SelectField('Condition', choices=condition_choices)
     price = FloatField('Price', [validators.Optional()])
     location = SelectField('Location to advertise', choices=location_choices)
@@ -91,37 +92,59 @@ def adsubmit(ad_id=None):
                 advert = models.Advert()
 
             advert.set_owner(current_user.id)
-            advert.set_isbn(form.isbn.data)
+
+            if form.isbn.data:
+                advert.set_isbn(form.isbn.data)
+
             advert.set_title(form.title.data)
-            advert.set_edition(form.edition.data)
+
+            if form.edition.data:
+                advert.set_edition(form.edition.data)
+
             advert.set_authors(form.authors.data)
-            advert.set_year(form.year.data)
-            advert.set_publisher(form.publisher.data)
-            advert.set_subjects(form.subjects.data)
-            advert.set_condition(form.condition.data)
+
+            if form.year.data:
+                advert.set_year(form.year.data)
+
+            if form.publisher.data:
+                advert.set_publisher(form.publisher.data)
+
+            if form.subjects.data:
+                advert.set_subjects(form.subjects.data)
+
+            if form.condition.data:
+                advert.set_condition(form.condition.data)
 
             if form.price.data:
                 advert.set_price(form.price.data)
 
-            if form.location.data == 'home':
-                lat, lon = current_user.location
-                advert.set_location(lat, lon)
-            elif form.location.data == 'uni':
-                results = Geocoder.geocode('Brunel University, United Kingdom')
-                lat, lng = results[0].coordinates
-                advert.set_location(lat, lng)
-            elif form.location.data == 'postcode':
-                results = Geocoder.geocode(form.postcode.data + ', United Kingdom')
-                lat, lng = results[0].coordinates
-                advert.set_location(lat, lng)
+            if form.location.data:
+                advert.set_spot(form.location.data)
+                if form.location.data == 'home':
+                    lat, lon = current_user.location
+                    advert.set_location(lat, lon)
+                elif form.location.data == 'uni':
+                    mail = current_user.id.split('@')
+                    domain = mail[-1]
+                    uni = domain_uni_lookup[domain]
+                    results = Geocoder.geocode(uni + ', United Kingdom')
+                    lat, lng = results[0].coordinates
+                    advert.set_location(lat, lng)
+                elif form.location.data == 'postcode':
+                    results = Geocoder.geocode(form.postcode.data + ', United Kingdom')
+                    lat, lng = results[0].coordinates
+                    advert.set_location(lat, lng)
 
-            advert.set_keywords(form.keywords.data)
+            if form.keywords.data:
+                advert.set_keywords(form.keywords.data)
 
             image = request.files['upload']
             if image and allowed_file(image.filename):
-                image_id = secure_filename(image.filename)
+                image_id = uuid.uuid4().hex
                 advert.set_image_id(image_id)
-                image.save(os.path.join(app.config['IMAGES_FOLDER'], image_id))
+                name = image.filename.split('.')
+                extension = name[-1]
+                image.save(os.path.join(app.config['IMAGES_FOLDER'], str(image_id)))
             elif image and not allowed_file(image.filename):
                 flash('This is not an allowed image type', 'error')
 
@@ -138,9 +161,12 @@ def adsubmit(ad_id=None):
 @ssl_required
 def details(ad_id):
     advert = models.Advert.pull(ad_id)
-
+    owner = None
+    if current_user.id == advert.owner:
+        owner = True
     if not advert:
         abort(404)
 
-    return render_template('advert/details.html', advert=advert, images_folder=app.config['IMAGES_FOLDER'])
+    return render_template('advert/details.html', advert=advert, images_folder=app.config['IMAGES_FOLDER'],
+                           owner=owner, ad_id=ad_id)
 
