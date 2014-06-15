@@ -1,6 +1,11 @@
 jQuery(document).ready(function($) {
-        $('#condition').select2();
-        $('#location').select2();
+        $('#condition').select2({
+            allowClear: true
+        });
+
+        $('#location').select2({
+            allowClear: true
+        });
     });
 
 $('#postcode-container').hide();
@@ -66,6 +71,8 @@ $('#location').change(function(e){
 
 function autocomplete(selector, doc_field, doc_type) {
         $(selector).select2({
+            placeholder: '',
+            allowClear: true,
             minimumInputLength: 3,
             ajax: {
                 url: current_scheme + "//" + current_domain + "/autocomplete/" + doc_type + "/" + doc_field,
@@ -87,4 +94,4 @@ function autocomplete(selector, doc_field, doc_type) {
         });
     };
 
-    autocomplete('#subjects', 'subjects', 'advert');
+    autocomplete('#subjects', 'subjects', 'adsubmit');
