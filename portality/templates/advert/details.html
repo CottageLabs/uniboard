@@ -3,9 +3,6 @@
 {% block content %}
 {% from "_formhelpers.html" import render_field %}
 
-<script type="text/javascript">
-</script>
-
 <h1>Advert details</h1>
 <div class="hero-unit">
     <div class="row">
@@ -13,6 +10,7 @@
             {% if owner %}
                 <div class="actions">
                         <a href="{{url_for('advert.adsubmit', ad_id=ad_id)}}" class="btn btn-large">Edit</a>
+                        <a href="{{url_for('advert.delete', ad_id=ad_id)}}" class="btn btn-large" id="delete">Delete</a>
                 </div>
             <br>
 
@@ -24,6 +22,7 @@
 
             <p>ISBN:
             {{ advert.isbn|join(', ') }}</p>
+
 
             <p>Title:
             {{ advert.title }}</p>
@@ -65,7 +64,7 @@
 
             <div class="actions">
                     <input id="abuse" type="abuse" value="Report Abuse" class="btn btn-primary" />
-                    <input id="contact" type="contact" value="Contact seller" class="btn btn-primary" />
+                    <a href="{{url_for('advert.contact', ad_id=ad_id)}}" target="_blank" class="btn btn-primary">Contact Seller</a>
             </div>
         </div>
         <div class="span5">
@@ -77,5 +76,5 @@
 
 {% block extra_js_bottom %}
 {{super()}}
-
+<script type="text/javascript" src="/static/uniboard/js/confirm.js"></script>
 {% endblock extra_js_bottom %}

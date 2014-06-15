@@ -89,15 +89,15 @@ def username(username):
         acc.save()
         flash("Account updated", "success")
         return render_template('account/view.html', account=acc)
-    else:
+    elif request.method == 'GET':
         if util.request_wants_json():
             resp = make_response(
                 json.dumps(acc.data, sort_keys=True, indent=4))
             resp.mimetype = "application/json"
             return resp
         else:
-            # do an mget on the journals, so that we can present them to the user
-            return render_template('account/view.html', account=acc)
+            adverts = models.Advert.get_by_owner(username)
+            return render_template('account/view.html', account=acc, adverts=adverts)
 
 
 def get_redirect_target(form=None):

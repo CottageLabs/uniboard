@@ -151,7 +151,7 @@ def adsubmit(ad_id=None):
             advert.save()
             advert.refresh()
             flash('Advert saved successfully', 'success')
-            return redirect(url_for('.adsubmit', ad_id=advert.id))
+            return redirect(url_for('.details', ad_id=advert.id))
 
     return render_template('advert/submit.html', form=form)
 
@@ -169,4 +169,52 @@ def details(ad_id):
 
     return render_template('advert/details.html', advert=advert, images_folder=app.config['IMAGES_FOLDER'],
                            owner=owner, ad_id=ad_id)
+
+class ContactForm(Form):
+    target = TextField('To:', [validators.Required()])
+    about = TextField('Subject:', [validators.Required()])
+    message = TextAreaField('Message:', [validators.Required()])
+
+@blueprint.route('/<ad_id>/contact', methods=['GET', 'POST', 'DELETE'])
+@login_required
+@ssl_required
+def contact(ad_id):
+    advert = models.Advert.pull(ad_id)
+    owner = advert.owner
+    title = advert.title
+
+    form = ContactForm(request.form)
+
+    if request.method == 'POST' and form.validate():
+
+        to = [owner, app.config['ADMIN_EMAIL']]
+        fro = current_user.id
+        subject = form.about.data + ' on ' + app.config.get("SERVICE_NAME", "")
+        text = form.message.data
+        try:
+            util.send_mail(to=to, fro=fro, subject=subject, text=text)
+            flash('Email has been sent.')
+            if app.config.get('DEBUG', False):
+                flash(to[0] + ' ' + fro + ' ' + subject + ' ' + text)
+        except Exception as e:
+            flash('Hm, sorry - sending the email didn\'t work.', 'error')
+            if app.config.get('DEBUG', False):
+                flash('Debug mode - email is ' + to[0] + ' ' + fro + ' ' + subject + ' ' + text)
+
+    return render_template('advert/contact.html', form=form, advert=advert, owner=owner, ad_id=ad_id, title=title)
+
+@blueprint.route('/<ad_id>/delete', methods=['GET', 'POST', 'DELETE'])
+@login_required
+@ssl_required
+def delete(ad_id):
+    advert = models.Advert.pull(ad_id)
+    username = current_user.id
+    if current_user.id == advert.owner:
+        advert.mark_deleted()
+        advert.save()
+        advert.refresh()
+        flash('Delete Successful!')
+    else:
+        abort(401)
+    return redirect(url_for("account.username", username=username))
 

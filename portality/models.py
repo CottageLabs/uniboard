@@ -254,6 +254,18 @@ class Advert(dao.AdvertDAO):
     def owner(self): return self.data.get("owner")
     def set_owner(self, val): self.data["owner"] = val
 
+    @classmethod
+    def get_by_owner(cls, owner_id):
+        res = cls.query(terms={"owner.exact": [owner_id]}, size=1000)
+        if 'hits' not in res:
+            return []
+        if res['hits']['total'] <= 0:
+            return []
+
+        hits = res['hits']['hits']
+        results = [cls(raw=h['_source']) for h in hits]
+        return results
+
     @property
     def isbn(self): return self.data.get("isbn", [])
 
