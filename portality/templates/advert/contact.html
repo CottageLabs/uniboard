@@ -2,33 +2,34 @@
 
 {% block content %}
 {% from "_formhelpers.html" import render_field %}
+{% from "_formhelpers.html" import render_field_horizontal %}
 
-<h1>Contact seller</h1>
-<div class="hero-unit">
-    <div class="row">
-        <div class="span5">
-            <form id="adsubmitform" method="POST" enctype="multipart/form-data" action="">
-
-                {{ render_field(form.csrf_token) }}
-
-                {{ render_field(form.target, value=owner) }}
-                {{ render_field(form.about, value='Regarding "'+ title + '"') }}
-                {{ render_field(form.message) }}
-
-                <div class="actions">
-                    <input id="adsubmit" type="submit" value="Send Message" class="btn btn-primary" />
-                    {#<br /><br /><br /><br /><br /><br /><input id="m" type="text" name="m" />#}
-                </div>
-            </form>
-        </div>
-        <div class="span5">
-        </div>
+<div class="row-fluid" style="padding-bottom: 10px; margin-bottom: 30px; padding-left: 30px; border-bottom: 3px dashed #aaaaaa">
+    <div class="span10"><h1>Contacting the seller of "{{advert.title}}"</h1></div>
+    <div class="span2"><a href="{{url_for('advert.details', ad_id=advert.id)}}" class="btn btn-primary"><i class="icon-white icon-backward"></i> Back to Advert</a></div>
+</div>
+<form id="adsubmitform" method="POST" enctype="multipart/form-data" action="">
+<div class="row-fluid">
+    <div class="span12 form-horizontal wide">
+            {{ render_field(form.csrf_token) }}
+            {{ render_field_horizontal(form.target, value=owner, style="width: 400px") }}
+            {{ render_field_horizontal(form.about, value='Regarding "'+ title + '"', style="width: 400px") }}
+            {{ render_field_horizontal(form.message, style="width: 400px; height: 200px") }}
     </div>
 </div>
+
+<div class="row-fluid">
+    <div class="span4">&nbsp;</div>
+    <div class="span4">
+        <button class="btn btn-primary" id="do_contact" type="submit" style="width: 100%; font-size: 30px; line-height: 30px">
+            Send my message!
+        </button>
+    </div>
+</div>
+</form>
 
 {% endblock %}
 
 {% block extra_js_bottom %}
-{{super()}}
-<script type="text/javascript" src="/static/uniboard/js/adsubmit.js"></script>
+
 {% endblock extra_js_bottom %}
