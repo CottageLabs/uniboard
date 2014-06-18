@@ -2,47 +2,62 @@
 
 {% block content %}
 {% from "_formhelpers.html" import render_field %}
+{% from "_formhelpers.html" import render_field_horizontal %}
 
-<h1>Create a new advert</h1>
-<div class="hero-unit">
-    <div class="row">
-        <div class="span5">
-            <form id="adsubmitform" method="POST" enctype="multipart/form-data" action="">
-
-                {{ render_field(form.csrf_token) }}
-
-                {{ render_field(form.isbn) }}
-                {{ render_field(form.title) }}
-                {{ render_field(form.edition) }}
-                {{ render_field(form.authors) }}
-                {{ render_field(form.year) }}
-                {{ render_field(form.publisher) }}
-                {{ render_field(form.subjects, class="input-large") }}
-                {{ render_field(form.condition, class="input-large") }}
-                {{ render_field(form.location, class="input-large") }}
-                {{ render_field(form.postcode) }}
-                {{ render_field(form.keywords) }}
-                {{ render_field(form.price) }}
+<div class="row-fluid" style="padding-bottom: 10px; margin-bottom: 30px; padding-left: 30px; border-bottom: 3px dashed #aaaaaa"><div class="span12"><h1>Selling an item</h1></div></div>
 
 
-                Upload a picture:
-                <div class="actions">
-                    <input type="file" name="upload" id="take-picture" accept="image/*;capture=camera">
-                    <div id="preview">
-                        <img style="width: 300px;" src="about:blank" alt="" id="show-picture">
-                    </div>
-                </div>
+<form id="adsubmitform" method="POST" enctype="multipart/form-data" action="">
+<div class="row-fluid">
+    <div class="span6">
+        <div class="form-horizontal wide">
+        <h3>Tell us about the book</h3>
+        {{ render_field(form.csrf_token) }}
+        {{ render_field_horizontal(form.title, style="width: 300px", placeholder="enter the book title here") }}
+        {{ render_field_horizontal(form.isbn, placeholder="e.g. 978-3-16-148410-0") }}
+        {{ render_field_horizontal(form.authors, style="width: 300px", placeholder="list the authors") }}
+        {{ render_field_horizontal(form.publisher, placeholder="enter the publisher here") }}
+        {{ render_field_horizontal(form.edition, style="width: 100px", placeholder="e.g. 3rd") }}
+        {{ render_field_horizontal(form.year, style="width: 100px", placeholder="e.g. 2008") }}
+        {{ render_field_horizontal(form.subjects, class="input-large") }}
+        {{ render_field_horizontal(form.keywords, style="width: 300px", placeholder="enter some keywords") }}
 
-                <div class="actions">
-                    <input id="adsubmit" type="submit" value="Create Advert" class="btn btn-primary" />
-                    {#<br /><br /><br /><br /><br /><br /><input id="m" type="text" name="m" />#}
-                </div>
-            </form>
-        </div>
-        <div class="span5">
+        <hr>
+        <h3>Tell us about the sale</h3>
+        {{ render_field_horizontal(form.price, style="width: 100px", placeholder="e.g. 19.50") }}
+        {{ render_field_horizontal(form.condition, class="input-large", placeholder="choose one") }}
+        {{ render_field_horizontal(form.location, class="input-large") }}
+        {{ render_field(form.postcode, style="width: 150px", placeholder="enter a postcode") }}
         </div>
     </div>
+    <div class="span6">
+        <div class="row-fluid"><div class="span12">
+            <h3>Upload a picture</h3>
+            <input type="file" name="upload" id="take-picture" accept="image/*;capture=camera">
+        </div></div>
+
+        <div class="row-fluid"><div class="span12">
+        <div id="placeholder" style="width: 70%; height: 300px; border: 1px dashed #aaaaaa; line-height: 300px; text-align: center">
+            <strong>why not upload an image?</strong>
+        </div>
+        <div id="preview" style="display: none">
+            <img class="span3" src="about:blank" alt="" id="show-picture">
+        </div>
+        </div></div>
+
+    </div>
 </div>
+
+<div class="row-fluid">
+    <div class="span4">&nbsp;</div>
+    <div class="span4">
+        <button class="btn btn-primary" id="adsubmit" type="submit" style="width: 100%; font-size: 30px; line-height: 30px">
+            Create my advert!
+        </button>
+    </div>
+</div>
+
+</form>
 
 {% endblock %}
 

@@ -1,0 +1,84 @@
+.red {
+    color: #C2020C;
+}
+
+.form-horizontal.wide .control-label {
+    width: 100px;
+}
+
+.form-horizontal.wide .controls,
+.form-horizontal.wide .form-status,
+.form-horizontal.wide .heading-aligned-with-fields
+{
+    margin-left: 120px;
+}
+
+.form-horizontal .nested-field-container .control-label {
+    width: auto;
+    margin-right: 1em;
+}
+
+.form-horizontal .nested-field-container .controls {
+    margin-left: 0;
+}
+
+.form-horizontal.wide h1,
+.form-horizontal.wide h2,
+.form-horizontal.wide h3,
+.form-horizontal.wide h4,
+.form-horizontal.wide h5,
+.form-horizontal.wide h6 {
+    margin-bottom: 1em;
+}
+
+.form-horizontal.wide .form-status {
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+}
+
+.form-horizontal.wide .form-section {
+    margin-top: 1em;
+    padding: 0.5em 1.5em;  /* top/bottom, left/right */
+}
+
+.nested-field-container textarea {
+    height: 5em;
+}
+
+.control-group.error .help-block,
+.control-group.error .help-inline,
+.control-group.error .radio {
+    color: #333;
+}
+
+.error ul.errors {
+    color: #D60500;
+}
+
+.error .select2-choice {
+    border-color: #b94a48;
+}
+
+.control-group.error input.extra_input_field {
+    border-color: #ccc;
+    color: #555;
+}
+
+.checkboxes ul {
+    list-style: none outside none;
+    margin-left: 0;
+}
+
+.checkboxes ul.errors {
+    list-style: disc;
+    margin-left: 25px;
+}
+
+.checkboxes label {
+    display: inline;
+}
+
+label > .label-text,
+.checkboxes label {
+    padding-left: 0.25em;
+}

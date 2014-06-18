@@ -63,7 +63,7 @@ class SubmitAd(Form):
     publisher = TextField('Publisher')
     subjects = TextField('Subject')
     condition = SelectField('Condition', choices=condition_choices)
-    price = FloatField('Price', [validators.Optional()])
+    price = FloatField('Price', [validators.Required()])
     location = SelectField('Location to advertise', choices=location_choices)
     postcode = TextField('Postcode')
     keywords = TagListField('Keywords')
