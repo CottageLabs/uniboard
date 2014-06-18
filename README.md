@@ -6,6 +6,14 @@ UniBoard depends on esprit, which must be installed before this package will ins
 
 https://github.com/richard-jones/esprit
 
+It also relies on the Google Map API, so in order to view the maps you will need a Google API key:
+
+https://developers.google.com/maps/documentation/javascript/tutorial#api_key
+
+and you will need to add a file at the root of the application (same directory as this README) called app.cfg with the content:
+
+GOOGLE_MAP_API_KEY="<your key>"
+
 ## Data Models
 
 ### Account Data Model

@@ -157,3 +157,8 @@ QUERY_ROUTE = {
 # 604800 = 7 days
 ADVERT_TIMEOUT = 604800
 
+# ==========================
+# MAP INTEGRATION
+
+# add this in app.cfg
+GOOGLE_MAP_API_KEY = None

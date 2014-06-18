@@ -168,7 +168,7 @@ def details(ad_id):
         abort(404)
 
     return render_template('advert/details.html', advert=advert, images_folder=app.config['IMAGES_FOLDER'],
-                           owner=owner, ad_id=ad_id)
+                           owner=owner, ad_id=ad_id, map_key=app.config.get("GOOGLE_MAP_API_KEY"))
 
 class ContactForm(Form):
     target = TextField('To:', [validators.Required()])

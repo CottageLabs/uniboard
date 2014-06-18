@@ -345,6 +345,14 @@ class Advert(dao.AdvertDAO):
             return None
         return (loc.get("lat"), loc.get("lon"))
 
+    @property
+    def lat(self):
+        return self.location[0]
+
+    @property
+    def lon(self):
+        return self.location[1]
+
     def set_location(self, lat, lon):
         if "loc" not in self.data:
             self.data["loc"] = {}

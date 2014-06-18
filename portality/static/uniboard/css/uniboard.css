@@ -1,3 +1,20 @@
+html { height: 100% }
+body { height: 100%; margin: 0; padding: 0 }
+#map-canvas {
+    height: 100%
+}
+#mappins-map img {
+    max-width: none !important;
+    height: auto !important;
+    background: none !important;
+    border: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.gm-style img { max-width: none; }
+.gm-style label { width: auto; display: inline; }
+
 .red {
     color: #C2020C;
 }
