@@ -6,6 +6,11 @@ UniBoard depends on esprit, which must be installed before this package will ins
 
 https://github.com/richard-jones/esprit
 
+It also contains submodules, so when you check this code out you will also need to run:
+
+    git submodule init
+    git submidule update
+
 It also relies on the Google Map API, so in order to view the maps you will need a Google API key:
 
 https://developers.google.com/maps/documentation/javascript/tutorial#api_key
