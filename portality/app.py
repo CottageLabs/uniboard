@@ -52,6 +52,7 @@ def autocomplete(doc_type, field_name):
     if not prefix:
         return jsonify({'suggestions':[{"id":"", "text": "No results found"}]})  # select2 does not understand 400, which is the correct code here...
 
+    #Because AdBock blocks anything with the word advert in it, the doc_type the autocomplete submits had to be renamed.
     if doc_type == 'adsubmit':
         doc_type = 'advert'
     m = models.lookup_model(doc_type)
