@@ -171,7 +171,6 @@ def details(ad_id):
                            owner=owner, ad_id=ad_id, map_key=app.config.get("GOOGLE_MAP_API_KEY"))
 
 class ContactForm(Form):
-    target = TextField('To:', [validators.Required()])
     about = TextField('Subject:', [validators.Required()])
     message = TextAreaField('Message:', [validators.Required()])
 
@@ -182,6 +181,7 @@ def contact(ad_id):
     advert = models.Advert.pull(ad_id)
     owner = advert.owner
     title = advert.title
+    ad_id = advert.id
 
     form = ContactForm(request.form)
 
@@ -196,6 +196,7 @@ def contact(ad_id):
             flash('Email has been sent.')
             if app.config.get('DEBUG', False):
                 flash(to[0] + ' ' + fro + ' ' + subject + ' ' + text)
+            return redirect(url_for('.details', ad_id=ad_id))
         except Exception as e:
             flash('Hm, sorry - sending the email didn\'t work.', 'error')
             if app.config.get('DEBUG', False):

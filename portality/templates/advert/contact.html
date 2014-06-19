@@ -12,8 +12,7 @@
 <div class="row-fluid">
     <div class="span12 form-horizontal wide">
             {{ render_field(form.csrf_token) }}
-            {{ render_field_horizontal(form.target, value=owner, style="width: 400px") }}
-            {{ render_field_horizontal(form.about, value='Regarding "'+ title + '"', style="width: 400px") }}
+            {{ render_field_horizontal(form.about, value='Regarding "'+ title + '"', style="width: 400px", readonly=readonly) }}
             {{ render_field_horizontal(form.message, style="width: 400px; height: 200px") }}
     </div>
 </div>
