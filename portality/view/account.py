@@ -256,7 +256,7 @@ def valid_email(self, field):
 
 class RegisterForm(Form):
     name = TextField('Full name', [validators.Required()])
-    email = TextField('Institutional Email Address',
+    email = TextField('Email Address',
     [
         validators.Required(),
         validators.Length(min=3, max=35),
