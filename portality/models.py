@@ -124,7 +124,15 @@ class Account(dao.AccountDAO, UserMixin):
             raise ModelException("Unable to set lat and lon - must be floats or cast to float: " + str(lat) + ", " + str(lon))
         self.data["loc"]["lat"] = lat
         self.data["loc"]["lon"] = lon
+    
+    @property
+    def lat(self):
+        return self.location[0]
 
+    @property
+    def lon(self):
+        return self.location[1]
+    
     @property
     def phone(self):
         return self.data.get("phone")

@@ -1,5 +1,14 @@
 jQuery(document).ready(function($) {
     
+    /****************************************************************
+     * Uniboard FacetView theme
+     ***************************
+     * Requires the following variables to be in scope
+     *
+     * user_lat - the latitude of the user of the view
+     * user_lon - the longitude of the user of the view
+     */
+    
     function discoveryRecordView(options, record) {
         var result = options.resultwrap_start;
 
@@ -58,6 +67,7 @@ jQuery(document).ready(function($) {
 
     
     $('#facetview').facetview({
+        debug: false,
         search_url : current_scheme + "//" + current_domain + "/user_query/searchable,ad/_search",
         page_size : 25,
         facets : [
@@ -74,9 +84,46 @@ jQuery(document).ready(function($) {
                     {"from" : 20, "to" : 30, "display": "£20 - £30"},
                     {"from" : 30, "to" : 40, "display": "£30 - £40"},
                     {"from" : 40, "to" : 50, "display": "£40 - £50"},
-                    {"from" : 40, "display": "£50+"}
+                    {"from" : 50, "display": "£50+"}
                 ]
             },
+            {
+                'field' : 'loc',
+                'display' : 'Distance from my Residence',
+                'type' : 'geo_distance',
+                'open' : true,
+                'hide_empty_distance' : true,
+                'unit' : 'mi',
+                'lat' : user_lat,
+                'lon' : user_lon,
+                "distance" : [
+                    {"to" : 0.5, "display" : "within 0.5 miles"}, 
+                    {"to" : 2, "display" : "within 2 miles"}, 
+                    {"to" : 5, "display" : "within 5 miles"},
+                    {"to" : 10, "display" : "within 10 miles"}, 
+                    {"to" : 20, "display" : "within 20 miles"}, 
+                    {"to" : 50, "display" : "within 50 miles"}
+                ]
+            },
+            // FIXME: at the moment you can't have two facets over the same field
+            //{
+            //    'field' : 'loc',
+            //    'display' : 'Distance from my University',
+            //    'type' : 'geo_distance',
+            //    'open' : true,
+            //    'hide_empty_distance' : true,
+            //    'unit' : 'mi',
+            //    'lat' : uni_lat,
+            //    'lon' : uni_lon,
+            //    "distance" : [
+            //        {"to" : 0.5, "display" : "within 0.5 miles"}, 
+            //        {"to" : 2, "display" : "within 2 miles"}, 
+            //        {"to" : 5, "display" : "within 5 miles"},
+            //        {"to" : 10, "display" : "within 10 miles"}, 
+            //        {"to" : 20, "display" : "within 20 miles"}, 
+            //        {"to" : 50, "display" : "within 50 miles"}
+            //    ]
+            //},
             {'field': 'subject.exact', 'display': 'Subject'},
             {'field': 'condition.exact', 'display': 'Condition'},
             {'field': 'year', 'display': 'Publication Year'},
