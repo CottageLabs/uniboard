@@ -18,6 +18,7 @@ setup(
         "nose",
         "pygeocoder",
         "futures==2.1.6",
+        "numpy",
         # for deployment
         "gunicorn",
         "newrelic",

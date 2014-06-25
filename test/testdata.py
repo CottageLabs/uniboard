@@ -1,5 +1,6 @@
 from random import randint, random
 from portality import models
+import numpy
 
 owners = ["richard@cottagelabs.com"]
 
@@ -85,6 +86,12 @@ tags = ["superserviceableness", "michigan", "atabalipa", "prespeculating", "goat
         "custodial", "relaunder", "unleaf", "anacusia", "precipice", "belligerent", "racemization", "pergamum", "cumberland",
         "reincorporating", "negationist", "nonresistance", "nonaddicting", "overinvestment", "puerilism"]
 
+coords = {
+    "lat" : 51.533182,
+    "lon" : -0.475996,
+    "scale" : 0.035
+}
+
 def _random(length, from_list, separator="", aslist=False):
     result = []
     for i in range(length):
@@ -128,13 +135,9 @@ def condition():
     return _random(1, conditions)
 
 def lat_lon():
-    lat_major = randint(-89, 89)
-    lon_major = randint(-179, 179)
-    lat_minor = random()
-    lon_minor = random()
-
-    lat = float(lat_major) + lat_minor
-    lon = float(lon_major) + lon_minor
+    offset = numpy.random.normal(scale=coords["scale"])
+    lat = coords["lat"] + offset
+    lon = coords["lon"] + offset
     return lat, lon
 
 def keywords():
