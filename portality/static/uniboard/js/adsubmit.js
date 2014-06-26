@@ -19,7 +19,7 @@ jQuery(document).ready(function($) {
             },
             createSearchChoice: function(term) {return {"id":term, "text": term};},
             initSelection : function (element, callback) {
-                var data = {id: element.val(), text: element.val()};
+                var data = {id: element.val().toLowerCase(), text: element.val().toLowerCase()};
                 callback(data);
             }
         });
