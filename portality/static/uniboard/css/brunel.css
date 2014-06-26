@@ -1,0 +1,77 @@
+#navigation {
+  background: -webkit-linear-gradient(180deg, blue, black); /* For Safari 5.1 to 6.0 */
+  background: -o-linear-gradient(180deg, blue, black); /* For Opera 11.1 to 12.0 */
+  background: -moz-linear-gradient(180deg, blue, black); /* For Firefox 3.6 to 15 */
+  background: linear-gradient(180deg, #003399, #011135); /* Standard syntax */
+  color: white;
+}
+
+body {
+    padding-top: 0px;
+    background: #aaaaaa;
+}
+
+#bigheader {
+ background: url(../img/bg-header.jpg);
+}
+
+#main-nav {
+    margin: 0px;
+}
+
+#header {
+    background: url(../img/bg-header.jpg);
+    height: 120px;
+}
+
+#headcontainer {
+    height: 120px;
+}
+
+#navigation a {
+    padding-top: 20px;
+    color: white;
+}
+
+/*#navigation a:hover {
+    text-decoration: underline;
+    background: #C0C0C0;
+    color: black;
+}
+
+#navigation a:active {
+}*/
+
+#navigation a:hover {
+
+    border: 0;
+    border-bottom: 5px solid #9ab2e1;
+    color: #fff;
+    padding-top: 20px;
+    padding-right: 10px;
+    padding-bottom: 6px;
+}
+
+.nav-inner {
+    background: linear-gradient(180deg, #003399, #011135); /* Standard syntax */
+}
+
+#footer {
+ background: url(../img/bg-footer.jpg);
+ border-top: 0px;
+ color: white;
+ margin-top: 0px;
+
+}
+
+#copyright {
+    padding-right: 5px;
+}
+
+#body{
+    background: white;
+    padding: 10px;
+    padding-top: 10px;
+    padding-bottom: 20px;
+    margin-top: 0px;
+}

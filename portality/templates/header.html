@@ -1,10 +1,12 @@
 <div class="container">
 
-    <div class="content">
 
-        <div class="row-fluid" style="border-bottom: 1px solid #000000">
-            <div class="span12">
-                <h1>UniBoard</h1>
+    <div class="content" id="navigation">
+
+        <div class="row-fluid" id="header">
+            <div class="span12" id="headcontainer">
+                <h1 id="bigheader"><img src="../static/uniboard/img/brunel_logo.png" style="padding: 10px;">
+                    <img  class="pull-right" src="../static/uniboard/img/uniboardlogo.png" style="padding-bottom: 10px; padding-top: 27px; height: 75px; padding-right: 5px;"></h1>
             </div>
         </div>
 
@@ -23,7 +25,7 @@
                 {% endif %}
                 </ul>
 
-                <ul class="nav pull-right" id="main-nav-first-menu" style="margin-bottom: 10px">
+                <ul class="nav pull-right" id="main-nav-first-menu" style="margin-bottom: 10px" >
                 {% if not current_user.is_anonymous() %}
                     <li><a href="{{ url_for('advert.adsubmit') }}">New Advert</a></li>
                     <li{% if request.path == url_for('root') %} class="active"{% endif %}><a href="{{ url_for('root') }}">Search UniBoard</a></li>
@@ -63,3 +65,4 @@
         </div>
 
     </div>
+</div>

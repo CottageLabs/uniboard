@@ -1,5 +1,9 @@
 html { height: 100% }
-body { height: 100%; margin: 0; padding: 0 }
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
 #map-canvas {
     height: 100%
 }
@@ -99,3 +103,4 @@ label > .label-text,
 .checkboxes label {
     padding-left: 0.25em;
 }
+
