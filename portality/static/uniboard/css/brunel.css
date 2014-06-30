@@ -52,6 +52,13 @@ body {
     padding-bottom: 6px;
 }
 
+#navigation .active>a{
+    border-bottom: 5px solid #9ab2e1;
+    background-color: transparent;
+    padding-top: 20px;
+    padding-bottom: 6px;
+}
+
 .nav-inner {
     background: linear-gradient(180deg, #003399, #011135); /* Standard syntax */
 }

@@ -5,8 +5,8 @@
 
         <div class="row-fluid" id="header">
             <div class="span12" id="headcontainer">
-                <h1 id="bigheader"><img src="../static/uniboard/img/brunel_logo.png" style="padding: 10px;">
-                    <img  class="pull-right" src="../static/uniboard/img/uniboardlogo.png" style="padding-bottom: 10px; padding-top: 27px; height: 75px; padding-right: 5px;"></h1>
+                <h1 id="bigheader"><img src="/static/uniboard/img/brunel_logo.png" style="padding: 10px;">
+                    <img  class="pull-right" src="/static/uniboard/img/uniboardlogo.png" style="padding-bottom: 10px; padding-top: 27px; height: 75px; padding-right: 5px;"></h1>
             </div>
         </div>
 
@@ -14,55 +14,54 @@
             <div class="navbar-inner">
                 <ul class="nav pull" id="main-nav-admin-menu" style="margin-bottom: 10px">
                 {% if not current_user.is_anonymous() %}
-                    <li{% if request.path == url_for('account.username', username=current_user.id) %} class="active"{% endif %}><a href="{{url_for('account.username', username=current_user.id)}}">{{current_user.id}}</a></li>
+                    <li{% if request.path == unquote(url_for('account.username', username=current_user.id)) %} class="active"{% endif %}><a href="{{url_for('account.username', username=current_user.id)}}">{{current_user.id}}</a></li>
                     {% if current_user.has_role("list_users") %}
-                        <li{% if request.path == url_for('account.index') %} class="active"{% endif %}><a href="{{ url_for('account.index') }}">users</a></li>
+                    <li{% if request.path == url_for('account.index') %} class="active"{% endif %}><a href="{{ url_for('account.index') }}">users</a></li>
                     {% endif %}
                     <li><a href="{{url_for('account.logout')}}">logout</a></li>
                 {% else %}
                     <li><a href="{{ url_for('account.login') }}">Login</a></li>
-                    <li><a href="{{ url_for('account.register') }}">Register</a></li>
+                    <li class="active"><a href="{{ url_for('account.register') }}">Register</a></li>
                 {% endif %}
                 </ul>
 
                 <ul class="nav pull-right" id="main-nav-first-menu" style="margin-bottom: 10px" >
                 {% if not current_user.is_anonymous() %}
-                    <li><a href="{{ url_for('advert.adsubmit') }}">New Advert</a></li>
+                    <li {% if request.path == url_for('advert.adsubmit') %} class="active"{% endif %}><a href="{{ url_for('advert.adsubmit') }}">New Advert</a></li>
                     <li{% if request.path == url_for('root') %} class="active"{% endif %}><a href="{{ url_for('root') }}">Search UniBoard</a></li>
                 {% endif %}
                 </ul>
             </div>
         </div>
-
         <div class="container">
 
-            <div class="alert-messages">
-
-                {% with messages = get_flashed_messages(with_categories=True) %}
-                    {% if messages %}
-                        {% set category_url_indicator = '+contains-url' %}
-
-                        {% for category, message in messages %}
-                            {% set message_has_url = False %}
-                            {% if category.endswith(category_url_indicator) %}
-                                {% set category = category[:category.rfind(category_url_indicator)] %}
-                                {% set message_has_url = True %}
-                            {% endif %}
-
-                            <div class="alert alert-{{category}} fade in" data-alert="alert">
-                                <a class="close" data-dismiss="alert" href="#">&times;</a>
-                                {% if message_has_url %}
-                                    {{ message | safe }}
-                                {% else %}
-                                    {{ message }}
-                                {% endif %}
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
-            </div>
-
         </div>
-
     </div>
+     <div class="container" style="background-color: white;">
+         <div class="alert-messages" >
+
+                    {% with messages = get_flashed_messages(with_categories=True) %}
+                        {% if messages %}
+                            {% set category_url_indicator = '+contains-url' %}
+
+                            {% for category, message in messages %}
+                                {% set message_has_url = False %}
+                                {% if category.endswith(category_url_indicator) %}
+                                    {% set category = category[:category.rfind(category_url_indicator)] %}
+                                    {% set message_has_url = True %}
+                                {% endif %}
+
+                                <div class="alert alert-{{category}} fade in" data-alert="alert">
+                                    <a class="close" data-dismiss="alert" href="#">&times;</a>
+                                    {% if message_has_url %}
+                                        {{ message | safe }}
+                                    {% else %}
+                                        {{ message }}
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+         </div>
+     </div>
 </div>

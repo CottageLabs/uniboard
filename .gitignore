@@ -8,3 +8,7 @@ dist/*
 
 app.cfg
 .idea
+
+# Test uploads
+portality/user_uploads/*
+!portality/user_uploads/.gitkeep

@@ -59,7 +59,7 @@
     </div>
     <div class="span6">
         {% if advert.image_id %}
-            <img src = "/static/images/{{ advert.image_id }}">
+            <img src = "{{ url_for('serve_user_uploads', image_name=advert.image_id) }}">
         {% else %}
             <div class="row-fluid"><div class="span12">
             <div id="placeholder" style="width: 70%; height: 300px; border: 1px dashed #aaaaaa; line-height: 300px; text-align: center">

@@ -141,10 +141,11 @@ def adsubmit(ad_id=None):
             image = request.files['upload']
             if image and allowed_file(image.filename):
                 image_id = uuid.uuid4().hex
-                advert.set_image_id(image_id)
                 name = image.filename.split('.')
                 extension = name[-1]
-                image.save(os.path.join(app.config['IMAGES_FOLDER'], str(image_id)))
+                image_name = str(image_id) + '.' + extension
+                image.save(os.path.join(app.config['IMAGES_FOLDER'], image_name))
+                advert.set_image_id(image_name)
             elif image and not allowed_file(image.filename):
                 flash('This is not an allowed image type', 'error')
 
@@ -162,6 +163,7 @@ def adsubmit(ad_id=None):
 def details(ad_id):
     advert = models.Advert.pull(ad_id)
     owner = None
+
     if current_user.id == advert.owner:
         owner = True
     if not advert:

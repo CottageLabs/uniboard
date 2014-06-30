@@ -1,4 +1,4 @@
-from flask import Flask, request, abort, render_template, redirect, make_response, jsonify
+from flask import Flask, request, abort, render_template, redirect, make_response, jsonify, send_file, send_from_directory
 from flask.views import View
 from flask.ext.login import login_user, current_user
 
@@ -64,6 +64,17 @@ def autocomplete(doc_type, field_name):
     # you shouldn't return lists top-level in a JSON response:
     # http://flask.pocoo.org/docs/security/#json-security
 
+@app.route("/user_uploads/<image_name>")
+def serve_user_uploads(image_name):
+    # if current_user.is_authenticated() and current_user.has_role("user"):
+    #
+    return send_from_directory(app.config['IMAGES_FOLDER'], image_name)
+    # else:
+    #     abort(401)
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=app.config['DEBUG'], port=app.config['PORT'])
