@@ -133,35 +133,10 @@ def query(path='Pages'):
         if default_filter:
             terms.update(_default_filter(subpaths))
 
-        if owner_filter:
-            terms.update(_owner_filter())
-
-        if editor_filter:
-            shoulds.update(_editor_filter())
-
-        if associate_filter:
-            terms.update(_associate_filter())
-
         resp = make_response( json.dumps(klass().query(q=qs, terms=terms, should_terms=shoulds)) )
 
     resp.mimetype = "application/json"
     return resp
-
-def _associate_filter():
-    return {"admin.editor.exact" : current_user.id}
-
-def _editor_filter():
-    """
-    Apply filter to include only items assigned to editor groups that the current user is the editor for
-    """
-    gnames = []
-    groups = models.EditorGroup.groups_by_editor(current_user.id)
-    for g in groups:
-        gnames.append(g.name)
-    return {"admin.editor_group.exact" : gnames}
-
-def _owner_filter():
-    return {"admin.owner.exact" : current_user.id}
 
 def _default_filter(subpaths):
     return {"admin.deleted" : False}
