@@ -262,18 +262,6 @@ class Advert(dao.AdvertDAO):
     def owner(self): return self.data.get("owner")
     def set_owner(self, val): self.data["owner"] = val
 
-    @classmethod
-    def get_by_owner(cls, owner_id):
-        res = cls.query(terms={"owner.exact": [owner_id]}, size=1000)
-        if 'hits' not in res:
-            return []
-        if res['hits']['total'] <= 0:
-            return []
-
-        hits = res['hits']['hits']
-        results = [cls(raw=h['_source']) for h in hits]
-        return results
-
     @property
     def isbn(self): return self.data.get("isbn", [])
 
@@ -452,6 +440,13 @@ class Advert(dao.AdvertDAO):
 
     @property
     def abuse(self): return self._admin("abuse", 0)
+
+    @property
+    def last_updated(self): return self.data.get("last_updated")
+
+    def get_last_updated(self, format="%Y-%m-%dT%H:%M:%SZ"):
+        dt = datetime.strptime(self.last_updated, "%Y-%m-%dT%H:%M:%SZ")
+        return dt.strftime(format)
 
     def increment_abuse(self, by=1):
         ab = self._admin("abuse", 0)

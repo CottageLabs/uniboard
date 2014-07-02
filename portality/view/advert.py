@@ -216,8 +216,32 @@ def delete(ad_id):
         advert.mark_deleted()
         advert.save()
         advert.refresh()
-        flash('Delete Successful!')
+        flash('Advert successfully deactivated!', "success")
     else:
         abort(401)
-    return redirect(url_for("account.username", username=username))
 
+    referrer = request.values.get("referrer", "user")
+    if referrer == "user":
+        return redirect(url_for("account.username", username=username))
+    elif referrer == "details":
+        return redirect(url_for("advert.details", ad_id=ad_id))
+
+@blueprint.route('/<ad_id>/reactivate', methods=['GET', 'POST', 'DELETE'])
+@login_required
+@ssl_required
+def reactivate(ad_id):
+    advert = models.Advert.pull(ad_id)
+    username = current_user.id
+    if current_user.id == advert.owner:
+        advert.mark_deleted(False)
+        advert.save()
+        advert.refresh()
+        flash('Advert successfully reactivated!', "success")
+    else:
+        abort(401)
+
+    referrer = request.values.get("referrer", "user")
+    if referrer == "user":
+        return redirect(url_for("account.username", username=username))
+    elif referrer == "details":
+        return redirect(url_for("advert.details", ad_id=ad_id))

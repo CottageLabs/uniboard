@@ -114,6 +114,28 @@ class AdvertDAO(esprit.dao.DomainObject):
         return cls(obs[0])
 
     @classmethod
+    def get_by_owner(cls, owner_id):
+        query = {
+            "query" : {
+                "term" : {"owner.exact" : owner_id}
+            },
+            "sort" : [{"last_updated" : {"order" : "desc"}}],
+        }
+        return cls.iterate(query)
+
+        """
+        res = cls.query(terms={"owner.exact": [owner_id]}, size=1000)
+        if 'hits' not in res:
+            return []
+        if res['hits']['total'] <= 0:
+            return []
+
+        hits = res['hits']['hits']
+        results = [cls(raw=h['_source']) for h in hits]
+        return results
+        """
+
+    @classmethod
     def prefix_query(cls, field, prefix, size=5):
         # example of a prefix query
         # {

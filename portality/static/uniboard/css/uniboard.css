@@ -104,3 +104,7 @@ label > .label-text,
     padding-left: 0.25em;
 }
 
+.advert_row:hover {
+    background: #eeeeee;
+}
+
