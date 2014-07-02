@@ -42,11 +42,12 @@ def index():
         return render_template('account/users.html', users=users)
 
 
-@blueprint.route('/<username>', methods=['GET', 'POST', 'DELETE'])
-@login_required
-@ssl_required
-def username(username):
+#@blueprint.route('/<username>', methods=['GET', 'POST', 'DELETE'])
+#@login_required
+#@ssl_required
+def userdetails(username):
     acc = models.Account.pull(username)
+    form = RegisterForm(request.form, csrf_enabled=False)
 
     if acc is None:
         abort(404)
@@ -99,6 +100,116 @@ def username(username):
             adverts = models.Advert.get_by_owner(username)
             return render_template('account/view.html', account=acc, adverts=adverts)
 
+def _get_user_form(acc, use_form_data=False):
+    form = None
+    if use_form_data:
+        form = RegisterForm(request.form, csrf_enabled=False)
+        form.email.data = acc.email
+    else:
+        form = RegisterForm(csrf_enabled=False)
+        form.name.data = acc.name
+        form.email.data = acc.email
+        form.degree.data = acc.degree
+        form.postcode.data = acc.postcode
+        form.phone.data = acc.phone
+        form.graduation.data = acc.graduation
+    return form
+
+def _update_account(account, form):
+    account.set_name(form.name.data)
+
+    if form.degree.data:
+        account.set_degree(form.degree.data)
+
+    if form.postcode.data:
+        account.set_postcode(form.postcode.data)
+
+        results = Geocoder.geocode(form.postcode.data + ', United Kingdom')
+        lat, lng = results[0].coordinates
+        account.set_location(lat, lng)
+
+    if form.phone.data:
+        account.set_phone(form.phone.data)
+
+    if form.graduation.data:
+        account.set_graduation(form.graduation.data)
+
+@blueprint.route('/<username>', methods=['GET', 'POST', 'DELETE'])
+@login_required
+@ssl_required
+def username(username):
+    acc = models.Account.pull(username)
+    if acc is None:
+        abort(404)
+
+    if request.method == "GET":
+        adverts = models.Advert.get_by_owner(username)
+        form = _get_user_form(acc)
+        pw = SetPasswordForm(csrf_enabled=False)
+        return render_template('account/view.html', account=acc, adverts=adverts, form=form, pwform=pw)
+
+    is_delete = request.method == "DELETE" or (request.method == "POST" and request.values.get("submit", False) == "Delete")
+    if is_delete:
+        if current_user.id != acc.id and not current_user.is_super:
+            abort(401)
+
+        conf = request.values.get("confirm")
+        if conf is None or conf != "confirm":
+            flash('check the box to confirm you really mean it!', "error")
+            adverts = models.Advert.get_by_owner(username)
+            form = _get_user_form(acc)
+            pw = SetPasswordForm(csrf_enabled=False)
+            return render_template('account/view.html', account=acc, adverts=adverts, form=form, pwform=pw)
+
+        acc.delete()
+        flash('Account ' + acc.id + ' deleted')
+
+        return redirect(url_for('.index'))
+
+    if request.method == "POST":
+        if current_user.id != acc.id and not current_user.is_super:
+            abort(401)
+
+        newdata = request.json if request.json else request.values
+
+        # is this a password update request?
+        if "password" in newdata:
+            pw = SetPasswordForm(request.form, csrf_enabled=False)
+            form = _get_user_form(acc)
+            adverts = models.Advert.get_by_owner(username)
+
+            # first check that the form validates
+            if not pw.validate():
+                flash("There was a problem with your password change request", "error")
+                return render_template('account/view.html', account=acc, adverts=adverts, form=form, pwform=pw)
+
+            # now check that the current password is correct
+            if not acc.check_password(pw.old_password.data):
+                flash("The current password you supplied was wrong", "error")
+                pw.old_password.errors.append("Your password was incorrect")
+                return render_template('account/view.html', account=acc, adverts=adverts, form=form, pwform=pw)
+
+            # if we get to here, we can set the password
+            acc.set_password(pw.password.data)
+            acc.save()
+            flash("Password updated", "success")
+            return render_template('account/view.html', account=acc, adverts=adverts, form=form, pwform=pw)
+
+        # is this a user details update request (which is all that is left here)
+        form = _get_user_form(acc, use_form_data=True)
+        if not form.validate():
+            flash("There was a problem with your change of details request", "error")
+            pw = SetPasswordForm(csrf_enabled=False)
+            adverts = models.Advert.get_by_owner(username)
+            return render_template('account/view.html', account=acc, adverts=adverts, form=form, pwform=pw)
+
+        # if we get to here then we need to update the account record
+        _update_account(acc, form)
+        acc.save()
+        flash("Account updated", "success")
+        adverts = models.Advert.get_by_owner(username)
+        pw = SetPasswordForm(csrf_enabled=False)
+        return render_template('account/view.html', account=acc, adverts=adverts, form=form, pwform=pw)
 
 def get_redirect_target(form=None):
     form_target = ''
@@ -111,27 +222,6 @@ def get_redirect_target(form=None):
         if target == util.is_safe_url(target):
             return target
     return url_for('root')
-
-
-class RedirectForm(Form):
-    next = HiddenField()
-
-    def __init__(self, *args, **kwargs):
-        Form.__init__(self, *args, **kwargs)
-        if not self.next.data:
-            self.next.data = get_redirect_target() or ''
-
-    def redirect(self, endpoint='index', **values):
-        if self.next.data == util.is_safe_url(self.next.data):
-            return redirect(self.next.data)
-        target = get_redirect_target()
-        return redirect(target or url_for(endpoint, **values))
-
-
-class LoginForm(RedirectForm):
-    email = TextField('Email', [validators.Required()])
-    password = PasswordField('Password', [validators.Required()])
-
 
 @blueprint.route('/login', methods=['GET', 'POST'])
 @ssl_required
@@ -254,6 +344,24 @@ def valid_email(self, field):
         if l[-1] not in domain_uni_lookup:
             raise ValidationError('This email is not on our list of permitted emails')
 
+class RedirectForm(Form):
+    next = HiddenField()
+
+    def __init__(self, *args, **kwargs):
+        Form.__init__(self, *args, **kwargs)
+        if not self.next.data:
+            self.next.data = get_redirect_target() or ''
+
+    def redirect(self, endpoint='index', **values):
+        if self.next.data == util.is_safe_url(self.next.data):
+            return redirect(self.next.data)
+        target = get_redirect_target()
+        return redirect(target or url_for(endpoint, **values))
+
+class LoginForm(RedirectForm):
+    email = TextField('Email', [validators.Required()])
+    password = PasswordField('Password', [validators.Required()])
+
 class RegisterForm(Form):
     name = TextField('Full name', [validators.Required()])
     email = TextField('Email Address',
@@ -270,11 +378,12 @@ class RegisterForm(Form):
 
 
 class SetPasswordForm(Form):
-    password = PasswordField('Password', [
+    old_password = PasswordField("Current Password", [validators.Required()])
+    password = PasswordField('New Password', [
         validators.Required(),
         validators.EqualTo('confirm_password', message='Passwords must match')
     ])
-    confirm_password = PasswordField('Repeat Password')
+    confirm_password = PasswordField('Repeat Password', [validators.Required()])
 
 
 @blueprint.route('/register', methods=['GET', 'POST'])
