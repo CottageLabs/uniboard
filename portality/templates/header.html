@@ -20,8 +20,8 @@
                     {% endif %}
                     <li><a href="{{url_for('account.logout')}}">logout</a></li>
                 {% else %}
-                    <li><a href="{{ url_for('account.login') }}">Login</a></li>
-                    <li class="active"><a href="{{ url_for('account.register') }}">Register</a></li>
+                    <li{% if request.path == url_for('account.login') %} class="active"{% endif %}><a href="{{ url_for('account.login') }}">Login</a></li>
+                    <li{% if request.path == url_for('account.register') %} class="active"{% endif %}><a href="{{ url_for('account.register') }}">Register</a></li>
                 {% endif %}
                 </ul>
 
