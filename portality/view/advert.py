@@ -32,7 +32,7 @@ condition_choices = [
 ]
 
 location_choices = [
-    ('home', 'Home'),
+    ('home', 'My term-time Residence'),
     ('uni', 'Uni'),
     ('postcode', 'By Postcode'),
 ]

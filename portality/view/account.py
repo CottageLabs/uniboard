@@ -365,14 +365,16 @@ class LoginForm(RedirectForm):
 class RegisterForm(Form):
     name = TextField('Full name', [validators.Required()])
     email = TextField('Email Address',
-    [
-        validators.Required(),
-        validators.Length(min=3, max=35),
-        validators.Email(message='Must be a valid email address'),
-        valid_email
-    ])
+                    [
+                        validators.Required(),
+                        validators.Length(min=3, max=35),
+                        validators.Email(message='Must be a valid email address'),
+                        valid_email
+                    ],
+                    description="You must use your institutional email here")
     degree = TextField('Course')
-    postcode = TextField('Postcode')
+    postcode = TextField('Postcode of term-time residence',
+                         description='We will use this postcode to obtain the approximate location of your term-time residence, to give you information about items for sale that are close to you.',)
     phone = TextField('Phone number')
     graduation = TextField('Graduation Year')
 

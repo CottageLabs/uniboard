@@ -89,7 +89,7 @@ jQuery(document).ready(function($) {
             },
             {
                 'field' : 'loc',
-                'display' : 'Distance from my Residence',
+                'display' : 'Distance from my term-time residence',
                 'type' : 'geo_distance',
                 'open' : true,
                 'hide_empty_distance' : true,
