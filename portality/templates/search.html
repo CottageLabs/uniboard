@@ -8,6 +8,7 @@
 
 {% block extra_js_bottom %}
 <script type="text/javascript">
+    var img_path = {{ url_for('serve_user_uploads', image_name="") }}
     var user_lat = {{current_user.lat}}
     var user_lon = {{current_user.lon}}
     //var uni_lat = 51.533182 // hard-coded for the time being

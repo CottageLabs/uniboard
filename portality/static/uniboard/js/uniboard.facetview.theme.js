@@ -16,8 +16,8 @@ jQuery(document).ready(function($) {
 
         // build the result
         result += "<div class='span2'>"
-        if (record.image) {
-            result += "<img src=''>"
+        if (record.image_id) {
+            result += "<img src='" + img_path + record.image_id + "'>"
         } else {
             result += "<img src='/static/uniboard/img/book_placeholder.png'>"
         }
