@@ -91,7 +91,13 @@ class Account(dao.AccountDAO, UserMixin):
         self.data['password'] = generate_password_hash(password)
 
     def check_password(self, password):
+        if "password" not in self.data:
+            return False
         return check_password_hash(self.data['password'], password)
+
+    def clear_password(self):
+        if "password" in self.data:
+            del self.data["password"]
 
     @property
     def degree(self):
@@ -156,12 +162,24 @@ class Account(dao.AccountDAO, UserMixin):
     def is_deleted(self):
         return self.data.get("admin", {}).get("deleted", False)
 
-    def set_deleted(self, val):
+    def set_deleted(self, val, cascade=True, save=True):
         if type(val) != bool:
             raise ModelException("Unable to set deleted - must be boolean value")
         if "admin" not in self.data:
             self.data["admin"] = {}
         self.data["admin"]["deleted"] = val
+
+        # Note that if val=False, we do not un-delete the adverts, this is a one-way operation
+        if cascade and val: # if we are deleting the account
+            adverts = Advert.get_by_owner(self.id)
+            for ad in adverts:
+                ad.mark_deleted(True)
+                ad.save()
+
+        if save:
+            self.save()
+
+
 
     def is_banned(self):
         return self.data.get("admin", {}).get("banned", False)
@@ -224,7 +242,6 @@ class Account(dao.AccountDAO, UserMixin):
         if not isinstance(role, list):
             role = [role]
         self.data["role"] = role
-
 
 class Advert(dao.AdvertDAO):
     """

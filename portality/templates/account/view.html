@@ -26,7 +26,7 @@
                     {{ render_field(form.postcode, style="width: 100px", placeholder="home post code") }}
                     {{ render_field(form.phone, style="width: 200px", placeholder="your telephone number") }}
                     {{ render_field(form.graduation, style="width: 100px", placeholder="e.g. 2016") }}
-                    <input type="submit" class="btn btn-success" name="submit" value="Update">
+                    <button type="submit" class="btn btn-success" name="submit">Update <i class="icon-white icon-pencil"></i></button>
                 </div>
                 </form>
             </div>
@@ -40,21 +40,20 @@
                     {{ render_field(pwform.old_password, style="width: 90%", placeholder="current password") }}
                     {{ render_field(pwform.password, style="width: 90%", placeholder="new password") }}
                     {{ render_field(pwform.confirm_password, style="width: 90%", placeholder="confirm your new password") }}
-                    <input type="submit" class="btn btn-success" name="submit" value="Update">
+                    <button type="submit" class="btn btn-success" name="submit">Update <i class="icon-white icon-pencil"></i></button>
                     </div>
                 </form>
             </div>
-            
-            {% if current_user.is_super %}
+
             <div style="border: 1px solid #cccccc; padding: 10px; margin: 10px">
-                <h4>Delete this account</h4>
-                <p>(This <strong>irrevocably</strong> deletes the account)</p>
+                <h3 style="padding-bottom: 10px">Want to delete your account?</h3>
+                <p class="help-block" style="margin-bottom: 10px">If you delete your account, it will also deactivate all of your adverts.  You can re-create your
+                account at any time in the future.</p>
                 <form action="" method="POST">
-                    <input type="submit" name="submit" value="Delete" class="btn btn-danger">
-                    <input type="radio" name="confirm" value="confirm">&nbsp;yes, I'm sure
+                    <button type="submit" class="btn btn-danger" id="delete_account" value="Delete" name="submit">Delete <i class="icon-white icon-trash"></i></button>
                 </form>
             </div>
-            {% endif %}
+
         </div>
 
     </div>

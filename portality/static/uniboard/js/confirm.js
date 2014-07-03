@@ -14,4 +14,11 @@ jQuery(document).ready(function(event){
          }
     });
 
+    $("#delete_account").click(function() {
+        var c = confirm("Are you sure you wish to delete your account?")
+        if (!c) {
+            return false;
+         }
+    });
+
 });
