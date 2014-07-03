@@ -279,18 +279,18 @@ def forgot():
         subject = app.config.get("SERVICE_NAME", "") + " - password reset"
         text = "A password reset request for account '" + account.id + "' has been received and processed.\n\n"
         text += "Please visit " + reset_url + " and enter your new password.\n\n"
-        text += "If you are the user '" + account.id + "' and you requested this change, please visit that link now and set the password to something of your preference.\n\n"
-        text += "If you are the user '" + account.id + "' and you did not request this change, you can ignore this email.\n\n"
-        text += "Regards, The OpenDOAR Team"
+        text += "If you are the user " + account.id + " and you requested this change, please visit that link now and set the password to something of your preference.\n\n"
+        text += "If you are the user " + account.id + " and you did not request this change, you can ignore this email.\n\n"
+        text += "Regards, The UniBoard Team"
         try:
             util.send_mail(to=to, fro=fro, subject=subject, text=text)
-            flash('Instructions to reset your password have been sent to you. Please check your emails.')
+            flash('Instructions to reset your password have been sent to you. Please check your emails.', "success")
             if app.config.get('DEBUG', False):
-                flash('Debug mode - url for reset is ' + reset_url)
+                flash('Debug mode - url for reset is ' + reset_url, "error")
         except Exception as e:
             flash('Hm, sorry - sending the password reset email didn\'t work.', 'error')
             if app.config.get('DEBUG', False):
-                flash('Debug mode - url for reset is' + reset_url)
+                flash('Debug mode - url for reset is' + reset_url, "error")
                 # app.logger.error(magic + "\n" + repr(e))
 
     return render_template('account/forgot.html')
