@@ -68,7 +68,7 @@
         <div class="span1">
             <div class="row-fluid"><div class="span4">
             {% if ad.image_id %}
-            <img src = "{{ url_for('serve_user_uploads', image_name=advert.image_id) }}">
+            <img src = "{{ url_for('serve_user_uploads', image_name=ad.image_id) }}">
             {% else %}
             <img src='/static/uniboard/img/book_placeholder.png'>
             {% endif %}
