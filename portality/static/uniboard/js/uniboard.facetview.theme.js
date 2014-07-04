@@ -65,70 +65,54 @@ jQuery(document).ready(function($) {
         return result;
     }
 
+    var facets = [
+        {
+            'field': 'price',
+            'display': 'Price',
+            "type" : "range",
+            "open" :true,
+            "hide_empty_range" : true,
+            "range" : [
+                {"to" : 5, "display" : "less than £5"},
+                {"from" : 5, "to" : 10, "display": "£5 - £10"},
+                {"from" : 10, "to" : 20, "display": "£10 - £20"},
+                {"from" : 20, "to" : 30, "display": "£20 - £30"},
+                {"from" : 30, "to" : 40, "display": "£30 - £40"},
+                {"from" : 40, "to" : 50, "display": "£40 - £50"},
+                {"from" : 50, "display": "£50+"}
+            ]
+        }
+    ]
+    if (user_lat && user_lon) {
+        facets.push({
+            'field' : 'loc',
+            'display' : 'Distance from my term-time residence',
+            'type' : 'geo_distance',
+            'open' : true,
+            'hide_empty_distance' : true,
+            'unit' : 'mi',
+            'lat' : user_lat,
+            'lon' : user_lon,
+            "distance" : [
+                {"to" : 0.5, "display" : "within 0.5 miles"},
+                {"to" : 2, "display" : "within 2 miles"},
+                {"to" : 5, "display" : "within 5 miles"},
+                {"to" : 10, "display" : "within 10 miles"},
+                {"to" : 20, "display" : "within 20 miles"},
+                {"to" : 50, "display" : "within 50 miles"}
+            ]
+        })
+    }
+    facets.push({'field': 'subject.exact', 'display': 'Subject'})
+    facets.push({'field': 'condition.exact', 'display': 'Condition'})
+    facets.push({'field': 'year', 'display': 'Publication Year'})
+    facets.push({'field': 'edition.exact', 'display': 'Edition'})
     
     $('#facetview').facetview({
         debug: false,
         search_url : current_scheme + "//" + current_domain + "/user_query/searchable,ad/_search",
         page_size : 25,
-        facets : [
-            {
-                'field': 'price', 
-                'display': 'Price', 
-                "type" : "range", 
-                "open" :true,
-                "hide_empty_range" : true,
-                "range" : [
-                    {"to" : 5, "display" : "less than £5"},
-                    {"from" : 5, "to" : 10, "display": "£5 - £10"},
-                    {"from" : 10, "to" : 20, "display": "£10 - £20"},
-                    {"from" : 20, "to" : 30, "display": "£20 - £30"},
-                    {"from" : 30, "to" : 40, "display": "£30 - £40"},
-                    {"from" : 40, "to" : 50, "display": "£40 - £50"},
-                    {"from" : 50, "display": "£50+"}
-                ]
-            },
-            {
-                'field' : 'loc',
-                'display' : 'Distance from my term-time residence',
-                'type' : 'geo_distance',
-                'open' : true,
-                'hide_empty_distance' : true,
-                'unit' : 'mi',
-                'lat' : user_lat,
-                'lon' : user_lon,
-                "distance" : [
-                    {"to" : 0.5, "display" : "within 0.5 miles"}, 
-                    {"to" : 2, "display" : "within 2 miles"}, 
-                    {"to" : 5, "display" : "within 5 miles"},
-                    {"to" : 10, "display" : "within 10 miles"}, 
-                    {"to" : 20, "display" : "within 20 miles"}, 
-                    {"to" : 50, "display" : "within 50 miles"}
-                ]
-            },
-            // FIXME: at the moment you can't have two facets over the same field
-            //{
-            //    'field' : 'loc',
-            //    'display' : 'Distance from my University',
-            //    'type' : 'geo_distance',
-            //    'open' : true,
-            //    'hide_empty_distance' : true,
-            //    'unit' : 'mi',
-            //    'lat' : uni_lat,
-            //    'lon' : uni_lon,
-            //    "distance" : [
-            //        {"to" : 0.5, "display" : "within 0.5 miles"}, 
-            //        {"to" : 2, "display" : "within 2 miles"}, 
-            //        {"to" : 5, "display" : "within 5 miles"},
-            //        {"to" : 10, "display" : "within 10 miles"}, 
-            //        {"to" : 20, "display" : "within 20 miles"}, 
-            //        {"to" : 50, "display" : "within 50 miles"}
-            //    ]
-            //},
-            {'field': 'subject.exact', 'display': 'Subject'},
-            {'field': 'condition.exact', 'display': 'Condition'},
-            {'field': 'year', 'display': 'Publication Year'},
-            {'field': 'edition.exact', 'display': 'Edition'}
-        ],
+        facets : facets,
         search_sortby : [
             {'display':'Date added','field':'created_date'},
             {'display':'Title','field':'title.exact'},

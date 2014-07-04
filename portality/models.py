@@ -133,11 +133,17 @@ class Account(dao.AccountDAO, UserMixin):
     
     @property
     def lat(self):
-        return self.location[0]
+        loc = self.location
+        if loc:
+            return loc[0]
+        return None
 
     @property
     def lon(self):
-        return self.location[1]
+        loc = self.location
+        if loc:
+            return loc[1]
+        return None
     
     @property
     def phone(self):
