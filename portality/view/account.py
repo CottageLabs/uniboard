@@ -15,16 +15,22 @@ from pygeocoder import Geocoder
 
 blueprint = Blueprint('account', __name__)
 
-def existscheck(form, field):
-    test = models.Account.pull(form.name.data)
-    if test:
-        raise ValidationError('Taken! Please try another.')
+class ValidEmailDomain(object):
+    def __init__(self):
+        pass
 
-#TODO write tests for this
-def valid_email(self, field):
-        l = self.email.data.split('@')
-        if l[-1] not in domain_uni_lookup:
-            raise ValidationError('This email is not on our list of permitted emails')
+    def __call__(self, form, field):
+        domain = field.data.split("@")
+        if len(domain) != 2:
+            raise ValidationError('This email address is not supported')
+        allowed = domain_uni_lookup.keys()
+        if domain[1] in allowed:
+            return True
+        allowed_suffix = ["." + a for a in allowed]
+        for suffix in allowed_suffix:
+            if domain[1].endswith(suffix):
+                return True
+        raise ValidationError('This email is not on our list of permitted emails.  Please be sure to use your institutional email address.')
 
 class RedirectForm(Form):
     next = HiddenField()
@@ -51,7 +57,7 @@ class RegisterForm(Form):
                         validators.Required(),
                         validators.Length(min=3, max=35),
                         validators.Email(message='Must be a valid email address'),
-                        valid_email
+                        ValidEmailDomain()
                     ],
                     description="You must use your institutional email here")
     degree = TextField('Course')
@@ -59,7 +65,6 @@ class RegisterForm(Form):
                          description='We will use this postcode to obtain the approximate location of your term-time residence, to give you information about items for sale that are close to you.',)
     phone = TextField('Phone number')
     graduation = TextField('Graduation Year')
-
 
 class SetPasswordForm(Form):
     old_password = PasswordField("Current Password", [validators.Required()])
