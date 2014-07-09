@@ -8,6 +8,7 @@ from flask.ext.wtf import TextField, TextAreaField, SelectField, HiddenField, In
 from flask.ext.wtf import Form, PasswordField, validators, ValidationError, Field
 from wtforms.widgets import TextInput
 from werkzeug.utils import secure_filename
+from datetime import datetime, timedelta
 
 from portality.core import app, ssl_required
 from portality import models
@@ -149,6 +150,8 @@ def adsubmit(ad_id=None):
             elif image and not allowed_file(image.filename):
                 flash('This is not an allowed image type', 'error')
 
+            advert.set_expires((datetime.now().replace(microsecond=0) + timedelta(hours=1)).isoformat() + 'Z')
+
             advert.save()
             advert.refresh()
             flash('Advert saved successfully', 'success')
@@ -234,6 +237,7 @@ def reactivate(ad_id):
     username = current_user.id
     if current_user.id == advert.owner:
         advert.mark_deleted(False)
+        advert.set_expires((datetime.now().replace(microsecond=0) + timedelta(hours=1)).isoformat() + 'Z')
         advert.save()
         advert.refresh()
         flash('Advert successfully reactivated!', "success")

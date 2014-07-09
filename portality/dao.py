@@ -1,6 +1,6 @@
 import esprit
 from portality.core import app
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class AccountDAO(esprit.dao.DomainObject):
     __type__ = 'account'
@@ -175,3 +175,10 @@ class AdvertDAO(esprit.dao.DomainObject):
             # terms will now go to the front of the result list
             result.append({"id": term['term'], "text": term['term']})
         return result
+
+    @classmethod
+    def get_by_expiration(cls):
+        res = []
+        exp_time = (datetime.now() + timedelta(hours=1)).isoformat() + 'Z'
+        query = {"query": {"range": {"admin.expires": {"lte": exp_time}}}}
+        return cls.iterate(query)

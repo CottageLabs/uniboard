@@ -1,7 +1,7 @@
 {
-    "brunel.ac.uk" : "Brunel University",
-    "bham.ac.uk" : "Birmingham University",
-    "cottagelabs.com": "24/6 Bruntsfield Place, Edinburgh",
-    "student.bham.ac.uk" : "Birmingham University",
-    "oneoverzero.com" : "24/6 Bruntsfield Place, Edinburgh"
+    "brunel.ac.uk" : {"lat": "51.532735", "lon": "-0.475244", "address":"Brunel University"},
+    "bham.ac.uk" : {"lat": "52.450817", "lon": "-1.930514", "address":"Birmingham University"},
+    "cottagelabs.com": {"lat": "55.9331351", "lon": "-3.2104161", "address":"24/6 Bruntsfield Place, Edinburgh"},
+    "student.bham.ac.uk" :{"lat": "52.450817", "lon": "-1.930514", "address":"Birmingham University"},
+    "oneoverzero.com" : {"lat": "55.9331351", "lon": "-3.2104161", "address":"24/6 Bruntsfield Place, Edinburgh}"
 }
