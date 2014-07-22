@@ -76,6 +76,14 @@ def allowed_file(filename):
 def adsubmit(ad_id=None):
     advert = models.Advert.pull(ad_id)
 
+    if advert is not None:
+        if advert.is_deleted and not current_user.has_role("edit_deleted"):
+            abort(404)
+
+        owner = current_user.id == advert.owner
+        if not owner and not current_user.has_role("edit_all_adverts"):
+            abort(404)
+
     form = SubmitAd(request.form, advert)
 
     if request.method == 'POST':
@@ -159,11 +167,17 @@ def adsubmit(ad_id=None):
 @ssl_required
 def details(ad_id):
     advert = models.Advert.pull(ad_id)
-    owner = None
+    if not advert:
+        abort(404)
 
+    if advert.is_deleted and not current_user.has_role("view_deleted"):
+        abort(404)
+
+    owner = False
     if current_user.id == advert.owner:
         owner = True
-    if not advert:
+
+    if advert.is_deactivated and not owner and not current_user.has_role("view_deleted"):
         abort(404)
 
     return render_template('advert/details.html', advert=advert, images_folder=app.config['IMAGES_FOLDER'],
