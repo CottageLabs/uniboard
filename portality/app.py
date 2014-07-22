@@ -39,6 +39,7 @@ def standard_authentication():
 app.register_blueprint(admin, url_prefix='/admin')
 app.register_blueprint(account, url_prefix='/account')
 app.register_blueprint(query, url_prefix='/user_query')
+app.register_blueprint(query, url_prefix='/admin_query')
 app.register_blueprint(advert, url_prefix='/advert')
 
 
