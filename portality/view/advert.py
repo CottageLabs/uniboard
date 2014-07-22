@@ -18,12 +18,6 @@ from pygeocoder import Geocoder
 
 blueprint = Blueprint('advert', __name__)
 
-subjects = [
-    ('maths', 'Maths'),
-    ('biology', 'Biology'),
-    ('law', 'Law'),
-]
-
 condition_choices = [
     ('as new', 'As New'),
     ('very good', 'Very Good'),
@@ -236,6 +230,8 @@ def reactivate(ad_id):
     advert = models.Advert.pull(ad_id)
     username = current_user.id
     if current_user.id == advert.owner:
+        if advert.is_deleted:
+            return render_template("advert/deleted.html")
         advert.mark_deactivated(False)
         advert.set_expires((datetime.now().replace(microsecond=0) + timedelta(hours=1)).isoformat() + 'Z')
         advert.save()
@@ -249,3 +245,41 @@ def reactivate(ad_id):
         return redirect(url_for("account.username", username=username))
     elif referrer == "details":
         return redirect(url_for("advert.details", ad_id=ad_id))
+
+@blueprint.route('/<ad_id>/delete', methods=['GET', 'POST', 'DELETE'])
+@login_required
+@ssl_required
+def delete(ad_id):
+    if not current_user.has_role("delete_advert"):
+        abort(401)
+
+    advert = models.Advert.pull(ad_id)
+    advert.mark_deleted()
+    advert.save()
+    advert.refresh()
+    flash('Advert successfully deleted!', "success")
+
+    referrer = request.values.get("referrer", "details")
+    if referrer == "details":
+        return redirect(url_for("advert.details", ad_id=ad_id))
+    else:
+        return redirect(url_for("admin.index"))
+
+@blueprint.route('/<ad_id>/undelete', methods=['GET', 'POST', 'DELETE'])
+@login_required
+@ssl_required
+def undelete(ad_id):
+    if not current_user.has_role("delete_advert"):
+        abort(401)
+
+    advert = models.Advert.pull(ad_id)
+    advert.mark_deleted(False)
+    advert.save()
+    advert.refresh()
+    flash('Advert successfully undeleted!', "success")
+
+    referrer = request.values.get("referrer", "details")
+    if referrer == "details":
+        return redirect(url_for("advert.details", ad_id=ad_id))
+    else:
+        return redirect(url_for("admin.index"))

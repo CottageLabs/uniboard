@@ -424,6 +424,10 @@ class Advert(dao.AdvertDAO):
         if type(val) != bool:
             raise ModelException("Unable to mark deleted - must be bool: " + str(val))
         self._set_admin("deleted", val)
+        # if we are deleting the advert then also deactivate it.  But if we are
+        # undeleting the advert, leave it deactivated
+        if val:
+            self.mark_deactivated()
 
     @property
     def is_deactivated(self):

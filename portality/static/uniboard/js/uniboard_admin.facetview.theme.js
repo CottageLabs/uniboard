@@ -52,11 +52,20 @@ jQuery(document).ready(function($) {
             result += "&nbsp;&nbsp;"
         }
 
-        if (record.admin && (record.admin.hasOwnProperty("deleted"))) {
-            if (record.admin.deleted) {
+        if (record.admin && (record.admin.hasOwnProperty("deactivated"))) {
+            if (record.admin.deactivated) {
                 result += '<span style="font-weight: bold; color: #cc3333">Deactivated</span>'
             } else {
                 result += '<span style="font-weight: bold; color: #33cc33">Active</span>'
+            }
+            result += "&nbsp;&nbsp;"
+        }
+
+        if (record.admin && (record.admin.hasOwnProperty("deleted"))) {
+            if (record.admin.deleted) {
+                result += '<span style="font-weight: bold; color: #cc3333">Deleted</span>'
+            } else {
+                result += '<span style="font-weight: bold; color: #33cc33">Not deleted</span>'
             }
             result += "&nbsp;&nbsp;"
         }
@@ -92,7 +101,8 @@ jQuery(document).ready(function($) {
     }
 
     var facets = []
-    facets.push({"field" : "admin.deleted", "display" : "Deactivated?", "open" : true})
+    facets.push({"field" : "admin.deleted", "display" : "Deleted?", "open" : true})
+    facets.push({"field" : "admin.deactivated", "display" : "Deactivated?", "open" : true})
     facets.push({"field" : "admin.abuse", "display" : "Times abuse reported", "open" : true})
     facets.push(
         {

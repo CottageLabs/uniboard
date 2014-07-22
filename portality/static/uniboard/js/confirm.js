@@ -1,6 +1,6 @@
 jQuery(document).ready(function(event){
 
-  $(".delete_advert").click(function(){
+  $(".deactivate_advert").click(function(){
     var c = confirm("Are you sure you wish to deactivate this advert?")
     if (!c) {
         return false;
@@ -9,6 +9,20 @@ jQuery(document).ready(function(event){
 
     $(".activate_advert").click(function() {
         var c = confirm("Are you sure you wish to re-activate this advert?")
+        if (!c) {
+            return false;
+         }
+    });
+
+  $(".delete_advert").click(function(){
+    var c = confirm("Are you sure you wish to delete this advert?")
+    if (!c) {
+        return false;
+     }
+  });
+
+    $(".undelete_advert").click(function() {
+        var c = confirm("Are you sure you wish to undelete this advert?")
         if (!c) {
             return false;
          }

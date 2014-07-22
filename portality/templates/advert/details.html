@@ -14,13 +14,24 @@
                 {% if owner %}
                     <a href="{{url_for('advert.adsubmit', ad_id=ad_id)}}" class="btn btn-primary edit_advert">Edit <i class="icon-white icon-edit"></i></a>
                     {% if advert.is_deactivated %}
-                        <a href="{{url_for('advert.reactivate', ad_id=ad_id)}}?referrer=details" class="btn btn-success activate_advert">Reactivate <i class="icon-white icon-ok"></i></a>
+                        {% if advert.is_deleted %}
+                            <button class="btn btn-success" disabled>Reactivate <i class="icon-white icon-ok"></i></button>
+                        {% else %}
+                            <a href="{{url_for('advert.reactivate', ad_id=ad_id)}}?referrer=details" class="btn btn-success activate_advert">Reactivate <i class="icon-white icon-ok"></i></a>
+                        {% endif %}
                     {% else %}
-                        <a href="{{url_for('advert.deactivate', ad_id=ad_id)}}?referrer=details" class="btn btn-danger delete_advert">Deactivate <i class="icon-white icon-remove"></i></a>
+                        <a href="{{url_for('advert.deactivate', ad_id=ad_id)}}?referrer=details" class="btn btn-danger deactivate_advert">Deactivate <i class="icon-white icon-remove"></i></a>
                     {% endif %}
                 {% else %}
                     <a href="{{url_for('advert.contact', ad_id=ad_id)}}" target="_blank" class="btn btn-success">Contact <i class="icon-white icon-envelope"></i></a>
                     <button class="btn btn-danger">Report Abuse <i class="icon-white icon-ban-circle"></i></button>
+                {% endif %}
+                {% if current_user.has_role("delete_advert") %}
+                    {% if advert.is_deleted %}
+                        <a href="{{url_for('advert.undelete', ad_id=ad_id)}}?referrer=details" class="btn btn-success undelete_advert">Undelete <i class="icon-white icon-ok"></i></a>
+                    {% else %}
+                        <a href="{{url_for('advert.delete', ad_id=ad_id)}}?referrer=details" class="btn btn-danger delete_advert">Delete <i class="icon-white icon-remove"></i></a>
+                    {% endif %}
                 {% endif %}
             </div>
             <div class="span4">

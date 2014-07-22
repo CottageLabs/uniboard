@@ -64,7 +64,7 @@
 
 {% for ad in adverts %}
 
-    <div class="row-fluid advert_row" style="border-bottom: 1px dashed #cccccc; padding-top: 10px; padding-bottom: 10px">
+    <div class="row-fluid advert_row" style="border-bottom: 1px dashed #cccccc; padding-top: 10px; padding-bottom: 10px{% if ad.is_deleted %}; background: #ffeeee{% endif %}">
         <div class="span1">
             <div class="row-fluid"><div class="span4">
             {% if ad.image_id %}
@@ -75,16 +75,20 @@
             </div></div>
         </div>
         <div class="span7">
-            <strong style="font-size: 120%"><a href="{{url_for('advert.details', ad_id=ad.id)}}">{{ ad.title }}</a></strong>
+            <strong style="font-size: 120%">{% if not ad.is_deleted %}<a href="{{url_for('advert.details', ad_id=ad.id)}}">{% endif %}{{ ad.title }}{% if not ad.is_deleted %}</a>{% endif %}</strong>
             <br><em>Last Updated: {{ ad.get_last_updated("%a %d %b %Y") }}</em> {% if ad.is_deactivated %}(This advert is currently inactive){% endif %}
         </div>
         <div class="span1"><strong style="font-size: 150%">£{{ad.price}}</strong></div>
         <div class="span3">
-            <a href="{{url_for('advert.adsubmit', ad_id=ad.id)}}" class="btn btn-primary edit_advert">Edit <i class="icon-white icon-edit"></i></a>
-            {% if ad.is_deactivated %}
-                <a href="{{url_for('advert.reactivate', ad_id=ad.id)}}" class="btn btn-success activate_advert">Reactivate <i class="icon-white icon-ok"></i></a>
+            {% if ad.is_deleted %}
+                This advert has been deleted by an administrator
             {% else %}
-                <a href="{{url_for('advert.deactivate', ad_id=ad.id)}}" class="btn btn-danger delete_advert">Deactivate <i class="icon-white icon-remove"></i></a>
+                <a href="{{url_for('advert.adsubmit', ad_id=ad.id)}}" class="btn btn-primary edit_advert">Edit <i class="icon-white icon-edit"></i></a>
+                {% if ad.is_deactivated %}
+                    <a href="{{url_for('advert.reactivate', ad_id=ad.id)}}" class="btn btn-success activate_advert">Reactivate <i class="icon-white icon-ok"></i></a>
+                {% else %}
+                    <a href="{{url_for('advert.deactivate', ad_id=ad.id)}}" class="btn btn-danger deactivate_advert">Deactivate <i class="icon-white icon-remove"></i></a>
+                {% endif %}
             {% endif %}
         </div>
     </div>
