@@ -7,6 +7,7 @@ jQuery(document).ready(function($) {
      *
      * user_lat - the latitude of the user of the view
      * user_lon - the longitude of the user of the view
+     * img_path - path to image service
      */
     
     function discoveryRecordView(options, record) {

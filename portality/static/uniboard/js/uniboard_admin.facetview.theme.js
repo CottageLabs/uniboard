@@ -5,8 +5,7 @@ jQuery(document).ready(function($) {
      ***************************
      * Requires the following variables to be in scope
      *
-     * user_lat - the latitude of the user of the view
-     * user_lon - the longitude of the user of the view
+     * img_path - path to image service
      */
     
     function discoveryRecordView(options, record) {
@@ -25,6 +24,8 @@ jQuery(document).ready(function($) {
 
         result += "<div class='span8'>"
         result += "<div style='padding-bottom: 10px'><strong><a href='/advert/" + record.id + "' style='font-size: 200%'>" + record.title + "</a></strong></div>"
+
+        // the bibliographic data associated with the book
         if (record.authors) {
             result += "<em style='font-size: 150%; color: #666666'>" + record.authors + "</em><br>"
         }
@@ -38,8 +39,33 @@ jQuery(document).ready(function($) {
             result += "Edition: " + record.edition + "&nbsp;&nbsp;"
         }
         if (record.publisher || record.year || record.edition) {
-            result += "<br>"
+            result += "<br><br>"
         }
+
+        // the administrative data associated with the book
+        if (record.admin && (record.admin.hasOwnProperty("abuse"))) {
+            if (record.admin.abuse === 0) {
+                result += '<span>No Abuse Reported</span>'
+            } else {
+                result += '<span style="font-weight: bold; color: #cc3333">Abuse Reported " + record.admin.abuse + " Times</span>'
+            }
+            result += "&nbsp;&nbsp;"
+        }
+
+        if (record.admin && (record.admin.hasOwnProperty("deleted"))) {
+            if (record.admin.deleted) {
+                result += '<span style="font-weight: bold; color: #cc3333">Deactivated</span>'
+            } else {
+                result += '<span style="font-weight: bold; color: #33cc33">Active</span>'
+            }
+            result += "&nbsp;&nbsp;"
+        }
+
+        if (record.admin && (record.admin.hasOwnProperty("expires"))) {
+            result += "Advert expires on: " + record.admin.expires
+            result += "&nbsp;&nbsp;"
+        }
+
         result += "</div>"
 
         result += "<div class='span2'>"
@@ -66,8 +92,8 @@ jQuery(document).ready(function($) {
     }
 
     var facets = []
-    facets.push({"field" : "admin.deleted", "display" : "Deactivated?"})
-    facets.push({"field" : "admin.abuse", "display" : "Times abuse reported"})
+    facets.push({"field" : "admin.deleted", "display" : "Deactivated?", "open" : true})
+    facets.push({"field" : "admin.abuse", "display" : "Times abuse reported", "open" : true})
     facets.push(
         {
             'field': 'price',
