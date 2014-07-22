@@ -238,7 +238,8 @@ class Account(dao.AccountDAO, UserMixin):
     def add_role(self, role):
         if "role" not in self.data:
             self.data["role"] = []
-        self.data["role"].append(role)
+        if role not in self.data:
+            self.data["role"].append(role)
     
     @property
     def role(self):

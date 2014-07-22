@@ -14,9 +14,9 @@
             <div class="navbar-inner">
                 <ul class="nav pull" id="main-nav-admin-menu" style="margin-bottom: 10px">
                 {% if not current_user.is_anonymous() %}
-                    <li{% if request.path == unquote(url_for('account.username', username=current_user.id)) %} class="active"{% endif %}><a href="{{url_for('account.username', username=current_user.id)}}">{{current_user.id}}</a></li>
+                    <li{% if request.path == unquote(url_for('account.username', username=current_user.id)) %} class="active"{% endif %}><a href="{{url_for('account.username', username=current_user.id)}}">my account</a></li>
                     {% if current_user.has_role("list_users") %}
-                    <li{% if request.path == url_for('account.index') %} class="active"{% endif %}><a href="{{ url_for('account.index') }}">users</a></li>
+                    {# <li{% if request.path == url_for('account.index') %} class="active"{% endif %}><a href="{{ url_for('account.index') }}">users</a></li> #}
                     {% endif %}
                     <li><a href="{{url_for('account.logout')}}">logout</a></li>
                 {% else %}
