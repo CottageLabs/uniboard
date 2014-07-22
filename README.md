@@ -76,8 +76,7 @@ GOOGLE_MAP_API_KEY="<your key>"
         "price" : <price in GBP>,
         "admin" : {
             "deleted" : True/False,
-            "reactivate_token" : "<reactivate token>",
-            "reactivate_expires" : "<ractivate token expiration timestamp>",
+            "deactivated" : True/False,
             "expires" : "<date the advert expires>",
             "abuse" : <number of times abuse reported>
         },
@@ -92,6 +91,8 @@ GOOGLE_MAP_API_KEY="<your key>"
 * The "loc" field will be a geopoint in the ES index, which will allow us to do geo-location, distance searching, etc
 * "price" should be a float
 * "abuse" should be an int, which indicates the number of times this advert has been flagged
+* "deactivated" is a boolean which indicates whether the advert has been (temporarily or permanently) removed from sale
+* "deleted" is a boolean which indicates that the admin has (permanently) removed the item from sale
 
 ## API
 

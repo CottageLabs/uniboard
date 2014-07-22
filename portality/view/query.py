@@ -53,9 +53,6 @@ def query(path='Pages'):
         if frag.startswith("/" + qroute):
             default_filter = qr[qroute].get("default_filter", True)
             role = qr[qroute].get("role")
-            owner_filter = qr[qroute].get("owner_filter")
-            editor_filter = qr[qroute].get("editor_filter", False)
-            associate_filter = qr[qroute].get("associate_filter", False)
             break
 
     # if there is a role, then check that the user is not anonymous and
@@ -139,4 +136,4 @@ def query(path='Pages'):
     return resp
 
 def _default_filter(subpaths):
-    return {"admin.deleted" : False}
+    return {"admin.deleted" : False, "admin.deactivated" : False}

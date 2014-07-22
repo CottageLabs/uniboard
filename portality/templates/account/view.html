@@ -76,15 +76,15 @@
         </div>
         <div class="span7">
             <strong style="font-size: 120%"><a href="{{url_for('advert.details', ad_id=ad.id)}}">{{ ad.title }}</a></strong>
-            <br><em>Last Updated: {{ ad.get_last_updated("%a %d %b %Y") }}</em> {% if ad.is_deleted %}(This advert is currently inactive){% endif %}
+            <br><em>Last Updated: {{ ad.get_last_updated("%a %d %b %Y") }}</em> {% if ad.is_deactivated %}(This advert is currently inactive){% endif %}
         </div>
         <div class="span1"><strong style="font-size: 150%">£{{ad.price}}</strong></div>
         <div class="span3">
             <a href="{{url_for('advert.adsubmit', ad_id=ad.id)}}" class="btn btn-primary edit_advert">Edit <i class="icon-white icon-edit"></i></a>
-            {% if ad.is_deleted %}
+            {% if ad.is_deactivated %}
                 <a href="{{url_for('advert.reactivate', ad_id=ad.id)}}" class="btn btn-success activate_advert">Reactivate <i class="icon-white icon-ok"></i></a>
             {% else %}
-                <a href="{{url_for('advert.delete', ad_id=ad.id)}}" class="btn btn-danger delete_advert">Deactivate <i class="icon-white icon-remove"></i></a>
+                <a href="{{url_for('advert.deactivate', ad_id=ad.id)}}" class="btn btn-danger delete_advert">Deactivate <i class="icon-white icon-remove"></i></a>
             {% endif %}
         </div>
     </div>

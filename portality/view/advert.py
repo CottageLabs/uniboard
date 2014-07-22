@@ -209,14 +209,14 @@ def contact(ad_id):
 
     return render_template('advert/contact.html', form=form, advert=advert, owner=owner, ad_id=ad_id, title=title)
 
-@blueprint.route('/<ad_id>/delete', methods=['GET', 'POST', 'DELETE'])
+@blueprint.route('/<ad_id>/deactivate', methods=['GET', 'POST', 'DELETE'])
 @login_required
 @ssl_required
-def delete(ad_id):
+def deactivate(ad_id):
     advert = models.Advert.pull(ad_id)
     username = current_user.id
     if current_user.id == advert.owner:
-        advert.mark_deleted()
+        advert.mark_deactivated()
         advert.save()
         advert.refresh()
         flash('Advert successfully deactivated!', "success")
@@ -236,7 +236,7 @@ def reactivate(ad_id):
     advert = models.Advert.pull(ad_id)
     username = current_user.id
     if current_user.id == advert.owner:
-        advert.mark_deleted(False)
+        advert.mark_deactivated(False)
         advert.set_expires((datetime.now().replace(microsecond=0) + timedelta(hours=1)).isoformat() + 'Z')
         advert.save()
         advert.refresh()

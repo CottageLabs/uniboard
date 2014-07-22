@@ -1,18 +1,14 @@
 from portality.models import Advert
 from portality.core import app
 from portality import util
-import uuid
-
 
 def expire_email():
     for item in Advert.get_by_expiration():
         if item.is_expired:
             print item.owner + " delete"
-            item.mark_deleted(True)
+            item.mark_deactivated(True)
         else:
             print item.owner
-            activation_token = uuid.uuid4().hex
-            item.set_reactivate_token(activation_token, 172800)
             activation_link = "http://localhost:5011/advert/" + item.id + "/reactivate"
             to = [item.owner, app.config['ADMIN_EMAIL']]
             fro = app.config['ADMIN_EMAIL']

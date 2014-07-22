@@ -48,7 +48,6 @@ class Account(dao.AccountDAO, UserMixin):
         "last_updated" : "<date account was last modified>"
     }
     """
-    # FIXME: this method needs to be re-written as part of the user registration work
     # we are not having usernames (people are identified by email address), so we either
     # want to use their email address as their id, or mint them an opaque id.
     @classmethod
@@ -179,13 +178,11 @@ class Account(dao.AccountDAO, UserMixin):
         if cascade and val: # if we are deleting the account
             adverts = Advert.get_by_owner(self.id)
             for ad in adverts:
-                ad.mark_deleted(True)
+                ad.mark_deactivated(True)
                 ad.save()
 
         if save:
             self.save()
-
-
 
     def is_banned(self):
         return self.data.get("admin", {}).get("banned", False)
@@ -429,19 +426,13 @@ class Advert(dao.AdvertDAO):
         self._set_admin("deleted", val)
 
     @property
-    def reactivate_token(self):
-        return self._admin('reactivate_token')
+    def is_deactivated(self):
+        return self._admin("deactivated", False)
 
-    def set_reactivate_token(self, token, timeout):
-        expires = datetime.now() + timedelta(0, timeout)
-        self._set_admin("reactivate_token", token)
-        self._set_admin("reactivate_expires", expires.strftime("%Y-%m-%dT%H:%M:%SZ"))
-
-    def remove_reactivate_token(self):
-        if "reactivate_token" in self.data.get("admin", {}):
-            del self.data["admin"]["reactivate_token"]
-        if "reactivate_expires" in self.data.get("admin", {}):
-            del self.data["admin"]["reactivate_expires"]
+    def mark_deactivated(self, val=True):
+        if type(val) != bool:
+            raise ModelException("Unable to mark deactivated - must be bool: " + str(val))
+        self._set_admin("deactivated", val)
 
     @property
     def expires(self): return self._admin("expires")
@@ -478,6 +469,10 @@ class Advert(dao.AdvertDAO):
         self._set_admin("abuse", ab)
 
     def prep(self):
+        dact = self._admin("deactivated")
+        if dact is None:
+            self.mark_deactivated(False)
+
         d = self._admin("deleted")
         if d is None:
             self.mark_deleted(False)

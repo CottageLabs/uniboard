@@ -13,10 +13,10 @@
             <div class="span8">
                 {% if owner %}
                     <a href="{{url_for('advert.adsubmit', ad_id=ad_id)}}" class="btn btn-primary edit_advert">Edit <i class="icon-white icon-edit"></i></a>
-                    {% if advert.is_deleted %}
+                    {% if advert.is_deactivated %}
                         <a href="{{url_for('advert.reactivate', ad_id=ad_id)}}?referrer=details" class="btn btn-success activate_advert">Reactivate <i class="icon-white icon-ok"></i></a>
                     {% else %}
-                        <a href="{{url_for('advert.delete', ad_id=ad_id)}}?referrer=details" class="btn btn-danger delete_advert">Deactivate <i class="icon-white icon-remove"></i></a>
+                        <a href="{{url_for('advert.deactivate', ad_id=ad_id)}}?referrer=details" class="btn btn-danger delete_advert">Deactivate <i class="icon-white icon-remove"></i></a>
                     {% endif %}
                 {% else %}
                     <a href="{{url_for('advert.contact', ad_id=ad_id)}}" target="_blank" class="btn btn-success">Contact <i class="icon-white icon-envelope"></i></a>
