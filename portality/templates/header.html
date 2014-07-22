@@ -13,23 +13,26 @@
         <div class="navbar" id="main-nav">
             <div class="navbar-inner">
                 <ul class="nav pull" id="main-nav-admin-menu" style="margin-bottom: 10px">
-                {% if not current_user.is_anonymous() %}
-                    <li{% if request.path == unquote(url_for('account.username', username=current_user.id)) %} class="active"{% endif %}><a href="{{url_for('account.username', username=current_user.id)}}">my account</a></li>
-                    {% if current_user.has_role("list_users") %}
-                    {# <li{% if request.path == url_for('account.index') %} class="active"{% endif %}><a href="{{ url_for('account.index') }}">users</a></li> #}
+                    {% if not current_user.is_anonymous() %}
+                        <li {% if request.path == url_for('advert.adsubmit') %} class="active"{% endif %}><a href="{{ url_for('advert.adsubmit') }}">New Advert</a></li>
+                        <li{% if request.path == url_for('root') %} class="active"{% endif %}><a href="{{ url_for('root') }}">Search UniBoard</a></li>
                     {% endif %}
-                    <li><a href="{{url_for('account.logout')}}">logout</a></li>
-                {% else %}
-                    <li{% if request.path == url_for('account.login') %} class="active"{% endif %}><a href="{{ url_for('account.login') }}">Login</a></li>
-                    <li{% if request.path == url_for('account.register') %} class="active"{% endif %}><a href="{{ url_for('account.register') }}">Register</a></li>
-                {% endif %}
                 </ul>
 
                 <ul class="nav pull-right" id="main-nav-first-menu" style="margin-bottom: 10px" >
-                {% if not current_user.is_anonymous() %}
-                    <li {% if request.path == url_for('advert.adsubmit') %} class="active"{% endif %}><a href="{{ url_for('advert.adsubmit') }}">New Advert</a></li>
-                    <li{% if request.path == url_for('root') %} class="active"{% endif %}><a href="{{ url_for('root') }}">Search UniBoard</a></li>
-                {% endif %}
+                    {% if not current_user.is_anonymous() %}
+                        <li{% if request.path == unquote(url_for('account.username', username=current_user.id)) %} class="active"{% endif %}><a href="{{url_for('account.username', username=current_user.id)}}">My Account</a></li>
+                        {% if current_user.has_role("list_users") %}
+                            {# <li{% if request.path == url_for('account.index') %} class="active"{% endif %}><a href="{{ url_for('account.index') }}">Users</a></li> #}
+                        {% endif %}
+                        {% if current_user.has_role("admin_nav") %}
+                            <li{% if request.path == unquote(url_for('admin.index')) %} class="active"{% endif %}><a href="{{url_for('admin.index')}}">Admin</a></li>
+                        {% endif %}
+                        <li><a href="{{url_for('account.logout')}}">Logout</a></li>
+                    {% else %}
+                        <li{% if request.path == url_for('account.login') %} class="active"{% endif %}><a href="{{ url_for('account.login') }}">Login</a></li>
+                        <li{% if request.path == url_for('account.register') %} class="active"{% endif %}><a href="{{ url_for('account.register') }}">Register</a></li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
