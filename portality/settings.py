@@ -162,3 +162,9 @@ ADVERT_TIMEOUT = 604800
 
 # add this in app.cfg
 GOOGLE_MAP_API_KEY = None
+
+
+# ===========================
+# Feedback
+
+FEEDBACK_EMAIL = "enquiry@uni-board.co.uk"
