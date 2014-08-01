@@ -34,7 +34,7 @@ jQuery(document).ready(function($) {
         if (n > 5) {
             return Math.round(n)
         } else {
-            return Math.round(n + 10) / 10
+            return Math.round(n * 10) / 10
         }
     }
 
