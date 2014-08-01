@@ -9,9 +9,53 @@ jQuery(document).ready(function($) {
      * user_lon - the longitude of the user of the view
      * img_path - path to image service
      */
-    
+
+    function pythagorasDistance(lat1, lon1, lat2, lon2) {
+        function toRad(value) {
+            /** Converts numeric degrees to radians */
+            return value * Math.PI / 180;
+        }
+        // var R = 6371; // km
+        var R = 3959; // miles
+
+        var t1 = toRad(lat1)
+        var t2 = toRad(lat2)
+        var l1 = toRad(lon1)
+        var l2 = toRad(lon2)
+
+        var x = (l2 - l1) * Math.cos((t1+t2)/2)
+        var y = (t2 - t1)
+        var d = Math.sqrt(x*x + y*y) * R;
+
+        return d
+    }
+
+    function roundOff(n) {
+        if (n > 5) {
+            return Math.round(n)
+        } else {
+            return Math.round(n + 10) / 10
+        }
+    }
+
     function discoveryRecordView(options, record) {
         var result = options.resultwrap_start;
+
+        // calculate the distance from the user to the sale
+        var slat = undefined
+        var slon = undefined
+        if (record.loc && record.loc.lat) {
+            slat = record.loc.lat
+        }
+        if (record.loc && record.loc.lon) {
+            slon = record.loc.lon
+        }
+        var dist = "location unknown"
+        if (slat && slon) {
+            dist = pythagorasDistance(user_lat, user_lon, slat, slon)
+            dist = roundOff(dist)
+            dist = "approx. " + dist + " miles"
+        }
 
         result += "<div class='row-fluid' style='margin-top: 10px; margin-bottom: 10px'>"
 
@@ -59,6 +103,11 @@ jQuery(document).ready(function($) {
             result += "<span style='font-size: 200%; font-weight: bold'>" + pence + "</span>"
             result += "</div>"
         }
+
+        result += "<div style='padding-top: 15px'>"
+        result += dist
+        result += "</div>"
+
         result += "</div>"
 
         result += "</div>"
