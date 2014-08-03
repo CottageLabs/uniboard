@@ -180,8 +180,22 @@ jQuery(document).ready(function($) {
         };
 
         // text search box
-        thefacetview += '<input type="text" class="facetview_freetext span4" style="display:inline-block; margin:0 0 21px 0; background:#ecf4ff;" name="q" \
+        var corners = "border-radius:0px 5px 5px 0px; -moz-border-radius:0px 5px 5px 0px; -webkit-border-radius:0px 5px 5px 0px;"
+        if (options.search_button) {
+            corners = "border-radius:0px 0px 0px 0px; -moz-border-radius:0px 0px 0px 0px; -webkit-border-radius:0px 0px 0px 0px;"
+        }
+        thefacetview += '<input type="text" class="facetview_freetext span4" style="display:inline-block; margin:0 0 21px 0; background:#ecf4ff; ' + corners + '" name="q" \
             value="" placeholder="search term" />';
+
+        // search button
+        if (options.search_button) {
+            thefacetview += "<a class='btn btn-info facetview_force_search' style='margin:0 0 21px 0px; border-radius:0px 5px 5px 0px; \
+                -moz-border-radius:0px 5px 5px 0px; -webkit-border-radius:0px 5px 5px 0px;'><i class='icon-white icon-search'></i></a>"
+        }
+
+        // text search box
+        //thefacetview += '<input type="text" class="facetview_freetext span4" style="display:inline-block; margin:0 0 21px 0; background:#ecf4ff;" name="q" \
+        //    value="" placeholder="search term" />';
 
         // share and save link
         if (options.sharesave_link) {
@@ -258,7 +272,8 @@ jQuery(document).ready(function($) {
             {'display':'Publisher','field':'publisher'}
         ],
         render_result_record : discoveryRecordView,
-        render_search_options : uniSearchOptions
+        render_search_options : uniSearchOptions,
+        search_button: true
     });
     
 });

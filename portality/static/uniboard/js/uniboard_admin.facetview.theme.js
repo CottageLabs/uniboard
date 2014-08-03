@@ -146,7 +146,8 @@ jQuery(document).ready(function($) {
             {'display':'Publisher','field':'publisher'}
         ],
         render_result_record : discoveryRecordView,
-        
+        search_button: true,
+        sharesave_link: false
     });
     
 });
