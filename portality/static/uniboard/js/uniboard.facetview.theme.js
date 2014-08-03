@@ -50,8 +50,8 @@ jQuery(document).ready(function($) {
         if (record.loc && record.loc.lon) {
             slon = record.loc.lon
         }
-        var dist = "location unknown"
-        if (slat && slon) {
+        var dist = "distance unknown"
+        if (slat && slon && user_lat && user_lon) {
             dist = pythagorasDistance(user_lat, user_lon, slat, slon)
             dist = roundOff(dist)
             dist = "approx. " + dist + " miles"

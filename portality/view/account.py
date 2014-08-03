@@ -450,6 +450,8 @@ def _update_account(account, form):
 
     if form.degree.data:
         account.set_degree(form.degree.data)
+    elif form.degree.data == "":
+        del account.degree
 
     if form.postcode.data:
         account.set_postcode(form.postcode.data)
@@ -457,9 +459,16 @@ def _update_account(account, form):
         results = Geocoder.geocode(form.postcode.data + ', United Kingdom')
         lat, lng = results[0].coordinates
         account.set_location(lat, lng)
+    elif form.postcode.data == "":
+        del account.postcode
+        account.unset_location()
 
     if form.phone.data:
         account.set_phone(form.phone.data)
+    elif form.phone.data == "":
+        del account.phone
 
     if form.graduation.data:
         account.set_graduation(form.graduation.data)
+    elif form.graduation.data == "":
+        del account.graduation

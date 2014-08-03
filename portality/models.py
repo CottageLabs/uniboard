@@ -105,12 +105,22 @@ class Account(dao.AccountDAO, UserMixin):
     def set_degree(self, val):
         self.data["degree"] = val
 
+    @degree.deleter
+    def degree(self):
+        if "degree" in self.data:
+            del self.data["degree"]
+
     @property
     def postcode(self):
         return self.data.get("postcode")
 
     def set_postcode(self, val):
         self.data["postcode"] = val
+
+    @postcode.deleter
+    def postcode(self):
+        if "postcode" in self.data:
+            del self.data["postcode"]
 
     @property
     def location(self):
@@ -129,7 +139,11 @@ class Account(dao.AccountDAO, UserMixin):
             raise ModelException("Unable to set lat and lon - must be floats or cast to float: " + str(lat) + ", " + str(lon))
         self.data["loc"]["lat"] = lat
         self.data["loc"]["lon"] = lon
-    
+
+    def unset_location(self):
+        if "loc" in self.data:
+            del self.data["loc"]
+
     @property
     def lat(self):
         loc = self.location
@@ -151,6 +165,11 @@ class Account(dao.AccountDAO, UserMixin):
     def set_phone(self, val):
         self.data["phone"] = val
 
+    @phone.deleter
+    def phone(self):
+        if "phone" in self.data:
+            del self.data["phone"]
+
     @property
     def graduation(self):
         return self.data.get("graduation")
@@ -163,6 +182,11 @@ class Account(dao.AccountDAO, UserMixin):
         if len(str(val)) != 4:
             raise ModelException("Unable to set graduation year - must be 4 digit format: " + str(val))
         self.data["graduation"] = val
+
+    @graduation.deleter
+    def graduation(self):
+        if "graduation" in self.data:
+            del self.data["graduation"]
 
     def is_deleted(self):
         return self.data.get("admin", {}).get("deleted", False)
