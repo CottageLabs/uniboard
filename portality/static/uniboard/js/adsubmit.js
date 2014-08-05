@@ -1,5 +1,21 @@
 jQuery(document).ready(function($) {
 
+    $("#show_book_form").click(function(event) {
+        event.preventDefault()
+        $("#book_advert").show()
+        $("#other_advert").hide()
+        $("#show_other_form").parent().removeClass("active")
+        $(this).parent().addClass("active")
+    })
+
+    $("#show_other_form").click(function(event) {
+        event.preventDefault()
+        $("#book_advert").hide()
+        $("#other_advert").show()
+        $("#show_book_form").parent().removeClass("active")
+        $(this).parent().addClass("active")
+    })
+
     function autocomplete(selector, doc_field, doc_type) {
         $(selector).select2({
             placeholder: '',
@@ -25,14 +41,14 @@ jQuery(document).ready(function($) {
         });
     };
 
-    $('#price').change(function () {
+    $('.price').change(function () {
         var high_number = 60;
 
-        if ($('#price').val() > high_number){
+        if ($('.price').val() > high_number){
             alert('Are you sure you want to set such a high price?');
         }
 
-    })();
+    })
 
     autocomplete('#subjects', 'subject', 'adsubmit');
 

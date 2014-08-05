@@ -76,6 +76,15 @@ class SubmitAd(Form):
     postcode = TextField('Postcode')
     keywords = TagListField('Keywords')
 
+class GeneralAd(Form):
+    category = TextField("Item Category", [validators.Required()])
+    title = TextField('Title', [validators.Required()])
+    description = TextAreaField("Description", [validators.Optional()])
+    price = FloatField('Price', [validators.Required()])
+    location = SelectField('Location to advertise', choices=location_choices)
+    postcode = TextField('Postcode')
+    keywords = TagListField('Keywords')
+    condition = SelectField('Condition', choices=condition_choices)
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -97,7 +106,9 @@ def adsubmit(ad_id=None):
         if not owner and not current_user.has_role("edit_all_adverts"):
             abort(404)
 
+    # FIXME: two possible forms, need to populate the right one!
     form = SubmitAd(request.form, advert)
+    genform = GeneralAd()
 
     if request.method == 'POST':
         if not form.validate():
@@ -175,7 +186,7 @@ def adsubmit(ad_id=None):
             flash('Advert saved successfully', 'success')
             return redirect(url_for('.details', ad_id=advert.id))
 
-    return render_template('advert/submit.html', form=form)
+    return render_template('advert/submit.html', form=form, genform=genform)
 
 
 @blueprint.route('/<ad_id>', methods=['GET'])

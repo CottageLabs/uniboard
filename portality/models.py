@@ -276,8 +276,10 @@ class Advert(dao.AdvertDAO):
     {
         "id" : "<opaque identifier for the advert>",
         "owner" : "<user who created the ad>",
+        "category" : "<Book or something else>",
         "isbn" : ["<isbn-10>", "<isbn-13>"],
         "title" : "<book title>",
+        "description" : "<description of the object for sale>",
         "edition" : "<edition of book>",
         "authors" : "<authors>",
         "year" : <year of publication>,
@@ -308,6 +310,10 @@ class Advert(dao.AdvertDAO):
     def set_owner(self, val): self.data["owner"] = val
 
     @property
+    def category(self): return self.data.get("category")
+    def set_category(self, val): self.data["category"] = val
+
+    @property
     def isbn(self): return self.data.get("isbn", [])
 
     def set_isbn(self, val):
@@ -323,6 +329,10 @@ class Advert(dao.AdvertDAO):
     @property
     def title(self): return self.data.get("title", "")
     def set_title(self, val): self.data["title"] = val
+
+    @property
+    def description(self): return self.data.get("description", "")
+    def set_description(self, val): self.data["description"] = val
 
     @property
     def edition(self): return self.data.get("edition", "")
