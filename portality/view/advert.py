@@ -49,12 +49,25 @@ class TagListField(Field):
             self.data = []
 
 
+class ValidYear(object):
+    def __init__(self):
+        pass
+
+    def __call__(self, form, field):
+        current_year = datetime.now().year
+        year = field.data
+        if year >= current_year:
+            raise ValidationError('The year of publication cannot be in the future.')
+
 class SubmitAd(Form):
     isbn = TagListField('ISBN')
     title = TextField('Title', [validators.Required()])
     edition = TextField('Edition')
     authors = TextField('Author(s)', [validators.Required()])
-    year = IntegerField('Year', [validators.Optional()])
+    year = IntegerField('Year',
+                                [validators.Optional(),
+                                ValidYear()]
+                        )
     publisher = TextField('Publisher')
     subjects = TextField('Subject')
     condition = SelectField('Condition', choices=condition_choices)
@@ -88,6 +101,7 @@ def adsubmit(ad_id=None):
 
     if request.method == 'POST':
         if not form.validate():
+
             print form.errors
             flash('Error while submitting', 'error')
         else:
@@ -106,8 +120,10 @@ def adsubmit(ad_id=None):
 
             advert.set_authors(form.authors.data)
 
+
             if form.year.data:
                 advert.set_year(form.year.data)
+
 
             if form.publisher.data:
                 advert.set_publisher(form.publisher.data)
@@ -129,7 +145,7 @@ def adsubmit(ad_id=None):
                 elif form.location.data == 'uni':
                     mail = current_user.id.split('@')
                     domain = mail[-1]
-                    uni = domain_uni_lookup[domain]
+                    uni = domain_uni_lookup[domain]["address"]
                     results = Geocoder.geocode(uni + ', United Kingdom')
                     lat, lng = results[0].coordinates
                     advert.set_location(lat, lng)

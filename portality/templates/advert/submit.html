@@ -24,7 +24,17 @@
 
         <hr>
         <h3>Tell us about the sale</h3>
-        {{ render_field_horizontal(form.price, style="width: 100px", placeholder="e.g. 19.50") }}
+            <div class="control-group">
+              <label class="control-label" for="price">Price
+                <span class="red">*</span>
+              </label>
+              <div class="controls">
+                  <div class="input-prepend">
+                     <span class="add-on">£</span>
+                    <input id="price" name="price" placeholder="e.g. 19.50" style="width: 100px" type="text" value="">
+                  </div>
+              </div>
+            </div>
         {{ render_field_horizontal(form.condition, class="input-large", placeholder="choose one") }}
         {{ render_field_horizontal(form.location, class="input-large") }}
         {{ render_field(form.postcode, style="width: 150px", placeholder="enter a postcode") }}
@@ -51,9 +61,16 @@
 <div class="row-fluid">
     <div class="span4">&nbsp;</div>
     <div class="span4">
+        {% if request.path.endswith("submit") %}
         <button class="btn btn-primary" id="adsubmit" type="submit" style="width: 100%; font-size: 30px; line-height: 30px">
             Create my advert!
         </button>
+        {% endif %}
+        {% if request.path.endswith("edit") %}
+        <button class="btn btn-primary" id="update" type="submit" style="width: 100%; font-size: 30px; line-height: 30px">
+            Update my advert!
+        </button>
+        {% endif %}
     </div>
 </div>
 

@@ -25,7 +25,16 @@ jQuery(document).ready(function($) {
         });
     };
 
-    autocomplete('#subjects', 'subjects', 'adsubmit');
+    $('#price').change(function () {
+        var high_number = 60;
+
+        if ($('#price').val() > high_number){
+            alert('Are you sure you want to set such a high price?');
+        }
+
+    })();
+
+    autocomplete('#subjects', 'subject', 'adsubmit');
 
     $("#keywords").select2({tags: [], formatNoMatches: function(term) { return "enter your keyword" }})
     $('#condition').select2();
