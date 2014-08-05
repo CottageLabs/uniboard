@@ -247,7 +247,8 @@ def reactivate(ad_id):
         if advert.is_deleted:
             return render_template("advert/deleted.html")
         advert.mark_deactivated(False)
-        advert.set_expires((datetime.now().replace(microsecond=0) + timedelta(hours=1)).isoformat() + 'Z')
+        advert.set_expires((datetime.now().replace(microsecond=0) + timedelta(days=7)).isoformat() + 'Z')
+
         advert.save()
         advert.refresh()
         flash('Advert successfully reactivated!', "success")

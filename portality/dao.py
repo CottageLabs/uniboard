@@ -179,6 +179,6 @@ class AdvertDAO(esprit.dao.DomainObject):
     @classmethod
     def get_by_expiration(cls):
         res = []
-        exp_time = (datetime.now() + timedelta(hours=1)).isoformat() + 'Z'
+        exp_time = (datetime.now() + timedelta(hours=36)).isoformat() + 'Z'
         query = {"query": {"range": {"admin.expires": {"lte": exp_time}}}}
         return cls.iterate(query)
