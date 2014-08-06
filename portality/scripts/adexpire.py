@@ -9,7 +9,7 @@ def expire_email():
             item.mark_deactivated(True)
         else:
             print item.owner
-            activation_link = "http://localhost:5011/advert/" + item.id + "/reactivate"
+            activation_link = app.config['LOCALHOST_URL'] + "/advert/" + item.id + "/reactivate"
             to = [item.owner, app.config['ADMIN_EMAIL']]
             fro = app.config['ADMIN_EMAIL']
             subject = app.config.get("SERVICE_NAME", "") + item.title + " - expires soon"
