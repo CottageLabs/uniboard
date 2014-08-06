@@ -81,4 +81,5 @@
 {% block extra_js_bottom %}
 {{super()}}
 <script type="text/javascript" src="/static/uniboard/js/adsubmit.js"></script>
+<script type="text/javascript">var price_check_book = {{config.get("PRICE_CHECK_BOOK") }};</script>
 {% endblock extra_js_bottom %}

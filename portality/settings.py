@@ -9,6 +9,10 @@ BASE_FILE_PATH = os.path.dirname(os.path.realpath(__file__))
 IMAGES_FOLDER = os.path.join(BASE_FILE_PATH, 'user_uploads')
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 
+#Price checks
+PRICE_CHECK_BOOK = 60
+PRICE_CHECK_OTHER = 100
+
 # make this something secret in your overriding app.cfg
 SECRET_KEY = "default-key"
 
