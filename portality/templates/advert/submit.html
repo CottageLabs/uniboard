@@ -24,15 +24,24 @@
 
         <hr>
         <h3>Tell us about the sale</h3>
-            <div class="control-group">
+            <div class="control-group
+      {% if form.price.errors %} error {% endif %}">
               <label class="control-label" for="price">Price
                 <span class="red">*</span>
               </label>
               <div class="controls">
                   <div class="input-prepend">
                      <span class="add-on">£</span>
-                    <input id="price" name="price" placeholder="e.g. 19.50" style="width: 100px" type="text" value="">
+                    <input id="price" name="price" placeholder="e.g. 19.50" style="width: 100px" type="text" value="{{form.price.data}}">
+
                   </div>
+                  {% if form.price.errors %}
+                  <ul class="errors">
+                      {% for error in form.price.errors %}
+                      <li>{{ error }}</li>
+                      {% endfor %}
+                  </ul>
+                  {% endif %}
               </div>
             </div>
         {{ render_field_horizontal(form.condition, class="input-large", placeholder="choose one") }}

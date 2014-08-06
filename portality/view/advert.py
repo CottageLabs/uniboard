@@ -59,19 +59,32 @@ class ValidYear(object):
         if year >= current_year:
             raise ValidationError('The year of publication cannot be in the future.')
 
+class ValidFloat(object):
+    def __init__(self):
+        pass
+
+    def __call__(self, form, field):
+        if field.data:
+            try:
+                field.data = float(field.data)
+            except ValueError:
+                print 'oops'
+                raise ValidationError('This is not a valid number.')
+
 class SubmitAd(Form):
     isbn = TagListField('ISBN')
     title = TextField('Title', [validators.Required()])
     edition = TextField('Edition')
     authors = TextField('Author(s)', [validators.Required()])
-    year = IntegerField('Year',
-                                [validators.Optional(),
-                                ValidYear()]
+    year = IntegerField('Year', [validators.Optional(),
+                                 ValidYear()]
                         )
     publisher = TextField('Publisher')
     subjects = TextField('Subject')
     condition = SelectField('Condition', choices=condition_choices)
-    price = FloatField('Price', [validators.Required()])
+    price = TextField('Price', [validators.Required(),
+                                ValidFloat()]
+                        )
     location = SelectField('Location to advertise', choices=location_choices)
     postcode = TextField('Postcode')
     keywords = TagListField('Keywords')
@@ -134,7 +147,12 @@ def adsubmit(ad_id=None):
             if form.condition.data:
                 advert.set_condition(form.condition.data)
 
+
+
             if form.price.data:
+                # form.price.data = str(form.price.data).rstrip()
+                # form.price.data = str(form.price.data).lstrip()
+                # form.price.data = float(form.price.data)
                 advert.set_price(form.price.data)
 
 
