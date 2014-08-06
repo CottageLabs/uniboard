@@ -33,7 +33,7 @@ jQuery(document).ready(function($) {
 
     });
 
-    autocomplete('#subjects', 'subject', 'adsubmit');
+    autocomplete('#subject', 'subject', 'adsubmit');
 
     $("#keywords").select2({tags: [], formatNoMatches: function(term) { return "enter your keyword" }})
     $('#condition').select2();

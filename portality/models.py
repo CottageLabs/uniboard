@@ -355,7 +355,14 @@ class Advert(dao.AdvertDAO):
     def set_image_id(self, val): self.data["image_id"] = val
 
     @property
-    def subject(self): return self.data.get("subject", [])
+    def subjects(self): return self.data.get("subject", [])
+
+    @property
+    def subject(self):
+        if 'subject' not in self.data:
+            return ''
+        else:
+            return self.data["subject"][0]
 
     def add_subject(self, val):
         if "subject" not in self.data:

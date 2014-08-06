@@ -80,7 +80,7 @@ class SubmitAd(Form):
                                  ValidYear()]
                         )
     publisher = TextField('Publisher')
-    subjects = TextField('Subject')
+    subject = TextField('Subject')
     condition = SelectField('Condition', choices=condition_choices)
     price = TextField('Price', [validators.Required(),
                                 ValidFloat()]
@@ -141,8 +141,8 @@ def adsubmit(ad_id=None):
             if form.publisher.data:
                 advert.set_publisher(form.publisher.data)
 
-            if form.subjects.data:
-                advert.set_subjects(form.subjects.data)
+            if form.subject.data:
+                advert.set_subjects(form.subject.data)
 
             if form.condition.data:
                 advert.set_condition(form.condition.data)
@@ -150,9 +150,6 @@ def adsubmit(ad_id=None):
 
 
             if form.price.data:
-                # form.price.data = str(form.price.data).rstrip()
-                # form.price.data = str(form.price.data).lstrip()
-                # form.price.data = float(form.price.data)
                 advert.set_price(form.price.data)
 
 
@@ -198,7 +195,7 @@ def adsubmit(ad_id=None):
             flash('Advert saved successfully', 'success')
             return redirect(url_for('.details', ad_id=advert.id))
 
-    return render_template('advert/submit.html', form=form)
+    return render_template('advert/submit.html', form=form, advert=advert)
 
 
 @blueprint.route('/<ad_id>', methods=['GET'])
