@@ -34,19 +34,19 @@
         {{ render_field_horizontal(form.edition, style="width: 100px", placeholder="e.g. 3rd") }}
         {{ render_field_horizontal(form.year, style="width: 100px", placeholder="e.g. 2008") }}
         {{ render_field_horizontal(form.subject, class="input-large") }}
-        {{ render_field_horizontal(form.keywords, style="width: 300px", placeholder="enter some keywords") }}
+        {{ render_field_horizontal(form.keywords, style="width: 300px", class="keywords", placeholder="enter some keywords") }}
 
         <hr>
         <h3>Tell us about the sale</h3>
             <div class="control-group{% if form.price.errors %} error {% endif %}">
-              <label class="control-label" for="price">Price
+              <label class="control-label" for="book_price">Price
                 <span class="red">*</span>
               </label>
               <div class="controls">
                   <div class="input-prepend">
                      <span class="add-on">£</span>
 
-                    <input id="price" name="price" class="price" placeholder="e.g. 19.50" style="width: 100px" type="text"
+                    <input id="book_price" name="price" class="book_price" placeholder="e.g. 19.50" style="width: 100px" type="text"
                            {% if form.price.data %}
                            value="{{form.price.data}}"
                            {% else %}
@@ -63,9 +63,9 @@
                   {% endif %}
               </div>
             </div>
-        {{ render_field_horizontal(form.condition, class="input-large", placeholder="choose one") }}
-        {{ render_field_horizontal(form.location, class="input-large") }}
-        {{ render_field(form.postcode, style="width: 150px", placeholder="enter a postcode") }}
+        {{ render_field_horizontal(form.condition, class="input-large condition", placeholder="choose one") }}
+        {{ render_field_horizontal(form.location, class="input-large location", id="book_location") }}
+        {{ render_field(form.postcode, style="width: 150px", placeholder="enter a postcode", container_id="book_postcode") }}
         </div>
 
     </div>
@@ -128,30 +128,46 @@
         {{ render_field(genform.csrf_token) }}
         {{ render_field_horizontal(genform.category, style="width: 300px") }}
         {{ render_field_horizontal(genform.title, style="width: 300px", placeholder="enter a title for your ad here") }}
-        {{ render_field_horizontal(genform.description, placeholder="describe the item for sale") }}
-        {{ render_field_horizontal(genform.keywords, style="width: 300px", placeholder="enter some keywords") }}
+        {{ render_field_horizontal(genform.description, style="width: 300px; height: 150px", placeholder="describe the item for sale") }}
+        {{ render_field_horizontal(genform.keywords, style="width: 300px", class="keywords", placeholder="enter some keywords") }}
 
         <hr>
         <h3>Tell us about the sale</h3>
             <div class="control-group">
-              <label class="control-label" for="price">Price
+              <label class="control-label" for="general_price">Price
                 <span class="red">*</span>
               </label>
               <div class="controls">
                   <div class="input-prepend">
                      <span class="add-on">£</span>
-                    <input id="general_price" class="price" name="price" placeholder="e.g. 19.50" style="width: 100px" type="text" value="{{genform.price.data}}">
+                      <input id="general_price" name="price" class="general_price" placeholder="e.g. 19.50" style="width: 100px" type="text"
+                           {% if genform.price.data %}
+                           value="{{genform.price.data}}"
+                           {% else %}
+                            value=""
+                            {% endif %}>
                   </div>
               </div>
             </div>
-        {{ render_field_horizontal(genform.condition, class="input-large", placeholder="choose one") }}
-        {{ render_field_horizontal(genform.location, class="input-large") }}
-        {{ render_field(genform.postcode, style="width: 150px", placeholder="enter a postcode") }}
+        {{ render_field_horizontal(genform.condition, class="input-large condition", placeholder="choose one") }}
+        {{ render_field_horizontal(genform.location, class="input-large location", id="general_location") }}
+        {{ render_field(genform.postcode, style="width: 150px", placeholder="enter a postcode", container_id="general_postcode") }}
         </div>
     </div>
     <div class="span6">
+        {% if request.path.endswith("edit") %}
+             {% if advert.image_id %}
+                <div class="row-fluid"><div class="span12">
+                         <a href="{{ url_for('serve_user_uploads', image_name=advert.image_id) }}"><img src = "{{ url_for('serve_user_uploads', image_name=advert.image_id) }}"></a>
+                </div></div>
+             {% endif %}
+            {% endif %}
         <div class="row-fluid"><div class="span12">
+            {% if request.path.endswith("edit") %}
+            <h3>Upload a new picture</h3>
+            {% else %}
             <h3>Upload a picture</h3>
+            {% endif %}
             <input type="file" name="upload" id="general_take-picture" accept="image/*;capture=camera">
         </div></div>
 

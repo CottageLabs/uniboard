@@ -3,7 +3,8 @@
             render_subfields_horizontal=False,
             container_class='',
             hidden=False,
-            first_field_with_error=''
+            first_field_with_error='',
+            container_id=""
             )
 %}
 
@@ -16,7 +17,8 @@
         {% if field.errors %} error{% endif %}
         {% if render_subfields_horizontal %} row-fluid{% endif %}
         {% if container_class %} {{container_class}} {% endif %}
-        " id="{{field.short_name}}-container"
+        "
+        {% if container_id %} id="{{container_id}}" {% else %} id="{{field.short_name}}-container" {% endif %}
         {% if hidden %} style="display: none;" {% endif %} 
         >
             {% for subfield in field %}
@@ -57,7 +59,7 @@
             <div class="control-group
             {% if subfield.errors %} error{% endif %}"
             {% if hidden %} style="display: none;" {% endif %}
-            id="{{field.short_name}}-container"
+            {% if container_id %} id="{{container_id}}" {% else %} id="{{field.short_name}}-container" {% endif %}
             >
                 {{ __render_field(subfield, **kwargs) }}
             </div>
@@ -69,7 +71,7 @@
         {% if container_class %} {{container_class}} {% endif %}
         "
         {% if hidden %} style="display: none;" {% endif %}
-        id="{{field.short_name}}-container"
+        {% if container_id %} id="{{container_id}}" {% else %} id="{{field.short_name}}-container" {% endif %}
         >
             {{ __render_field(field, **kwargs) }}
         </div> 
