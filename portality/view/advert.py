@@ -2,7 +2,7 @@ import uuid, json
 import os
 
 from flask import Blueprint, request, url_for, flash, redirect, make_response
-from flask import render_template, abort
+from flask import render_template, abort, jsonify
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from flask.ext.wtf import TextField, TextAreaField, SelectField, HiddenField, IntegerField, FloatField
 from flask.ext.wtf import Form, PasswordField, validators, ValidationError, Field
@@ -13,8 +13,11 @@ from datetime import datetime, timedelta
 from portality.core import app, ssl_required, login_manager
 from portality import models
 from portality.datasets import domain_uni_lookup
+from portality.isbn_lookup import isbn_lookup
 from portality import util
 from pygeocoder import Geocoder
+
+import requests
 
 blueprint = Blueprint('advert', __name__)
 
@@ -335,3 +338,9 @@ def undelete(ad_id):
         return redirect(url_for("advert.details", ad_id=ad_id))
     else:
         return redirect(url_for("admin.index"))
+
+@blueprint.route('/isbn/<isbn>', methods=['GET'])
+@login_required
+@ssl_required
+def isbn(isbn):
+    return jsonify(isbn_lookup(isbn))
