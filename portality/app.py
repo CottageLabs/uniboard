@@ -19,6 +19,7 @@ def load_account_for_login_manager(userid):
     return out
 
 
+
 @app.before_request
 def standard_authentication():
     """Check remote_user on a per-request basis."""
@@ -48,7 +49,28 @@ def root():
     if current_user.is_authenticated() and current_user.has_role("user"):
         return render_template("search.html", search_base_url="")
     else:
-        return render_template("welcome.html")
+        advert = models.Advert()
+        query = {
+                  "size": 10,
+                  "sort" : [{ "last_updated" : "desc" }],
+                  "query": {
+                    "filtered": {
+                      "query": {
+                        "match": { "admin.abuse" : 0 }
+                      },
+                      "filter": {
+                        "exists": { "field": "image_id"}
+                      }
+                    }
+                  }
+        }
+        res = advert.query(q=query)
+        ads = [hit.get("_source") for hit in res.get("hits", {}).get("hits", [])]
+        images = []
+        length = len(ads)
+        for i in range(0, len(ads)):
+            images.append({ads[i].get("id"): ads[i].get("image_id")})
+        return render_template("welcome.html", images=images, ads=ads, length=length)
 
 
 @app.route('/autocomplete/<doc_type>/<field_name>', methods=["GET", "POST"])
@@ -75,10 +97,10 @@ def autocomplete(doc_type, field_name):
 
 @app.route("/user_uploads/<image_name>")
 def serve_user_uploads(image_name):
-    if current_user.is_authenticated() and current_user.has_role("user"):
-        return send_from_directory(app.config['IMAGES_FOLDER'], image_name)
-    else:
-        abort(401)
+    #if current_user.is_authenticated() and current_user.has_role("user"):
+    return send_from_directory(app.config['IMAGES_FOLDER'], image_name)
+    #else:
+        #abort(401)
 
 
 @app.errorhandler(404)

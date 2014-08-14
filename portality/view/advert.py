@@ -10,7 +10,7 @@ from wtforms.widgets import TextInput
 from werkzeug.utils import secure_filename
 from datetime import datetime, timedelta
 
-from portality.core import app, ssl_required
+from portality.core import app, ssl_required, login_manager
 from portality import models
 from portality.datasets import domain_uni_lookup
 from portality import util
@@ -197,6 +197,7 @@ def adsubmit(ad_id=None):
 
     return render_template('advert/submit.html', form=form, advert=advert)
 
+login_manager.login_view = "account.login"
 
 @blueprint.route('/<ad_id>', methods=['GET'])
 @login_required

@@ -6,4 +6,27 @@
 
 <p>If you have an account, log in to see anything.  If you don't have an account you can register for one.</p>
 
+<div class="row-fluid">
+    <div class="slider">
+      {% for i in range(0, length) %}
+      <div><a href="{{url_for('advert.details', ad_id=ads[i].get('id'))}}"><img src="{{ url_for('serve_user_uploads', image_name=ads[i].get('image_id')) }}" style="width: 200px; height: 200px"></a></div>
+      {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js_bottom %}
+<script type="text/javascript">
+$(document).ready(function(){
+	$('.slider').slick({
+	  autoplay: true,
+	  slidesToShow: 4,
+      slidesToScroll: 1,
+      autoplay: true,
+      autoplaySpeed: 2000
+	});
+});
+
+</script>
 {% endblock %}
