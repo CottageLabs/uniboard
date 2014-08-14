@@ -4,6 +4,39 @@
 
 <h1>Welcome to UniBoard.</h1>
 
+<h2>Sell your uni stuff and find the stuff you need.</h2>
+
+
+<p>Have heaps of old textbooks piling up? Likewise did you fall off your chair when you saw textbook prices on Amazon? Or are you looking to get a bike to make traveling to campus that little bit easier?
+
+Whatever the situation, UniBoard allows you to sell your old, now unused stuff, and find a great deal on items yourself.</p>
+
+
+
 <p>If you have an account, log in to see anything.  If you don't have an account you can register for one.</p>
 
+
+<div class="row-fluid">
+    <div class="slider">
+      {% for i in range(0, length) %}
+      <div><a href="{{url_for('advert.details', ad_id=ads[i].get('id'))}}"><img src="{{ url_for('serve_user_uploads', image_name=ads[i].get('image_id')) }}" style="width: 200px; height: 200px"></a></div>
+      {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js_bottom %}
+<script type="text/javascript">
+$(document).ready(function(){
+	$('.slider').slick({
+	  autoplay: true,
+	  slidesToShow: 4,
+      slidesToScroll: 1,
+      autoplay: true,
+      autoplaySpeed: 2000
+	});
+});
+
+</script>
 {% endblock %}

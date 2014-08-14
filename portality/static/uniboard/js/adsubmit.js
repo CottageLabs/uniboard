@@ -44,13 +44,13 @@ jQuery(document).ready(function($) {
     $('.price').change(function () {
         var high_number = 60;
 
-        if ($('.price').val() > high_number){
+        if ($('.price').val() > price_check_book){
             alert('Are you sure you want to set such a high price?');
         }
 
-    })
+    });
 
-    autocomplete('#subjects', 'subject', 'adsubmit');
+    autocomplete('#subject', 'subject', 'adsubmit');
 
     $("#keywords").select2({tags: [], formatNoMatches: function(term) { return "enter your keyword" }})
     $('#condition').select2();

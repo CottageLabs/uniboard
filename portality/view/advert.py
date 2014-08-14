@@ -10,7 +10,7 @@ from wtforms.widgets import TextInput
 from werkzeug.utils import secure_filename
 from datetime import datetime, timedelta
 
-from portality.core import app, ssl_required
+from portality.core import app, ssl_required, login_manager
 from portality import models
 from portality.datasets import domain_uni_lookup
 from portality import util
@@ -59,19 +59,32 @@ class ValidYear(object):
         if year >= current_year:
             raise ValidationError('The year of publication cannot be in the future.')
 
+class ValidFloat(object):
+    def __init__(self):
+        pass
+
+    def __call__(self, form, field):
+        if field.data:
+            try:
+                field.data = float(field.data)
+            except ValueError:
+                print 'oops'
+                raise ValidationError('This is not a valid number.')
+
 class SubmitAd(Form):
     isbn = TagListField('ISBN')
     title = TextField('Title', [validators.Required()])
     edition = TextField('Edition')
     authors = TextField('Author(s)', [validators.Required()])
-    year = IntegerField('Year',
-                                [validators.Optional(),
-                                ValidYear()]
+    year = IntegerField('Year', [validators.Optional(),
+                                 ValidYear()]
                         )
     publisher = TextField('Publisher')
-    subjects = TextField('Subject')
+    subject = TextField('Subject')
     condition = SelectField('Condition', choices=condition_choices)
-    price = FloatField('Price', [validators.Required()])
+    price = TextField('Price', [validators.Required(),
+                                ValidFloat()]
+                        )
     location = SelectField('Location to advertise', choices=location_choices)
     postcode = TextField('Postcode')
     keywords = TagListField('Keywords')
@@ -97,7 +110,6 @@ def allowed_file(filename):
 @ssl_required
 def adsubmit(ad_id=None):
     advert = models.Advert.pull(ad_id)
-
     if advert is not None:
         if advert.is_deleted and not current_user.has_role("edit_deleted"):
             abort(404)
@@ -139,20 +151,27 @@ def adsubmit(ad_id=None):
             if form.publisher.data:
                 advert.set_publisher(form.publisher.data)
 
-            if form.subjects.data:
-                advert.set_subjects(form.subjects.data)
+            if form.subject.data:
+                advert.set_subjects(form.subject.data)
 
             if form.condition.data:
                 advert.set_condition(form.condition.data)
 
+
+
             if form.price.data:
                 advert.set_price(form.price.data)
+
 
             if form.location.data:
                 advert.set_spot(form.location.data)
                 if form.location.data == 'home':
-                    lat, lon = current_user.location
-                    advert.set_location(lat, lon)
+                    if current_user.location:
+                        lat, lon = current_user.location
+                        advert.set_location(lat, lon)
+                    else:
+                        flash("We do not have an address for your account. If you wish to use this option, please edit your information under My Account.", 'error')
+                        return render_template('advert/submit.html', form=form)
                 elif form.location.data == 'uni':
                     mail = current_user.id.split('@')
                     domain = mail[-1]
@@ -186,8 +205,9 @@ def adsubmit(ad_id=None):
             flash('Advert saved successfully', 'success')
             return redirect(url_for('.details', ad_id=advert.id))
 
-    return render_template('advert/submit.html', form=form, genform=genform)
+    return render_template('advert/submit.html', form=form, advert=advert, genform=genform)
 
+login_manager.login_view = "account.login"
 
 @blueprint.route('/<ad_id>', methods=['GET'])
 @login_required

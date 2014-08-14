@@ -4,7 +4,12 @@
 {% from "_formhelpers.html" import render_field %}
 {% from "_formhelpers.html" import render_field_horizontal %}
 
+{% if request.path.endswith("edit") %}
+<div class="row-fluid" style="padding-bottom: 10px; margin-bottom: 30px; padding-left: 30px; border-bottom: 3px dashed #aaaaaa"><div class="span12"><h1>Updating an item</h1></div></div>
+{% else %}
 <div class="row-fluid" style="padding-bottom: 10px; margin-bottom: 30px; padding-left: 30px; border-bottom: 3px dashed #aaaaaa"><div class="span12"><h1>Selling an item</h1></div></div>
+{% endif %}
+
 
 <div class="row-fluid">
     <div class="span12">
@@ -28,30 +33,56 @@
         {{ render_field_horizontal(form.publisher, placeholder="enter the publisher here") }}
         {{ render_field_horizontal(form.edition, style="width: 100px", placeholder="e.g. 3rd") }}
         {{ render_field_horizontal(form.year, style="width: 100px", placeholder="e.g. 2008") }}
-        {{ render_field_horizontal(form.subjects, class="input-large") }}
+        {{ render_field_horizontal(form.subject, class="input-large") }}
         {{ render_field_horizontal(form.keywords, style="width: 300px", placeholder="enter some keywords") }}
 
         <hr>
         <h3>Tell us about the sale</h3>
-            <div class="control-group">
+            <div class="control-group{% if form.price.errors %} error {% endif %}">
               <label class="control-label" for="price">Price
                 <span class="red">*</span>
               </label>
               <div class="controls">
                   <div class="input-prepend">
                      <span class="add-on">£</span>
-                    <input id="price" name="price" class="price" placeholder="e.g. 19.50" style="width: 100px" type="text" value="{{form.price.data}}">
+
+                    <input id="price" name="price" class="price" placeholder="e.g. 19.50" style="width: 100px" type="text"
+                           {% if form.price.data %}
+                           value="{{form.price.data}}"
+                           {% else %}
+                            value=""
+                            {% endif %}>
+
                   </div>
+                  {% if form.price.errors %}
+                  <ul class="errors">
+                      {% for error in form.price.errors %}
+                      <li>{{ error }}</li>
+                      {% endfor %}
+                  </ul>
+                  {% endif %}
               </div>
             </div>
         {{ render_field_horizontal(form.condition, class="input-large", placeholder="choose one") }}
         {{ render_field_horizontal(form.location, class="input-large") }}
         {{ render_field(form.postcode, style="width: 150px", placeholder="enter a postcode") }}
         </div>
+
     </div>
     <div class="span6">
+        {% if request.path.endswith("edit") %}
+             {% if advert.image_id %}
+                <div class="row-fluid"><div class="span12">
+                         <a href="{{ url_for('serve_user_uploads', image_name=advert.image_id) }}"><img src = "{{ url_for('serve_user_uploads', image_name=advert.image_id) }}"></a>
+                </div></div>
+             {% endif %}
+            {% endif %}
         <div class="row-fluid"><div class="span12">
+            {% if request.path.endswith("edit") %}
+            <h3>Upload a new picture</h3>
+            {% else %}
             <h3>Upload a picture</h3>
+            {% endif %}
             <input type="file" name="upload" id="take-picture" accept="image/*;capture=camera">
         </div></div>
 
@@ -66,7 +97,7 @@
 
     </div>
 </div>
-
+<br>
 <div class="row-fluid">
     <div class="span4">&nbsp;</div>
     <div class="span4">
@@ -161,4 +192,5 @@
 {% block extra_js_bottom %}
 {{super()}}
 <script type="text/javascript" src="/static/uniboard/js/adsubmit.js"></script>
+<script type="text/javascript">var price_check_book = {{config.get("PRICE_CHECK_BOOK") }};</script>
 {% endblock extra_js_bottom %}
