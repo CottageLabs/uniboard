@@ -305,6 +305,9 @@ class Advert(dao.AdvertDAO):
     }
     """
 
+    # special category which represents a book
+    BOOK = "Book"
+
     @property
     def owner(self): return self.data.get("owner")
     def set_owner(self, val): self.data["owner"] = val

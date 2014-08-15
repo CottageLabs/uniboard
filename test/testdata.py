@@ -92,6 +92,8 @@ coords = {
     "scale" : 0.035
 }
 
+categories = ["Aircraft", "Bicycle", "Computer Hardware", "Fitness", "Clothing", "Food", "Shoes", "Bags", "Homeware"]
+
 def _random(length, from_list, separator="", aslist=False):
     result = []
     for i in range(length):
@@ -108,8 +110,8 @@ def owner():
 def isbn(length=10):
     return _random(length, numbers)
 
-def title():
-    length = randint(2, 5)
+def title(minwords=2, maxwords=5):
+    length = randint(minwords, maxwords)
     return _random(length, titlewords, " ")
 
 def edition():
@@ -149,13 +151,28 @@ def price():
     minor = _random(2, numbers)
     return str(major) + "." + minor
 
-def generate_record():
+def category():
+    return _random(1, categories)
+
+def description():
+    desc = ""
+    sentences = randint(5, 10)
+    for i in range(sentences):
+        slen = randint(5, 10)
+        sentence =_random(slen, [w.lower() for w in titlewords + names], " ")
+        sentence = sentence.capitalize()
+        desc += sentence + ". "
+    return desc
+
+def generate_general_record():
     """
     {
         "id" : "<opaque identifier for the advert>",
         "owner" : "<user who created the ad>",
+        "category" : "<Book or something else>",
         "isbn" : ["<isbn-10>", "<isbn-13>"],
         "title" : "<book title>",
+        "description" : "<description of the object for sale>",
         "edition" : "<edition of book>",
         "authors" : "<authors>",
         "year" : <year of publication>,
@@ -167,12 +184,12 @@ def generate_record():
             "lat" : <latitude>,
             "lon" : <longitude>
         },
+        "spot" : "<location of sale>"
         "keywords" : ["<keyword>"],
         "price" : <price in GBP>,
         "admin" : {
             "deleted" : True/False,
-            "reactivate_token" : "<reactivate token>",
-            "reactivate_expires" : "<ractivate token expiration timestamp>",
+            "deactivated" : True/False,
             "expires" : "<date the advert expires>",
             "abuse" : <number of times abuse reported>
         },
@@ -181,6 +198,51 @@ def generate_record():
     }
     """
     ad = models.Advert()
+    ad.set_category(category())
+    ad.set_owner(owner())
+    ad.set_title(title(maxwords=2))
+    ad.set_description(description())
+    ad.set_condition(condition())
+    ad.set_location(*lat_lon())
+    ad.set_keywords(keywords())
+    ad.set_price(price())
+    ad.save()
+
+def generate_book_record():
+    """
+    {
+        "id" : "<opaque identifier for the advert>",
+        "owner" : "<user who created the ad>",
+        "category" : "<Book or something else>",
+        "isbn" : ["<isbn-10>", "<isbn-13>"],
+        "title" : "<book title>",
+        "description" : "<description of the object for sale>",
+        "edition" : "<edition of book>",
+        "authors" : "<authors>",
+        "year" : <year of publication>,
+        "publisher" : "<publisher of book>",
+        "image_id" : "<id of book image in image library>",
+        "subject" : ["<subject classification>"],
+        "condition" : "<condition of the book>",
+        "loc" : {
+            "lat" : <latitude>,
+            "lon" : <longitude>
+        },
+        "spot" : "<location of sale>"
+        "keywords" : ["<keyword>"],
+        "price" : <price in GBP>,
+        "admin" : {
+            "deleted" : True/False,
+            "deactivated" : True/False,
+            "expires" : "<date the advert expires>",
+            "abuse" : <number of times abuse reported>
+        },
+        "created_date" : "<date advert was created>",
+        "last_updated" : "<date advert was last modified>",
+    }
+    """
+    ad = models.Advert()
+    ad.set_category(ad.BOOK)
     ad.set_owner(owner())
     ad.add_isbn(isbn(10))
     ad.add_isbn(isbn(13))
@@ -198,4 +260,6 @@ def generate_record():
 
 if __name__ == "__main__":
     for i in range(100):
-        generate_record()
+        generate_book_record()
+    for i in range(100):
+        generate_general_record()

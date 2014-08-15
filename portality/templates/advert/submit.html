@@ -33,7 +33,7 @@
         {{ render_field_horizontal(form.publisher, placeholder="enter the publisher here") }}
         {{ render_field_horizontal(form.edition, style="width: 100px", placeholder="e.g. 3rd") }}
         {{ render_field_horizontal(form.year, style="width: 100px", placeholder="e.g. 2008") }}
-        {{ render_field_horizontal(form.subject, class="input-large") }}
+        {{ render_field_horizontal(form.subject, style="width: 300px", class="input-large", placeholder="choose an appropriate subject area") }}
         {{ render_field_horizontal(form.keywords, style="width: 300px", class="keywords", placeholder="enter some keywords") }}
 
         <hr>
@@ -126,7 +126,7 @@
         <div class="form-horizontal wide">
         <h3>Tell us about the item</h3>
         {{ render_field(genform.csrf_token) }}
-        {{ render_field_horizontal(genform.category, style="width: 300px") }}
+        {{ render_field_horizontal(genform.category, style="width: 300px", placeholder="choose a category for this item") }}
         {{ render_field_horizontal(genform.title, style="width: 300px", placeholder="enter a title for your ad here") }}
         {{ render_field_horizontal(genform.description, style="width: 300px; height: 150px", placeholder="describe the item for sale") }}
         {{ render_field_horizontal(genform.keywords, style="width: 300px", class="keywords", placeholder="enter some keywords") }}

@@ -70,7 +70,11 @@
             {% if ad.image_id %}
             <img src = "{{ url_for('serve_user_uploads', image_name=ad.image_id) }}">
             {% else %}
-            <img src='/static/uniboard/img/book_placeholder.png'>
+                {% if ad.category == "Book" %}
+                    <img src='/static/uniboard/img/book_placeholder2.png'>
+                {% else %}
+                    <img src='/static/uniboard/img/general_placeholder.png'>
+                {% endif %}
             {% endif %}
             </div></div>
         </div>

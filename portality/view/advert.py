@@ -118,10 +118,25 @@ def adsubmit(ad_id=None):
         if not owner and not current_user.has_role("edit_all_adverts"):
             abort(404)
 
-    # FIXME: two possible forms, need to populate the right one!
-    form = SubmitAd(request.form, advert)
-    genform = GeneralAd()
+    # two possible forms, need to populate the right one!
+    bookform = None
+    genform = None
 
+    # if we are creating a new ad from scratch, both forms are blank
+    if request.path.endswith("/submit") and request.method == "GET":
+        bookform = SubmitAd()
+        genform = GeneralAd()
+        return render_template('advert/submit.html', form=bookform, genform=genform)
+
+    # if we are editing an existing advert, we need to populate the correct one
+    elif request.path.endswith("/edit") and request.method == "GET":
+        if advert.category == "Book":
+            bookform = SubmitAd(request.form, advert)
+        else:
+            genform = GeneralAd(request.form, advert)
+        return render_template('advert/submit.html', form=bookform, genform=genform, advert=advert)
+
+    """
     if request.method == 'POST':
         if not form.validate():
 
@@ -206,6 +221,7 @@ def adsubmit(ad_id=None):
             return redirect(url_for('.details', ad_id=advert.id))
 
     return render_template('advert/submit.html', form=form, advert=advert, genform=genform)
+    """
 
 login_manager.login_view = "account.login"
 
