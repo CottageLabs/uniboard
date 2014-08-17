@@ -344,3 +344,14 @@ def undelete(ad_id):
 @ssl_required
 def isbn(isbn):
     return jsonify(isbn_lookup(isbn))
+
+@blueprint.route('/abuse/<ad_id>', methods=['GET'])
+@login_required
+@ssl_required
+def abuse(ad_id):
+    advert = models.Advert.pull(ad_id)
+    advert.increment_abuse()
+    advert.save()
+    flash('Abuse reported', 'message')
+    return redirect(url_for("advert.details", ad_id=ad_id))
+
