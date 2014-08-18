@@ -1,25 +1,38 @@
 {% extends "base.html" %}
 
+{% set edit = request.path.endswith("edit") %}
+{% set is_book = advert and advert.category == "Book" %}
+
 {% block content %}
 {% from "_formhelpers.html" import render_field %}
 {% from "_formhelpers.html" import render_field_horizontal %}
 
 {% if request.path.endswith("edit") %}
-<div class="row-fluid" style="padding-bottom: 10px; margin-bottom: 30px; padding-left: 30px; border-bottom: 3px dashed #aaaaaa"><div class="span12"><h1>Updating an item</h1></div></div>
+<div class="row-fluid" style="padding-bottom: 10px; margin-bottom: 30px; padding-left: 30px; border-bottom: 3px dashed #aaaaaa"><div class="span12"><h1>Update your item</h1></div></div>
 {% else %}
 <div class="row-fluid" style="padding-bottom: 10px; margin-bottom: 30px; padding-left: 30px; border-bottom: 3px dashed #aaaaaa"><div class="span12"><h1>Selling an item</h1></div></div>
 {% endif %}
 
-
 <div class="row-fluid">
     <div class="span12">
         <ul class="nav nav-tabs">
-            <li class="active"><a href="#" id="show_book_form"><strong>Selling a Book</strong></a></li>
-            <li><a href="#" id="show_other_form"><strong>Selling something else</strong></a></li>
+            {% if edit %}
+                {% if is_book %}
+                    <li class="active"><a href="#" id="show_book_form"><strong>Selling a Book</strong></a></li>
+                    <li><a href="#" id="show_other_form" data-disabled="true" style="color: #cccccc"><strong>Selling something else</strong></a></li>
+                {% else %}
+                    <li><a href="#" id="show_book_form" data-disabled="true" style="color: #cccccc"><strong>Selling a Book</strong></a></li>
+                    <li class="active"><a href="#" id="show_other_form"><strong>Selling something else</strong></a></li>
+                {% endif %}
+            {% else %}
+                <li class="active"><a href="#" id="show_book_form"><strong>Selling a Book</strong></a></li>
+                <li><a href="#" id="show_other_form"><strong>Selling something else</strong></a></li>
+            {% endif %}
         </ul>
     </div>
 </div>
 
+{% if (edit and is_book) or not edit %}
 <div id="book_advert">
 <form id="adsubmitform" method="POST" enctype="multipart/form-data" action="">
 <div class="row-fluid">
@@ -118,6 +131,9 @@
 
 </div>
 
+{% endif %}
+
+{% if (edit and not is_book) or not edit %}
 <div id="other_advert" style="display: none">
 
 <form id="generalsubmitform" method="POST" enctype="multipart/form-data" action="">
@@ -202,11 +218,17 @@
 </form>
 
 </div>
+{% endif %}
 
 {% endblock %}
 
 {% block extra_js_bottom %}
 {{super()}}
+<script type="text/javascript">
+    var price_check_book = {{config.get("PRICE_CHECK_BOOK") }};
+    var price_check_general = {{config.get("PRICE_CHECK_OTHER") }};
+    var editing = {% if edit %}true{% else %}false{% endif %}
+    var is_book = {% if is_book %}true{% else %}false{% endif %}
+</script>
 <script type="text/javascript" src="/static/uniboard/js/adsubmit.js"></script>
-<script type="text/javascript">var price_check_book = {{config.get("PRICE_CHECK_BOOK") }};</script>
 {% endblock extra_js_bottom %}

@@ -14,7 +14,7 @@
             <div class="navbar-inner">
                 <ul class="nav pull" id="main-nav-admin-menu" style="margin-bottom: 10px">
                     {% if not current_user.is_anonymous() %}
-                        <li {% if request.path == url_for('advert.adsubmit') %} class="active"{% endif %}><a href="{{ url_for('advert.adsubmit') }}">New Advert</a></li>
+                        <li {% if request.path == url_for('advert.adsubmit') %} class="active"{% endif %}><a href="{{ url_for('advert.adsubmit') }}">Selling an item</a></li>
                         <li{% if request.path == url_for('root') %} class="active"{% endif %}><a href="{{ url_for('root') }}">Search UniBoard</a></li>
                     {% endif %}
                 </ul>

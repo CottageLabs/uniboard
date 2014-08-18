@@ -1,20 +1,34 @@
 jQuery(document).ready(function($) {
 
-    // functions to switch between the two different kinds of input form
-    $("#show_book_form").click(function(event) {
-        event.preventDefault()
+    function bookForm() {
         $("#book_advert").show()
         $("#other_advert").hide()
         $("#show_other_form").parent().removeClass("active")
-        $(this).parent().addClass("active")
+        $("#show_book_form").parent().addClass("active")
+    }
+
+    function generalForm() {
+        $("#book_advert").hide()
+        $("#other_advert").show()
+        $("#show_book_form").parent().removeClass("active")
+        $("#show_other_form").parent().addClass("active")
+    }
+
+    // functions to switch between the two different kinds of input form
+    $("#show_book_form").click(function(event) {
+        event.preventDefault()
+        if ($(this).attr("data-disabled") === "true") {
+            return
+        }
+        bookForm()
     })
 
     $("#show_other_form").click(function(event) {
         event.preventDefault()
-        $("#book_advert").hide()
-        $("#other_advert").show()
-        $("#show_book_form").parent().removeClass("active")
-        $(this).parent().addClass("active")
+        if ($(this).attr("data-disabled") === "true") {
+            return
+        }
+        generalForm()
     })
 
     // generic autocomplete function
@@ -38,20 +52,23 @@ jQuery(document).ready(function($) {
             },
             createSearchChoice: function(term) {return {"id":term, "text": term};},
             initSelection : function (element, callback) {
-                var data = {id: element.val().toLowerCase(), text: element.val().toLowerCase()};
+                var data = {id: element.val(), text: element.val()};
                 callback(data);
             }
         });
     };
 
     // sense check the price
-    $('.price').change(function () {
-        var high_number = 60;
-
-        if ($('.price').val() > price_check_book){
+    $('.book_price').change(function () {
+        if ($('.book_price').val() > price_check_book){
             alert('Are you sure you want to set such a high price?');
         }
+    });
 
+    $('.general_price').change(function () {
+        if ($('.general_price').val() > price_check_general){
+            alert('Are you sure you want to set such a high price?');
+        }
     });
 
     // autocompletes required by either form
@@ -142,5 +159,14 @@ jQuery(document).ready(function($) {
 
     pictureUpload("#take-picture", "#show-picture", "#placeholder", "#preview")
     pictureUpload("#general_take-picture", "#general_show-picture", "#general_placeholder", "#general_preview")
+
+    // once all the stuff has been defined, make sure we're looking at the right thing
+    if (editing) {
+        if (is_book) {
+            bookForm()
+        } else {
+            generalForm()
+        }
+    }
 
 });
