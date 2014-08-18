@@ -59,10 +59,12 @@
     </div>
 </div>
 
+{% set is_book = advert.category == "Book" %}
 
 <div class="row-fluid">
     <div class="span6">
-        <p><em style="font-size: 200%; color: #666666">{{ advert.authors}}</em></p>
+        {% if is_book %}
+        <p><em style="font-size: 200%; color: #666666">A book by: {{ advert.authors}}</em></p>
         <p>ISBN: {{ advert.isbn|join(', ') }}</p>
         <p>Publisher: {{ advert.publisher}}</p>
         <p>Edition: {{ advert.edition}}</p>
@@ -71,6 +73,11 @@
             <p>Subject Area: {{ advert.subjects|join(', ')}}</p>
             <p>Keywords: {{ advert.keywords|join(', ')}}</p>
         </div>
+        {% else %}
+            <p><em style="font-size: 200%; color: #666666">Category: {{ advert.category}}</em></p>
+            <p>{{advert.description}}</p>
+            <p>Keywords: {{ advert.keywords|join(', ')}}</p>
+        {% endif %}
     </div>
     <div class="span6">
         {% if advert.image_id %}
