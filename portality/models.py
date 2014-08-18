@@ -390,7 +390,7 @@ class Advert(dao.AdvertDAO):
     @property
     def condition(self): return self.data.get("condition", "")
 
-    def set_condition(self, val): self.data["condition"] = val
+    def set_condition(self, val): self.data["condition"] = val.lower()
 
     @property
     def spot(self):

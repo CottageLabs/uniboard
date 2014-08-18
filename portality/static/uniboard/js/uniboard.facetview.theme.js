@@ -310,6 +310,20 @@ jQuery(document).ready(function($) {
         })
     }
 
+    function conditionValues(cond) {
+        var table = {
+            "as new" : "As New",
+            "very good" : "Very Good",
+            "good" : "Good",
+            "fair" : "Fair",
+            "poor" : "Poor"
+        }
+        if (cond in table) {
+            return table[cond]
+        }
+        return cond
+    }
+
     var facets = []
     facets.push({"field" : "category.exact", "display" : "Category"})
     facets.push(
@@ -351,7 +365,7 @@ jQuery(document).ready(function($) {
         })
     }
     facets.push({'field': 'subject.exact', 'display': 'Subject'})
-    facets.push({'field': 'condition.exact', 'display': 'Condition'})
+    facets.push({'field': 'condition.exact', 'display': 'Condition', "value_function" : conditionValues})
     facets.push({'field': 'year', 'display': 'Publication Year'})
     facets.push({'field': 'edition.exact', 'display': 'Edition'})
     

@@ -220,9 +220,23 @@ jQuery(document).ready(function($) {
         })
     }
 
+    function deletedValue(value) {
+        if (value === "T") {
+            return "Deleted"
+        }
+        return "Not Deleted"
+    }
+
+    function deactivatedValue(value) {
+        if (value === "T") {
+            return "Deactivated"
+        }
+        return "Active"
+    }
+
     var facets = []
-    facets.push({"field" : "admin.deleted", "display" : "Deleted?", "open" : true})
-    facets.push({"field" : "admin.deactivated", "display" : "Deactivated?", "open" : true})
+    facets.push({"field" : "admin.deleted", "display" : "Deleted?", "open" : true, "value_function" : deletedValue})
+    facets.push({"field" : "admin.deactivated", "display" : "Deactivated?", "open" : true, "value_function" : deactivatedValue})
     facets.push({"field" : "admin.abuse", "display" : "Times abuse reported", "open" : true})
     facets.push({"field" : "category.exact", "display" : "Category"})
     facets.push(
