@@ -16,6 +16,7 @@
                     {% if not current_user.is_anonymous() %}
                         <li {% if request.path == url_for('advert.adsubmit') %} class="active"{% endif %}><a href="{{ url_for('advert.adsubmit') }}">Selling an item</a></li>
                         <li{% if request.path == url_for('root') %} class="active"{% endif %}><a href="{{ url_for('root') }}">Search UniBoard</a></li>
+                        <li{% if request.path == url_for('categories') %} class="active"{% endif %}><a href="{{ url_for('categories') }}">Categories &amp; Subjects</a></li>
                     {% endif %}
                 </ul>
 

@@ -95,13 +95,17 @@ def autocomplete(doc_type, field_name):
     # http://flask.pocoo.org/docs/security/#json-security
 
 
-@app.route("/user_uploads/<image_name>")
+@app.route("/user_uploads/<image_name>") # NOTE: this is now not authenticated, so that we can serve images to the front page
 def serve_user_uploads(image_name):
     #if current_user.is_authenticated() and current_user.has_role("user"):
     return send_from_directory(app.config['IMAGES_FOLDER'], image_name)
     #else:
         #abort(401)
 
+@app.route("/categories")
+def categories():
+    cats, subs = models.Advert.categories_and_subjects()
+    return render_template("categories.html", categories=cats, subjects=subs)
 
 @app.errorhandler(404)
 def page_not_found(e):
