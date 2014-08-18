@@ -18,9 +18,17 @@ Whatever the situation, UniBoard allows you to sell your old, now unused stuff, 
 
 <div class="row-fluid">
     <div class="slider">
-      {% for i in range(0, length) %}
-      <div><a href="{{url_for('advert.details', ad_id=ads[i].get('id'))}}"><img src="{{ url_for('serve_user_uploads', image_name=ads[i].get('image_id')) }}" style="width: 200px; height: 200px"></a></div>
-      {% endfor %}
+    {% if length > 1 %}
+        {% for i in range(0, length) %}
+            <div><a href="{{url_for('advert.details', ad_id=ads[i].get('id'))}}"><img src="{{ url_for('serve_user_uploads', image_name=ads[i].get('image_id')) }}" style="width: 200px; height: 200px"></a></div>
+        {% endfor %}
+    {% else %}
+      <div><a href="{{url_for('account.login')}}"><img src="static/uniboard/img/book_placeholder.png"></a></div>
+      <div><a href="{{url_for('account.login')}}"><img src="static/uniboard/img/book_placeholder.png"></a></div>
+      <div><a href="{{url_for('account.login')}}"><img src="static/uniboard/img/book_placeholder.png"></a></div>
+      <div><a href="{{url_for('account.login')}}"><img src="static/uniboard/img/book_placeholder.png"></a></div>
+      <div><a href="{{url_for('account.login')}}"><img src="static/uniboard/img/book_placeholder.png"></a></div>
+    {% endif %}
     </div>
 </div>
 
@@ -37,6 +45,5 @@ $(document).ready(function(){
       autoplaySpeed: 2000
 	});
 });
-
 </script>
 {% endblock %}

@@ -24,7 +24,7 @@
                     {% endif %}
                 {% else %}
                     <a href="{{url_for('advert.contact', ad_id=ad_id)}}" target="_blank" class="btn btn-success">Contact <i class="icon-white icon-envelope"></i></a>
-                    <button class="btn btn-danger">Report Abuse <i class="icon-white icon-ban-circle"></i></button>
+                    <a href="{{url_for('advert.abuse', ad_id=ad_id)}}"><button class="btn btn-danger">Report Abuse <i class="icon-white icon-ban-circle"></i></button></a>
                 {% endif %}
                 {% if current_user.has_role("delete_advert") %}
                     {% if advert.is_deleted %}
