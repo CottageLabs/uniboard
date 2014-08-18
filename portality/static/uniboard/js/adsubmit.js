@@ -160,9 +160,69 @@ jQuery(document).ready(function($) {
     pictureUpload("#take-picture", "#show-picture", "#placeholder", "#preview")
     pictureUpload("#general_take-picture", "#general_show-picture", "#general_placeholder", "#general_preview")
 
+    function enableBookEntry() {
+        $("#book_metadata").show()
+        $("#book_submit_buttons").show()
+        $("#no_isbn").hide()
+    }
+
+    $("#no_isbn").click(function(event) {
+        event.preventDefault()
+        $("#book_metadata").show()
+        $("#book_submit_buttons").show()
+        $(this).hide()
+    })
+
+    $("#fetch_book_data").click(function(event) {
+        event.preventDefault()
+
+        function gotISBN(data) {
+            if (Object.keys(data).length === 0) {
+                alert("Could not locate any data associated with that ISBN")
+                enableBookEntry()
+                return
+            }
+
+            if (data.title) {
+                $("#adsubmitform input[name=title]").val(data.title)
+            }
+            if (data.authors) {
+                var author_string = data.authors.join(", ")
+                $("#adsubmitform input[name=authors]").val(author_string)
+            }
+            if (data.publisher) {
+                $("#adsubmitform input[name=publisher]").val(data.publisher)
+            }
+            if (data.subjects && data.subjects.length > 0) {
+                $("#adsubmitform input[name=subject]").select2("val", data.subjects[0])
+            }
+
+            enableBookEntry()
+        }
+
+        function failedISBN(data) {
+            alert("Could not locate any data associated with that ISBN")
+            enableBookEntry()
+        }
+
+        var isbn = $("#isbn").val()
+        $.ajax({
+            url: "/isbn/" + isbn,
+            method: "GET",
+            success : gotISBN,
+            error: failedISBN
+        })
+    })
+
+    // if an isbn is entered in the form, always enable the book data
+    if ($("#isbn").val()) {
+        enableBookEntry()
+    }
+
     // once all the stuff has been defined, make sure we're looking at the right thing
     if (editing) {
         if (is_book) {
+            enableBookEntry()
             bookForm()
         } else {
             generalForm()

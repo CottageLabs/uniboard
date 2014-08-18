@@ -1,11 +1,12 @@
 from flask import Flask, request, abort, render_template, redirect, make_response, jsonify, send_file, \
     send_from_directory
 from flask.views import View
-from flask.ext.login import login_user, current_user
+from flask.ext.login import login_user, current_user, login_required
 
 import portality.models as models
-from portality.core import app, login_manager
+from portality.core import app, login_manager, ssl_required
 from portality import settings
+from portality.isbn_lookup import isbn_lookup
 
 from portality.view.admin import blueprint as admin
 from portality.view.account import blueprint as account
@@ -106,6 +107,12 @@ def serve_user_uploads(image_name):
 def categories():
     cats, subs = models.Advert.categories_and_subjects()
     return render_template("categories.html", categories=cats, subjects=subs)
+
+@app.route('/isbn/<isbn>', methods=['GET'])
+@login_required
+@ssl_required
+def isbn(isbn):
+    return jsonify(isbn_lookup(isbn))
 
 @app.errorhandler(404)
 def page_not_found(e):

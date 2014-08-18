@@ -433,12 +433,6 @@ def undelete(ad_id):
     else:
         return redirect(url_for("admin.index"))
 
-@blueprint.route('/isbn/<isbn>', methods=['GET'])
-@login_required
-@ssl_required
-def isbn(isbn):
-    return jsonify(isbn_lookup(isbn))
-
 @blueprint.route('/abuse/<ad_id>', methods=['GET'])
 @login_required
 @ssl_required

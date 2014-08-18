@@ -40,14 +40,21 @@
         <div class="form-horizontal wide">
         <h3>Tell us about the book</h3>
         {{ render_field(form.csrf_token) }}
-        {{ render_field_horizontal(form.title, style="width: 300px", placeholder="enter the book title here") }}
+
+        <p>Enter the ISBN of the book if you know it</p>
         {{ render_field_horizontal(form.isbn, placeholder="e.g. 978-3-16-148410-0") }}
+        <button id="fetch_book_data" class="btn btn-primary" style="margin-left: 120px">Fetch book data</button>
+        <a href="#" id="no_isbn" style="margin-left: 50px">I don't know the ISBN</a>
+
+        <div style="display: none; margin-top: 30px" id="book_metadata">
+        {{ render_field_horizontal(form.title, style="width: 300px", placeholder="enter the book title here") }}
         {{ render_field_horizontal(form.authors, style="width: 300px", placeholder="list the authors") }}
         {{ render_field_horizontal(form.publisher, placeholder="enter the publisher here") }}
         {{ render_field_horizontal(form.edition, style="width: 100px", placeholder="e.g. 3rd") }}
         {{ render_field_horizontal(form.year, style="width: 100px", placeholder="e.g. 2008") }}
         {{ render_field_horizontal(form.subject, style="width: 300px", class="input-large", placeholder="choose an appropriate subject area") }}
         {{ render_field_horizontal(form.keywords, style="width: 300px", class="keywords", placeholder="enter some keywords") }}
+        </div>
 
         <hr>
         <h3>Tell us about the sale</h3>
@@ -111,7 +118,7 @@
     </div>
 </div>
 <br>
-<div class="row-fluid">
+<div class="row-fluid" style="display: none" id="book_submit_buttons">
     <div class="span4">&nbsp;</div>
     <div class="span4">
         {% if request.path.endswith("submit") %}
