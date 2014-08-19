@@ -2,7 +2,9 @@ import requests
 
 
 def isbn_lookup(isbn):
-    url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + str(isbn)
+    isbn = str(isbn)
+    isbn = ''.join(c for c in isbn if c.isdigit())
+    url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn
     book_google = requests.get(url)
     book_google = book_google.json()
     if book_google['totalItems'] != 1:
