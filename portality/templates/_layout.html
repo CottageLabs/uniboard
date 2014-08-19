@@ -1,0 +1,35 @@
+{% macro columns(values, cols=3, facet_style=True, category_link=False, subject_link=False, style='') %}
+    {% set rows = (values|length / cols)|round(0, "ceil")|int %}
+    {% set span = (12 / cols)|round(0, "floor")|int %}
+
+    {% set category_query_prefix = '?source=%7B"query"%3A%7B"filtered"%3A%7B"filter"%3A%7B"bool"%3A%7B"must"%3A%5B%7B"term"%3A%7B"category.exact"%3A"' %}
+    {% set category_query_suffix = '"%7D%7D%5D%7D%7D%2C"query"%3A%7B"match_all"%3A%7B%7D%7D%7D%7D%2C"size"%3A25%7D' %}
+    {% set subject_query_prefix = '?source=%7B"query"%3A%7B"filtered"%3A%7B"filter"%3A%7B"bool"%3A%7B"must"%3A%5B%7B"term"%3A%7B"subject.exact"%3A"' %}
+    {% set subject_query_suffix = '"%7D%7D%5D%7D%7D%2C"query"%3A%7B"match_all"%3A%7B%7D%7D%7D%7D%2C"size"%3A25%7D' %}
+
+
+    <div class="row-fluid" style="{{style}}">
+    {% for i in range(cols) %}
+        <div class="span{{span}}">
+        {% for j in range(rows) %}
+            {% set idx = (i * rows) + j %}
+            {% if idx < values|length %}
+                {% if facet_style %}
+                    {% if category_link %}
+                        {% set qs = category_query_prefix + values[idx]['term'] + category_query_suffix %}
+                    {% endif %}
+                    {% if subject_link %}
+                        {% set qs = subject_query_prefix + values[idx]['term'] + subject_query_suffix %}
+                    {% endif %}
+                    <a href="{{url_for('root')}}{{qs}}">{{values[idx]["term"]}} ({{values[idx]["count"]}})</a>
+                {% else %}
+                    {{ values[idx] }}
+                {% endif %}
+                <br>
+            {% endif %}
+        {% endfor %}
+        </div>
+    {% endfor %}
+    </div>
+
+{% endmacro %}

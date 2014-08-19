@@ -1,11 +1,12 @@
 from flask import Flask, request, abort, render_template, redirect, make_response, jsonify, send_file, \
     send_from_directory
 from flask.views import View
-from flask.ext.login import login_user, current_user
+from flask.ext.login import login_user, current_user, login_required
 
 import portality.models as models
-from portality.core import app, login_manager
+from portality.core import app, login_manager, ssl_required
 from portality import settings
+from portality.isbn_lookup import isbn_lookup
 
 from portality.view.admin import blueprint as admin
 from portality.view.account import blueprint as account
@@ -95,13 +96,23 @@ def autocomplete(doc_type, field_name):
     # http://flask.pocoo.org/docs/security/#json-security
 
 
-@app.route("/user_uploads/<image_name>")
+@app.route("/user_uploads/<image_name>") # NOTE: this is now not authenticated, so that we can serve images to the front page
 def serve_user_uploads(image_name):
     #if current_user.is_authenticated() and current_user.has_role("user"):
     return send_from_directory(app.config['IMAGES_FOLDER'], image_name)
     #else:
         #abort(401)
 
+@app.route("/categories")
+def categories():
+    cats, subs = models.Advert.categories_and_subjects()
+    return render_template("categories.html", categories=cats, subjects=subs)
+
+@app.route('/isbn/<isbn>', methods=['GET'])
+@login_required
+@ssl_required
+def isbn(isbn):
+    return jsonify(isbn_lookup(isbn))
 
 @app.errorhandler(404)
 def page_not_found(e):

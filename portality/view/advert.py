@@ -59,7 +59,7 @@ class ValidYear(object):
     def __call__(self, form, field):
         current_year = datetime.now().year
         year = field.data
-        if year >= current_year:
+        if year > current_year:
             raise ValidationError('The year of publication cannot be in the future.')
 
 class ValidFloat(object):
@@ -92,11 +92,152 @@ class SubmitAd(Form):
     postcode = TextField('Postcode')
     keywords = TagListField('Keywords')
 
+class GeneralAd(Form):
+    category = TextField("Item Category", [validators.Required()])
+    title = TextField('Title', [validators.Required()])
+    description = TextAreaField("Description", [validators.Optional()])
+    price = FloatField('Price', [validators.Required()])
+    location = SelectField('Location to advertise', choices=location_choices)
+    postcode = TextField('Postcode')
+    keywords = TagListField('Keywords')
+    condition = SelectField('Condition', choices=condition_choices)
 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']
 
+def xwalk_book(form, advert):
+    if not advert:
+        advert = models.Advert()
+
+    advert.set_category(advert.BOOK)
+    advert.set_owner(current_user.id)
+
+    if form.isbn.data:
+        advert.set_isbn(form.isbn.data)
+
+    advert.set_title(form.title.data)
+
+    if form.edition.data:
+        advert.set_edition(form.edition.data)
+
+    if form.authors.data:
+        advert.set_authors(form.authors.data)
+
+    if form.year.data:
+        advert.set_year(form.year.data)
+
+    if form.publisher.data:
+        advert.set_publisher(form.publisher.data)
+
+    if form.subject.data:
+        advert.set_subjects(form.subject.data)
+
+    if form.condition.data:
+        advert.set_condition(form.condition.data)
+
+    if form.price.data:
+        advert.set_price(form.price.data)
+
+    if form.location.data:
+        advert.set_spot(form.location.data)
+        if form.location.data == 'home':
+            if current_user.location:
+                lat, lon = current_user.location
+                advert.set_location(lat, lon)
+            else:
+                flash("We do not have an address for your account. If you wish to use this option, please edit your information under My Account.", 'error')
+                return render_template('advert/submit.html', form=form)
+        elif form.location.data == 'uni':
+            mail = current_user.id.split('@')
+            domain = mail[-1]
+            uni = domain_uni_lookup[domain]["address"]
+            results = Geocoder.geocode(uni + ', United Kingdom')
+            lat, lng = results[0].coordinates
+            advert.set_location(lat, lng)
+        elif form.location.data == 'postcode':
+            results = Geocoder.geocode(form.postcode.data + ', United Kingdom')
+            lat, lng = results[0].coordinates
+            advert.set_location(lat, lng)
+
+    if form.keywords.data:
+        advert.set_keywords(form.keywords.data)
+
+    image = request.files['upload']
+    if image and allowed_file(image.filename):
+        image_id = uuid.uuid4().hex
+        name = image.filename.split('.')
+        extension = name[-1]
+        image_name = str(image_id) + '.' + extension
+        image.save(os.path.join(app.config['IMAGES_FOLDER'], image_name))
+        advert.set_image_id(image_name)
+    elif image and not allowed_file(image.filename):
+        flash('This is not an allowed image type', 'error')
+
+    advert.expires_in(app.config.get("ADVERT_TIMEOUT", 604800))
+    advert.save()
+    advert.refresh()
+    return advert
+
+def xwalk_generic(form, advert):
+    if not advert:
+        advert = models.Advert()
+
+    advert.set_owner(current_user.id)
+
+    if form.category.data:
+        advert.set_category(form.category.data)
+
+    advert.set_title(form.title.data)
+
+    if form.description.data:
+        advert.set_description(form.description.data)
+
+    if form.condition.data:
+        advert.set_condition(form.condition.data)
+
+    if form.price.data:
+        advert.set_price(form.price.data)
+
+    if form.location.data:
+        advert.set_spot(form.location.data)
+        if form.location.data == 'home':
+            if current_user.location:
+                lat, lon = current_user.location
+                advert.set_location(lat, lon)
+            else:
+                flash("We do not have an address for your account. If you wish to use this option, please edit your information under My Account.", 'error')
+                return render_template('advert/submit.html', form=form)
+        elif form.location.data == 'uni':
+            mail = current_user.id.split('@')
+            domain = mail[-1]
+            uni = domain_uni_lookup[domain]["address"]
+            results = Geocoder.geocode(uni + ', United Kingdom')
+            lat, lng = results[0].coordinates
+            advert.set_location(lat, lng)
+        elif form.location.data == 'postcode':
+            results = Geocoder.geocode(form.postcode.data + ', United Kingdom')
+            lat, lng = results[0].coordinates
+            advert.set_location(lat, lng)
+
+    if form.keywords.data:
+        advert.set_keywords(form.keywords.data)
+
+    image = request.files['upload']
+    if image and allowed_file(image.filename):
+        image_id = uuid.uuid4().hex
+        name = image.filename.split('.')
+        extension = name[-1]
+        image_name = str(image_id) + '.' + extension
+        image.save(os.path.join(app.config['IMAGES_FOLDER'], image_name))
+        advert.set_image_id(image_name)
+    elif image and not allowed_file(image.filename):
+        flash('This is not an allowed image type', 'error')
+
+    advert.expires_in(app.config.get("ADVERT_TIMEOUT", 604800))
+    advert.save()
+    advert.refresh()
+    return advert
 
 @blueprint.route('/submit', methods=['GET', 'POST', 'DELETE'])
 @blueprint.route('/<ad_id>/edit', methods=['GET', 'POST', 'DELETE'])
@@ -112,93 +253,46 @@ def adsubmit(ad_id=None):
         if not owner and not current_user.has_role("edit_all_adverts"):
             abort(404)
 
+    # two possible forms, need to populate the right one!
+    bookform = None
+    genform = None
 
-    form = SubmitAd(request.form, advert)
+    # if we are creating a new ad from scratch, both forms are blank
+    if request.path.endswith("/submit") and request.method == "GET":
+        bookform = SubmitAd()
+        genform = GeneralAd()
+        return render_template('advert/submit.html', form=bookform, genform=genform)
 
-    if request.method == 'POST':
-        if not form.validate():
-
-            print form.errors
-            flash('Error while submitting', 'error')
+    # if we are editing an existing advert, we need to populate the correct one
+    elif request.path.endswith("/edit") and request.method == "GET":
+        if advert.category == "Book":
+            bookform = SubmitAd(request.form, advert)
         else:
-            if not advert:
-                advert = models.Advert()
+            genform = GeneralAd(request.form, advert)
+        return render_template('advert/submit.html', form=bookform, genform=genform, advert=advert)
 
-            advert.set_owner(current_user.id)
-
-            if form.isbn.data:
-                advert.set_isbn(form.isbn.data)
-
-            advert.set_title(form.title.data)
-
-            if form.edition.data:
-                advert.set_edition(form.edition.data)
-
-            advert.set_authors(form.authors.data)
-
-
-            if form.year.data:
-                advert.set_year(form.year.data)
-
-
-            if form.publisher.data:
-                advert.set_publisher(form.publisher.data)
-
-            if form.subject.data:
-                advert.set_subjects(form.subject.data)
-
-            if form.condition.data:
-                advert.set_condition(form.condition.data)
-
-
-
-            if form.price.data:
-                advert.set_price(form.price.data)
-
-
-            if form.location.data:
-                advert.set_spot(form.location.data)
-                if form.location.data == 'home':
-                    if current_user.location:
-                        lat, lon = current_user.location
-                        advert.set_location(lat, lon)
-                    else:
-                        flash("We do not have an address for your account. If you wish to use this option, please edit your information under My Account.", 'error')
-                        return render_template('advert/submit.html', form=form)
-                elif form.location.data == 'uni':
-                    mail = current_user.id.split('@')
-                    domain = mail[-1]
-                    uni = domain_uni_lookup[domain]["address"]
-                    results = Geocoder.geocode(uni + ', United Kingdom')
-                    lat, lng = results[0].coordinates
-                    advert.set_location(lat, lng)
-                elif form.location.data == 'postcode':
-                    results = Geocoder.geocode(form.postcode.data + ', United Kingdom')
-                    lat, lng = results[0].coordinates
-                    advert.set_location(lat, lng)
-
-            if form.keywords.data:
-                advert.set_keywords(form.keywords.data)
-
-            image = request.files['upload']
-            if image and allowed_file(image.filename):
-                image_id = uuid.uuid4().hex
-                name = image.filename.split('.')
-                extension = name[-1]
-                image_name = str(image_id) + '.' + extension
-                image.save(os.path.join(app.config['IMAGES_FOLDER'], image_name))
-                advert.set_image_id(image_name)
-            elif image and not allowed_file(image.filename):
-                flash('This is not an allowed image type', 'error')
-
-            advert.set_expires((datetime.now().replace(microsecond=0) + timedelta(hours=1)).isoformat() + 'Z')
-
-            advert.save()
-            advert.refresh()
+    if request.method == "POST":
+        category = request.values.get("category")
+        if category is not None:
+            # something other than a book
+            genform = GeneralAd(request.form, advert)
+            if not genform.validate():
+                flash('Error while submitting', 'error')
+                bookform = SubmitAd()
+                return render_template('advert/submit.html', form=bookform, advert=advert, genform=genform)
+            advert = xwalk_generic(genform, advert)
             flash('Advert saved successfully', 'success')
             return redirect(url_for('.details', ad_id=advert.id))
-
-    return render_template('advert/submit.html', form=form, advert=advert)
+        else:
+            # we have a book
+            bookform = SubmitAd(request.form, advert)
+            if not bookform.validate():
+                flash('Error while submitting', 'error')
+                genform = GeneralAd()
+                return render_template('advert/submit.html', form=bookform, advert=advert, genform=genform)
+            advert = xwalk_book(bookform, advert)
+            flash('Advert saved successfully', 'success')
+            return redirect(url_for('.details', ad_id=advert.id))
 
 login_manager.login_view = "account.login"
 
@@ -338,12 +432,6 @@ def undelete(ad_id):
         return redirect(url_for("advert.details", ad_id=ad_id))
     else:
         return redirect(url_for("admin.index"))
-
-@blueprint.route('/isbn/<isbn>', methods=['GET'])
-@login_required
-@ssl_required
-def isbn(isbn):
-    return jsonify(isbn_lookup(isbn))
 
 @blueprint.route('/abuse/<ad_id>', methods=['GET'])
 @login_required

@@ -39,6 +39,17 @@ jQuery(document).ready(function($) {
     }
 
     function discoveryRecordView(options, record) {
+        if (record.category && record.category === "Book") {
+            return bookView(options, record)
+        } else {
+            return generalView(options, record)
+        }
+    }
+
+    function generalView(options, record) {
+        // configure how long the truncated description strings will be
+        var DESC_LEN = 200
+
         var result = options.resultwrap_start;
 
         // calculate the distance from the user to the sale
@@ -64,7 +75,81 @@ jQuery(document).ready(function($) {
         if (record.image_id) {
             result += "<img src='" + img_path + record.image_id + "'>"
         } else {
-            result += "<img src='/static/uniboard/img/book_placeholder.png'>"
+            result += "<img src='/static/uniboard/img/general_placeholder.png'>"
+        }
+        result += "</div>"
+
+        result += "<div class='span8'>"
+        result += "<div style='padding-bottom: 10px'><strong><a href='/advert/" + record.id + "' style='font-size: 200%'>" + record.title + "</a></strong></div>"
+        if (record.category) {
+            result += "<em style='font-size: 150%; color: #666666'>Category: " + record.category + "</em><br>"
+        }
+        if (record.description) {
+            result += "<p>" + record.description.substring(0, DESC_LEN)
+            if (record.description.length > DESC_LEN) {
+                result += "<span id='" + record.id + "_short' class='short_desc'>...(<a href='#' class='more_desc' data-id='" + record.id + "'>more</a>)</span>"
+                result += "<span id='" + record.id + "_long' class='long_desc'>" + record.description.substring(DESC_LEN) + " (<a href='#' class='less_desc' data-id='" + record.id + "'>less</a>)</span>"
+            }
+            result += "</p>"
+        }
+
+        result += "</div>"
+
+        result += "<div class='span2'>"
+        if (record.price) {
+            var bits = String(record.price).split(".")
+            var pounds = bits[0]
+            var pence = "00"
+            if (bits.length > 1) {
+                pence = bits[1]
+                if (pence.length === 1) {
+                    pence += "0"
+                }
+            }
+            result += "<div style='padding-top: 15px'>"
+            result += "<span style='font-size: 300%; font-weight: bold'>£" + pounds + ".</span>"
+            result += "<span style='font-size: 200%; font-weight: bold'>" + pence + "</span>"
+            result += "</div>"
+        }
+
+        result += "<div style='padding-top: 15px'>"
+        result += dist
+        result += "</div>"
+
+        result += "</div>"
+
+        result += "</div>"
+        result += options.resultwrap_end;
+        return result;
+    }
+
+    function bookView(options, record) {
+        var result = options.resultwrap_start;
+
+        // calculate the distance from the user to the sale
+        var slat = undefined
+        var slon = undefined
+        if (record.loc && record.loc.lat) {
+            slat = record.loc.lat
+        }
+        if (record.loc && record.loc.lon) {
+            slon = record.loc.lon
+        }
+        var dist = "distance unknown"
+        if (slat && slon && user_lat && user_lon) {
+            dist = pythagorasDistance(user_lat, user_lon, slat, slon)
+            dist = roundOff(dist)
+            dist = "approx. " + dist + " miles"
+        }
+
+        result += "<div class='row-fluid' style='margin-top: 10px; margin-bottom: 10px'>"
+
+        // build the result
+        result += "<div class='span2'>"
+        if (record.image_id) {
+            result += "<img src='" + img_path + record.image_id + "'>"
+        } else {
+            result += "<img src='/static/uniboard/img/book_placeholder2.png'>"
         }
         result += "</div>"
 
@@ -209,8 +294,39 @@ jQuery(document).ready(function($) {
         return thefacetview
     }
 
+    function postRender() {
+        $(".long_desc").hide()
+        $(".more_desc").click(function(event) {
+            event.preventDefault()
+            var rid = $(this).attr("data-id")
+            $('#' + rid + '_short').hide()
+            $('#' + rid + '_long').show()
+        })
+        $(".less_desc").click(function(event) {
+            event.preventDefault()
+            var rid = $(this).attr("data-id")
+            $('#' + rid + '_long').hide()
+            $('#' + rid + '_short').show()
+        })
+    }
 
-    var facets = [
+    function conditionValues(cond) {
+        var table = {
+            "as new" : "As New",
+            "very good" : "Very Good",
+            "good" : "Good",
+            "fair" : "Fair",
+            "poor" : "Poor"
+        }
+        if (cond in table) {
+            return table[cond]
+        }
+        return cond
+    }
+
+    var facets = []
+    facets.push({"field" : "category.exact", "display" : "Category"})
+    facets.push(
         {
             'field': 'price',
             'display': 'Price',
@@ -227,7 +343,7 @@ jQuery(document).ready(function($) {
                 {"from" : 50, "display": "£50+"}
             ]
         }
-    ]
+    )
     if (user_lat && user_lon) {
         facets.push({
             'field' : 'loc',
@@ -249,7 +365,7 @@ jQuery(document).ready(function($) {
         })
     }
     facets.push({'field': 'subject.exact', 'display': 'Subject'})
-    facets.push({'field': 'condition.exact', 'display': 'Condition'})
+    facets.push({'field': 'condition.exact', 'display': 'Condition', "value_function" : conditionValues})
     facets.push({'field': 'year', 'display': 'Publication Year'})
     facets.push({'field': 'edition.exact', 'display': 'Edition'})
     
@@ -273,7 +389,8 @@ jQuery(document).ready(function($) {
         ],
         render_result_record : discoveryRecordView,
         render_search_options : uniSearchOptions,
-        search_button: true
+        search_button: true,
+        post_render_callback: postRender
     });
     
 });

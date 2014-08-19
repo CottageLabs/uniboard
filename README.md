@@ -58,8 +58,10 @@ GOOGLE_MAP_API_KEY="<your key>"
     {
         "id" : "<opaque identifier for the advert>",
         "owner" : "<user who created the ad>",
+        "category" : "<Book or something else>",
         "isbn" : ["<isbn-10>", "<isbn-13>"],
         "title" : "<book title>",
+        "description" : "<description of the object for sale>",
         "edition" : "<edition of book>",
         "authors" : "<authors>",
         "year" : <year of publication>,

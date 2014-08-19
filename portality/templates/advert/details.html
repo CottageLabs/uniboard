@@ -37,20 +37,20 @@
             <div class="span4">
                 <span style='font-size: 250%; font-weight: bold'>£{{advert.price}}</span><br>
                 <strong>
-                    {% if advert.condition == "As New" %}<span style="color: #37CF00">
-                        {{advert.condition}}
+                    {% if advert.condition == "As New" or advert.condition == "as new" %}<span style="color: #37CF00">
+                        As New
                     {% endif %}
-                    {% if advert.condition == "Very Good" %}<span style="color: #37CF00">
-                        {{advert.condition}} Cond.
+                    {% if advert.condition == "Very Good" or advert.condition == "very good" %}<span style="color: #37CF00">
+                       Very Good Cond.
                     {% endif %}
-                    {% if advert.condition == "Good" %}<span style="color: #FA9F20">
-                        {{advert.condition}} Condition
+                    {% if advert.condition == "Good" or advert.condition == "good" %}<span style="color: #FA9F20">
+                        Good Condition
                     {% endif %}
-                    {% if advert.condition == "Fair" %}<span style="color: #FA9F20">
-                        {{advert.condition}} Condition
+                    {% if advert.condition == "Fair" or advert.condition == "fair" %}<span style="color: #FA9F20">
+                        Fair Condition
                     {% endif %}
-                    {% if advert.condition == "Poor" %}<span style="color: #FA5E20">
-                        {{advert.condition}} Condition
+                    {% if advert.condition == "Poor" or advert.condition == "poor" %}<span style="color: #FA5E20">
+                        Poor Condition
                     {% endif %}
                     </span>
                 </strong>
@@ -59,10 +59,12 @@
     </div>
 </div>
 
+{% set is_book = advert.category == "Book" %}
 
 <div class="row-fluid">
     <div class="span6">
-        <p><em style="font-size: 200%; color: #666666">{{ advert.authors}}</em></p>
+        {% if is_book %}
+        <p><em style="font-size: 200%; color: #666666">A book by: {{ advert.authors}}</em></p>
         <p>ISBN: {{ advert.isbn|join(', ') }}</p>
         <p>Publisher: {{ advert.publisher}}</p>
         <p>Edition: {{ advert.edition}}</p>
@@ -71,6 +73,11 @@
             <p>Subject Area: {{ advert.subjects|join(', ')}}</p>
             <p>Keywords: {{ advert.keywords|join(', ')}}</p>
         </div>
+        {% else %}
+            <p><em style="font-size: 200%; color: #666666">Category: {{ advert.category}}</em></p>
+            <p>{{advert.description}}</p>
+            <p>Keywords: {{ advert.keywords|join(', ')}}</p>
+        {% endif %}
     </div>
     <div class="span6">
         {% if advert.image_id %}

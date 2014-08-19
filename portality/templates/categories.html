@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% from "_layout.html" import columns %}
+
+<div class="row-fluid" style="padding-bottom: 10px; margin-bottom: 30px; padding-left: 30px; border-bottom: 3px dashed #aaaaaa"><div class="span12"><h1>Categories of Item</h1></div></div>
+
+{{columns(categories, cols=6, category_link=True, style="margin-bottom: 50px")}}
+
+<div class="row-fluid" style="padding-bottom: 10px; margin-bottom: 30px; padding-left: 30px; border-bottom: 3px dashed #aaaaaa"><div class="span12"><h1>Book Subjects</h1></div></div>
+
+{{columns(subjects, cols=3, subject_link=True)}}
+
+{% endblock %}
+
+{% block extra_js_bottom %}
+<script type="text/javascript">
+
+</script>
+
+{% endblock %}

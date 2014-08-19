@@ -182,3 +182,21 @@ class AdvertDAO(esprit.dao.DomainObject):
         exp_time = (datetime.now() + timedelta(hours=36)).isoformat() + 'Z'
         query = {"query": {"range": {"admin.expires": {"lte": exp_time}}}}
         return cls.iterate(query)
+
+    @classmethod
+    def categories_and_subjects(cls):
+        q = {
+            "query" : { "match_all" : {} },
+            "size" : 0,
+            "facets" : {
+                "categories" : {"terms" : {"field" : "category.exact", "size" : 1000, "order" : "term"}},
+                "subjects" : {"terms" : {"field" : "subject.exact", "size" : 1000, "order" : "term"}}
+            }
+        }
+
+        r = esprit.raw.search(cls.__conn__, cls.__type__, q)
+        j = r.json()
+
+        cats = j.get("facets", {}).get("categories", {}).get("terms", [])
+        subs = j.get("facets", {}).get("subjects", {}).get("terms", [])
+        return cats, subs
