@@ -6,7 +6,7 @@
 
 <h2 style="text-align: center;">Sell your uni stuff and find the stuff you need.</h2>
 
-<div class="container span7" style="margin: 0px auto; float: none; width: 60%; padding: 10px;">
+<div class="container" style="margin: 0px auto; float: none; width: 60%; padding-top: 10px; padding-bottom: 10px;">
         <p style="text-align: center; font-size: 15px;">Have heaps of old textbooks piling up? Likewise did you fall off your chair when you saw textbook prices on Amazon? Or are you looking to get a bike to make traveling to campus that little bit easier?
 
         Whatever the situation, UniBoard allows you to sell your old, now unused stuff, and find a great deal on items yourself.</p>
@@ -21,7 +21,7 @@
         <div class="slider">
         {% if length > 3 %}
             {% for i in range(0, length) %}
-                <div><a href="{{url_for('advert.details', ad_id=ads[i].get('id'))}}"><img src="{{ url_for('serve_user_uploads', image_name=ads[i].get('image_id')) }}" style="width: 200px; height: 200px; border: 1px solid; border-radius: 25px; border-color: black; box-shadow: 0px 5px 2px #888888;"><h3 style="text-align: center; padding-top: 3px;">{{ ads[i].get('title') }}</h3></a></div>
+                <div><a href="{{url_for('advert.details', ad_id=ads[i].get('id'))}}"><img src="{{ url_for('serve_user_uploads', image_name=ads[i].get('image_id')) }}" style="margin: auto; width: 200px; height: 200px; border: 1px solid; border-radius: 25px; border-color: black; box-shadow: 0px 5px 2px #888888;"><p style="text-align: center; padding-top: 5px; color: black; font-size: 20px">{{ ads[i].get('title') }}</p></a></div>
             {% endfor %}
         {% else %}
           <div><a href="{{url_for('account.login')}}"><img src="static/uniboard/img/book_placeholder.png"></a></div>
