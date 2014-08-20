@@ -33,7 +33,7 @@
 </div>
 
 {% if (edit and is_book) or not edit %}
-<div id="book_advert">
+<div id="book_advert" style="padding-left: 30px">
 <form id="adsubmitform" method="POST" enctype="multipart/form-data" action="">
 <div class="row-fluid">
     <div class="span6">
@@ -146,7 +146,7 @@
 {% endif %}
 
 {% if (edit and not is_book) or not edit %}
-<div id="other_advert" style="display: none">
+<div id="other_advert" style="display: none; padding-left: 30px">
 
 <form id="generalsubmitform" method="POST" enctype="multipart/form-data" action="">
 <div class="row-fluid">
