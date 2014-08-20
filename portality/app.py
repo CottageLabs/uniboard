@@ -1,5 +1,5 @@
 from flask import Flask, request, abort, render_template, redirect, make_response, jsonify, send_file, \
-    send_from_directory
+    send_from_directory, url_for
 from flask.views import View
 from flask.ext.login import login_user, current_user, login_required
 
@@ -50,29 +50,32 @@ def root():
     if current_user.is_authenticated() and current_user.has_role("user"):
         return render_template("search.html", search_base_url="")
     else:
-        advert = models.Advert()
-        query = {
-                  "size": 10,
-                  "sort" : [{ "last_updated" : "desc" }],
-                  "query": {
-                    "filtered": {
-                      "query": {
-                        "match": { "admin.abuse" : 0 }
-                      },
-                      "filter": {
-                        "exists": { "field": "image_id"}
-                      }
-                    }
-                  }
-        }
-        res = advert.query(q=query)
-        ads = [hit.get("_source") for hit in res.get("hits", {}).get("hits", [])]
-        images = []
-        length = len(ads)
-        for i in range(0, len(ads)):
-            images.append({ads[i].get("id"): ads[i].get("image_id")})
-        return render_template("welcome.html", images=images, ads=ads, length=length)
+        return redirect(url_for("welcome"))
 
+@app.route("/welcome")
+def welcome():
+    advert = models.Advert()
+    query = {
+              "size": 10,
+              "sort" : [{ "last_updated" : "desc" }],
+              "query": {
+                "filtered": {
+                  "query": {
+                    "match": { "admin.abuse" : 0 }
+                  },
+                  "filter": {
+                    "exists": { "field": "image_id"}
+                  }
+                }
+              }
+    }
+    res = advert.query(q=query)
+    ads = [hit.get("_source") for hit in res.get("hits", {}).get("hits", [])]
+    images = []
+    length = len(ads)
+    for i in range(0, len(ads)):
+        images.append({ads[i].get("id"): ads[i].get("image_id")})
+    return render_template("welcome.html", images=images, ads=ads, length=length)
 
 @app.route('/autocomplete/<doc_type>/<field_name>', methods=["GET", "POST"])
 def autocomplete(doc_type, field_name):
