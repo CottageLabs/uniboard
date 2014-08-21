@@ -100,25 +100,29 @@
             <input type="file" name="upload" id="take-picture" accept="image/*;capture=camera">
         </div></div>
 
-        <div class="row-fluid"><div class="span12">
+        <div class="row-fluid">
+            <div class="span12">
 
         {% if request.path.endswith("edit") %}
-            <div id="placeholder" style="width: 70%; text-align: center">
          {% if advert.image_id %}
-            <div class="row-fluid"><div class="span12">
-                     <a href="{{ url_for('serve_user_uploads', image_name=advert.image_id) }}"><img src = "{{ url_for('serve_user_uploads', image_name=advert.image_id) }}"></a>
-            </div></div>
+            <div id="placeholder" style="width: 70%; text-align: center">
+                <div class="row-fluid">
+                    <div class="span12">
+                         <a href="{{ url_for('serve_user_uploads', image_name=advert.image_id) }}"><img src = "{{ url_for('serve_user_uploads', image_name=advert.image_id) }}"></a>
+                    </div>
+                </div>
+            </div>
          {% endif %}
         {% else %}
             <div id="placeholder" style="width: 70%; height: 300px; border: 1px dashed #aaaaaa; line-height: 300px; text-align: center">
             <strong>why not upload an image?</strong>
+            </div>
         {% endif %}
-
-        </div>
         <div id="preview" style="display: none">
             <img class="span3" src="about:blank" alt="" id="show-picture">
         </div>
-        </div></div>
+            </div>
+        </div>
 
     </div>
 </div>
@@ -184,30 +188,35 @@
     </div>
     <div class="span6">
 
-        <div class="row-fluid"><div class="span12">
+        <div class="row-fluid">
+            <div class="span12">
             {% if request.path.endswith("edit") %}
             <h3>Upload a new picture</h3>
             {% else %}
             <h3>Upload a picture</h3>
             {% endif %}
             <input type="file" name="upload" id="general_take-picture" accept="image/*;capture=camera">
-        </div></div>
+            </div>
+        </div>
 
         {% if request.path.endswith("edit") %}
-            <div id="placeholder" style="width: 70%; text-align: center">
          {% if advert.image_id %}
-            <div class="row-fluid"><div class="span12">
-                     <a href="{{ url_for('serve_user_uploads', image_name=advert.image_id) }}"><img src = "{{ url_for('serve_user_uploads', image_name=advert.image_id) }}"></a>
-            </div></div>
+            <div id="general_placeholder" style="width: 70%; text-align: center">
+                <div class="row-fluid">
+                    <div class="span12">
+                         <a href="{{ url_for('serve_user_uploads', image_name=advert.image_id) }}"><img src = "{{ url_for('serve_user_uploads', image_name=advert.image_id) }}"></a>
+                    </div>
+                </div>
+            </div>
          {% endif %}
         {% else %}
-            <div id="placeholder" style="width: 70%; height: 300px; border: 1px dashed #aaaaaa; line-height: 300px; text-align: center">
+            <div id="general_placeholder" style="width: 70%; height: 300px; border: 1px dashed #aaaaaa; line-height: 300px; text-align: center">
             <strong>why not upload an image?</strong>
+            </div>
         {% endif %}
         <div id="general_preview" style="display: none">
             <img class="span3" src="about:blank" alt="" id="general_show-picture">
         </div>
-        </div></div>
 
     </div>
 
