@@ -111,3 +111,7 @@ label > .label-text,
 .slick-prev:before, .slick-next:before {
     color:black !important;
 }
+
+#uniboard {
+    background: #00325b;
+}
