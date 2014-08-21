@@ -1,18 +1,10 @@
 <div class="container">
 
 
-    <div class="content" id="navigation">
-
-        <div class="row-fluid" id="header">
-            <div class="span12" id="headcontainer">
-                <h1 id="bigheader"><a href="http://www.brunel.ac.uk" class="logo_link"><img src="/static/uniboard/img/brunel_logo.png" style="padding: 10px;"></a>
-                    <a href="{{url_for('welcome')}}" class="logo_link"><img  class="pull-right" src="/static/uniboard/img/uniboardlogo.png" style="padding-bottom: 10px; padding-top: 27px; height: 75px; padding-right: 5px;"></a></h1>
-            </div>
-        </div>
-
+    <div class="content" id="navigation" style="margin-top: 0px">
         <div class="navbar" id="main-nav">
             <div class="navbar-inner">
-                <ul class="nav pull" id="main-nav-admin-menu" style="margin-bottom: 10px">
+                <ul class="nav pull" id="main-nav-admin-menu">
                     {% if not current_user.is_anonymous() %}
                         <li {% if request.path == url_for('advert.adsubmit') %} class="active"{% endif %}><a href="{{ url_for('advert.adsubmit') }}">Selling an item</a></li>
                         <li{% if request.path == url_for('root') %} class="active"{% endif %}><a href="{{ url_for('root') }}">Search UniBoard</a></li>
@@ -20,7 +12,7 @@
                     {% endif %}
                 </ul>
 
-                <ul class="nav pull-right" id="main-nav-first-menu" style="margin-bottom: 10px" >
+                <ul class="nav pull-right" id="main-nav-first-menu">
                     {% if not current_user.is_anonymous() %}
                         <li{% if request.path == unquote(url_for('account.username', username=current_user.id)) %} class="active"{% endif %}><a href="{{url_for('account.username', username=current_user.id)}}">My Account</a></li>
                         {% if current_user.has_role("list_users") %}
@@ -37,10 +29,20 @@
                 </ul>
             </div>
         </div>
-        <div class="container">
+    </div>
 
+    <div class="row-fluid" id="header">
+        <div class="span12" id="headcontainer">
+            <a href="http://www.brunel.ac.uk" class="logo_link"><img src="/static/uniboard/img/brunel_logo_new.png" style="padding-top: 20px; padding-bottom: 20px; padding-left: 30px; height: 70px"></a>
         </div>
     </div>
+
+    <div class="row-fluid" id="uniboard">
+        <div class="span12" id="uniboardcontainer">
+            <a href="{{url_for('welcome')}}" class="logo_link"><img src="/static/uniboard/img/uniboardlogo.png" style="padding-bottom: 0px; padding-top: 5px; height: 40px; padding-right: 5px; padding-left: 20px"></a>
+        </div>
+    </div>
+
      <div class="container" style="background-color: white;">
          <div class="alert-messages" >
 
