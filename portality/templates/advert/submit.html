@@ -7,11 +7,18 @@
 {% from "_formhelpers.html" import render_field %}
 {% from "_formhelpers.html" import render_field_horizontal %}
 
-{% if request.path.endswith("edit") %}
-<div class="row-fluid" style="padding-bottom: 10px; margin-bottom: 30px; padding-left: 30px; border-bottom: 3px dashed #aaaaaa"><div class="span12"><h1>Update your item</h1></div></div>
-{% else %}
-<div class="row-fluid" style="padding-bottom: 10px; margin-bottom: 30px; padding-left: 30px; border-bottom: 3px dashed #aaaaaa"><div class="span12"><h1>Selling an item</h1></div></div>
-{% endif %}
+
+<div class="row-fluid">
+    <div class="span12">
+        <div style="padding-bottom: 10px; margin-bottom: 30px; padding-left: 30px; border-bottom: 3px dashed #aaaaaa">
+            {% if request.path.endswith("edit") %}
+            <h1>Update your item</h1>
+            {% else %}
+            <h1>Selling an item</h1>
+            {% endif %}
+        </div>
+    </div>
+</div>
 
 <div class="row-fluid">
     <div class="span12">

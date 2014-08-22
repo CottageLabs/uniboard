@@ -2,6 +2,13 @@
 
 {% block title %}Page Not Found{% endblock %}
 {% block content %}
-  <h1 style="padding: 50px; padding-bottom: 30px;">Page Not Found</h1>
+<div class="row-fluid">
+    <div class="span12">
+        <div style="padding-bottom: 10px; margin-bottom: 30px; padding-left: 30px; border-bottom: 3px dashed #aaaaaa">
+            <h1>Page Not Found</h1>
+        </div>
+    </div>
+</div>
+
   <p style="padding-left: 50px; font-size: 20px;">You seem to have wandered off the beaten path. <a href="{{ url_for('root') }}">Let's get you out of here.</a></p>
 {% endblock %}
