@@ -10,7 +10,7 @@
 
                 <p style="color: #ffffff; font-size: 150%; margin-bottom: 40px">You can search, buy and sell from within your university</p>
 
-                <p>All you need to do is register and log in using your uni email address</p>
+                <p style="color: #ffffff;">All you need to do is <a href="{{url_for('account.register')}}" style="color: #ffffff; text-decoration: underline">register</a> and <a href="{{url_for('account.login')}}" style="color: #ffffff; text-decoration: underline">log in</a> using your uni email address</p>
             </div>
         </div>
         <div style="width: 50%; margin:0px; padding:0px; float: left; height: 390px" id="front_page_image">
@@ -25,25 +25,27 @@
 <div class="containter span7" style="margin: 0px auto; float: none; padding-top: 20px;" >
     <div class="row-fluid" >
         <div class="slider">
-        {% if length > 3 %}
-            {% for i in range(0, length) %}
+        {% if ads|length > 0 %}
+            {% for ad in ads %}
                 <div>
-                    <a href="{{url_for('advert.details', ad_id=ads[i].get('id'))}}">
-                        <div style="max-height:200px; overflow-y: hidden; padding-bottom: 5px;">
-                            <img src="{{ url_for('serve_user_uploads', image_name=ads[i].get('image_id')) }}" style="max-width: 200px; margin: auto; border: 1px solid; border-radius: 25px; border-color: black;">
+                    <a href="{{url_for('advert.details', ad_id=ad.id)}}" class="carousel_link">
+                        <div style="height: 267px; max-height:267px; overflow-y: hidden; padding-bottom: 5px;">
+                            <img src="{{ url_for('serve_user_uploads', image_name=ad.image_id) }}" style="max-width: 200px; margin: auto;">
                         </div>
-                        <p style="text-align: left; padding-top: 5px; padding-left: 15px; color: black; font-size: 20px">{{ ads[i].get('title') }}</p>
-                        <p style="text-align: left; padding-left: 15px; color: black; font-size: 20px">£{{ ads[i].get('price') }}</p>
+                        <p style="height: 40px; text-align: left; padding-top: 5px; padding-left: 15px; color: blue">{{ ad.title }}</p>
+                        <p style="text-align: left; padding-left: 15px; color: red">
+                            £{{ ad.price }}
+                        </p>
                     </a>
                 </div>
             {% endfor %}
         {% else %}
-          <div><a href="{{url_for('account.login')}}"><img src="/static/uniboard/img/book_placeholder.png"></a></div>
-          <div><a href="{{url_for('account.login')}}"><img src="/static/uniboard/img/book_placeholder.png"></a></div>
-          <div><a href="{{url_for('account.login')}}"><img src="/static/uniboard/img/book_placeholder.png"></a></div>
-          <div><a href="{{url_for('account.login')}}"><img src="/static/uniboard/img/book_placeholder.png"></a></div>
-          <div><a href="{{url_for('account.login')}}"><img src="/static/uniboard/img/book_placeholder.png"></a></div>
-          <div><a href="{{url_for('account.login')}}"><img src="/static/uniboard/img/book_placeholder.png"></a></div>
+          <div><a href="{{url_for('account.login')}}"><img src="/static/uniboard/img/book_placeholder2.png"></a></div>
+          <div><a href="{{url_for('account.login')}}"><img src="/static/uniboard/img/book_placeholder2.png"></a></div>
+          <div><a href="{{url_for('account.login')}}"><img src="/static/uniboard/img/book_placeholder2.png"></a></div>
+          <div><a href="{{url_for('account.login')}}"><img src="/static/uniboard/img/book_placeholder2.png"></a></div>
+          <div><a href="{{url_for('account.login')}}"><img src="/static/uniboard/img/book_placeholder2.png"></a></div>
+          <div><a href="{{url_for('account.login')}}"><img src="/static/uniboard/img/book_placeholder2.png"></a></div>
         {% endif %}
         </div>
     </div>
@@ -58,7 +60,8 @@ $(document).ready(function(){
 	  slidesToShow: 3,
       slidesToScroll: 1,
       autoplay: true,
-      autoplaySpeed: 5000
+      autoplaySpeed: 5000,
+      speed: 1000
 	});
 });
 </script>

@@ -200,3 +200,23 @@ class AdvertDAO(esprit.dao.DomainObject):
         cats = j.get("facets", {}).get("categories", {}).get("terms", [])
         subs = j.get("facets", {}).get("subjects", {}).get("terms", [])
         return cats, subs
+
+    @classmethod
+    def get_latest_with_image(cls, number):
+        query = {
+            "size": number,
+            "sort" : [{ "last_updated" : "desc" }],
+            "query": {
+                "filtered": {
+                    "query": {
+                        "match": { "admin.abuse" : 0 }
+                    },
+                    "filter": {
+                        "exists": { "field": "image_id"}
+                    }
+                }
+            }
+        }
+        res = cls.query(q=query)
+        ads = esprit.raw.unpack_json_result(res)
+        return [cls(a) for a in ads]

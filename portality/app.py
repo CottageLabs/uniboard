@@ -54,28 +54,8 @@ def root():
 
 @app.route("/welcome")
 def welcome():
-    advert = models.Advert()
-    query = {
-              "size": 10,
-              "sort" : [{ "last_updated" : "desc" }],
-              "query": {
-                "filtered": {
-                  "query": {
-                    "match": { "admin.abuse" : 0 }
-                  },
-                  "filter": {
-                    "exists": { "field": "image_id"}
-                  }
-                }
-              }
-    }
-    res = advert.query(q=query)
-    ads = [hit.get("_source") for hit in res.get("hits", {}).get("hits", [])]
-    images = []
-    length = len(ads)
-    for i in range(0, len(ads)):
-        images.append({ads[i].get("id"): ads[i].get("image_id")})
-    return render_template("welcome.html", images=images, ads=ads, length=length)
+    ads = models.Advert.get_latest_with_image(10)
+    return render_template("welcome.html", ads=ads)
 
 @app.route('/autocomplete/<doc_type>/<field_name>', methods=["GET", "POST"])
 def autocomplete(doc_type, field_name):
