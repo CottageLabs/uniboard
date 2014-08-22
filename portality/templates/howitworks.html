@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="row-fluid">
+    <div class="span12">
+        <div style="padding-bottom: 10px; margin-bottom: 30px; padding-left: 30px; border-bottom: 3px dashed #aaaaaa">
+            <h1>How it Works</h1>
+        </div>
+    </div>
+</div>
+
+<div style="padding-left: 30px">
+<p>UniBoard is an online noticeboard for you at your university. It’s free, quick and easy. UniBoard allows you to place adverts online, in one specific place that is easily accessible for others to find.</p>
+
+<p>What’s great, is it works just like a conventional noticeboard:</p>
+
+<ul>
+    <li>If you're selling an item, you create an advert, then list it and hope someone likes your advert enough they get in contact. You can then arrange to meet up locally on campus to complete the exchange.</li>
+    <li>If your buying an item, you look on the noticeboard to see if it has something you’re after, consider the adverts and then get in touch with the seller. Again, you can then arrange to meet up locally on campus to complete the exchange.</li>
+</ul>
+
+<p>Because UniBoard is online:</p>
+
+<p>If you’re selling an item you don’t have to worry about:</p>
+
+<ul>
+    <li>Placing the advert in lots of different locations in the hope someone sees it</li>
+    <li>Someone removing, covering up or damaging your advert</li>
+    <li>The costs associated with paying for an advert</li>
+</ul>
+
+<p>If you're looking to buy an item, then you don’t have to worry about:</p>
+
+<ul>
+    <li>Spending lots of time physically trying to search for the adverts</li>
+    <li>Going to different places, collecting and comparing different adverts</li>
+    <li>Spending lots of money buying brand new items</li>
+</ul>
+</div>
+
+<div class="row-fluid">
+    <div class="span12">
+        <div style="padding-bottom: 10px; margin-bottom: 30px; padding-left: 30px; border-bottom: 3px dashed #aaaaaa">
+            <h1>Creating an advert</h1>
+        </div>
+    </div>
+</div>
+
+<div style="padding-left: 30px">
+
+<h2>Selling a book</h2>
+
+<p>Keep it simple. Enter the ISBN number to auto-populate the books information. (You will find the number on the back of the book).</p>
+
+<div class="row-fluid">
+    <div class="span4">&nbsp;</div>
+    <div class="span4"><img src="/static/uniboard/img/isbn.png"></div>
+</div>
+
+<p>Failing that, enter information about the book, such as the title, author, and edition.</p>
+<p>Tell us about the sale: price, condition and the location you are selling it from.</p>
+<p>Finished? Click create my advert!</p>
+
+<h2>Selling something else</h2>
+
+<p>Input the item category e.g. sports equipment, housing appliances, tickets</p>
+
+<p>Give your item a title, so that people can find your advert.</p>
+
+<p>Tell us about the sale: price, condition and the location you are selling it from.</p>
+
+<p>Finished? Click create my advert!</p>
+
+<hr>
+
+Want to give us feedback about the site?  Likewise, do you have a question that needs answering? You can <a href="mailto:{{config.get('FEEDBACK_EMAIL')}}">contact us</a>!
+</div>
+
+{% endblock %}
+

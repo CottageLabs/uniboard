@@ -57,6 +57,14 @@ def welcome():
     ads = models.Advert.get_latest_with_image(10)
     return render_template("welcome.html", ads=ads)
 
+@app.route("/howitworks")
+def howitworks():
+    return render_template("howitworks.html")
+
+@app.route("/about")
+def about():
+    return render_template("about.html")
+
 @app.route('/autocomplete/<doc_type>/<field_name>', methods=["GET", "POST"])
 def autocomplete(doc_type, field_name):
     prefix = request.args.get('q', '').lower()
