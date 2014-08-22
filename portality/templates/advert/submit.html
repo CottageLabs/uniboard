@@ -105,12 +105,16 @@
 
         {% if request.path.endswith("edit") %}
          {% if advert.image_id %}
-            <div id="placeholder" style="width: 70%; text-align: center">
+            <div id="image-placeholder" style="width: 70%; text-align: center">
                 <div class="row-fluid">
                     <div class="span12">
                          <a href="{{ url_for('serve_user_uploads', image_name=advert.image_id) }}"><img src = "{{ url_for('serve_user_uploads', image_name=advert.image_id) }}"></a>
                     </div>
                 </div>
+            </div>
+         {% else %}
+            <div id="placeholder" style="width: 70%; height: 300px; border: 1px dashed #aaaaaa; line-height: 300px; text-align: center">
+            <strong>why not upload an image?</strong>
             </div>
          {% endif %}
         {% else %}
@@ -207,6 +211,10 @@
                          <a href="{{ url_for('serve_user_uploads', image_name=advert.image_id) }}"><img src = "{{ url_for('serve_user_uploads', image_name=advert.image_id) }}"></a>
                     </div>
                 </div>
+            </div>
+         {% else %}
+            <div id="general_placeholder" style="width: 70%; height: 300px; border: 1px dashed #aaaaaa; line-height: 300px; text-align: center">
+            <strong>why not upload an image?</strong>
             </div>
          {% endif %}
         {% else %}
