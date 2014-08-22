@@ -1,20 +1,26 @@
 {% extends "base.html" %}
 
+{% block precontent %}
+    <div style="width: 100%; margin: 0px; padding: 0px; margin-top: -15px">
+        <div style="width: 50%; height: 390px; background: #6f79a7; color: #ffffff; margin:0px; padding:0px; float: left">
+            <div style="padding: 50px">
+                <h1 style="color: #ffffff; font-weight: normal; font-size: 300%; margin-bottom: 10px">Welcome to UniBoard</h1>
+
+                <p style="color: #ffffff; font-size: 150%; margin-bottom: 40px">The online notice board</p>
+
+                <p style="color: #ffffff; font-size: 150%; margin-bottom: 40px">You can search, buy and sell from within your university</p>
+
+                <p>All you need to do is register and log in using your uni email address</p>
+            </div>
+        </div>
+        <div style="width: 50%; margin:0px; padding:0px; float: left; height: 390px" id="front_page_image">
+            <img src="/static/uniboard/img/front_page.jpg">
+        </div>
+    </div>
+
+{% endblock %}
+
 {% block content %}
-
-<h1 style="text-align: center;">Welcome to UniBoard.</h1>
-
-<h2 style="text-align: center;">Sell your uni stuff and find the stuff you need.</h2>
-
-<div class="container" style="margin: 0px auto; float: none; width: 60%; padding-top: 10px; padding-bottom: 10px;">
-        <p style="text-align: center; font-size: 15px;">Have heaps of old textbooks piling up? Likewise did you fall off your chair when you saw textbook prices on Amazon? Or are you looking to get a bike to make traveling to campus that little bit easier?
-
-        Whatever the situation, UniBoard allows you to sell your old, now unused stuff, and find a great deal on items yourself.</p>
-
-        <p style="text-align: center; font-size: 15px;">If you have an account, log in to see anything.  If you don't have an account you can register for one.</p>
-
-</div>
-
 
 <div class="containter span7" style="margin: 0px auto; float: none; padding-top: 20px;" >
     <div class="row-fluid" >
@@ -32,12 +38,12 @@
                 </div>
             {% endfor %}
         {% else %}
-          <div><a href="{{url_for('account.login')}}"><img src="static/uniboard/img/book_placeholder.png"></a></div>
-          <div><a href="{{url_for('account.login')}}"><img src="static/uniboard/img/book_placeholder.png"></a></div>
-          <div><a href="{{url_for('account.login')}}"><img src="static/uniboard/img/book_placeholder.png"></a></div>
-          <div><a href="{{url_for('account.login')}}"><img src="static/uniboard/img/book_placeholder.png"></a></div>
-          <div><a href="{{url_for('account.login')}}"><img src="static/uniboard/img/book_placeholder.png"></a></div>
-          <div><a href="{{url_for('account.login')}}"><img src="static/uniboard/img/book_placeholder.png"></a></div>
+          <div><a href="{{url_for('account.login')}}"><img src="/static/uniboard/img/book_placeholder.png"></a></div>
+          <div><a href="{{url_for('account.login')}}"><img src="/static/uniboard/img/book_placeholder.png"></a></div>
+          <div><a href="{{url_for('account.login')}}"><img src="/static/uniboard/img/book_placeholder.png"></a></div>
+          <div><a href="{{url_for('account.login')}}"><img src="/static/uniboard/img/book_placeholder.png"></a></div>
+          <div><a href="{{url_for('account.login')}}"><img src="/static/uniboard/img/book_placeholder.png"></a></div>
+          <div><a href="{{url_for('account.login')}}"><img src="/static/uniboard/img/book_placeholder.png"></a></div>
         {% endif %}
         </div>
     </div>
