@@ -23,8 +23,13 @@
 <script type="text/javascript" src="/static/portality/vendor/select2-release-3.2/select2.min.js"></script>
 
 <!-- get facetview -->
-{# <script type="text/javascript" src="/static/portality/vendor/facetview/jquery.facetview.js"></script>#}
 <script type="text/javascript" src="/static/portality/vendor/facetview2/jquery.facetview2.js"></script>
+
+<!-- get a JSON parser for broken IE8-s and < IE8 -->
+<!--[if lte IE 8]>
+<script type="text/javascript" src="//cdn.jsdelivr.net/json3/3.3.2/json3.min.js"></script>
+<![endif]-->
+
 
 <!-- google map integration -->
 {% if map_key %}
@@ -33,5 +38,3 @@
 
 <script type="text/javascript">var current_domain = document.location.host;</script>
 <script type="text/javascript">var current_scheme = window.location.protocol;</script>
-
-
