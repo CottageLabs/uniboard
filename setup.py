@@ -12,7 +12,6 @@ setup(
         "Flask-Login==0.1.3",
         "Flask-WTF==0.8.3",
         "requests==1.1.0",
-        "lxml",
         "nose",
         "pygeocoder",
         "futures==2.1.6",
