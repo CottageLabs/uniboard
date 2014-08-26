@@ -2,14 +2,16 @@
 
 ## Installation
 
-UniBoard depends on esprit, which must be installed before this package will install:
-
-https://github.com/richard-jones/esprit
-
-It also contains submodules, so when you check this code out you will also need to run:
+This repo contains submodules, so when you check this code out you will also need to run:
 
     git submodule init
     git submidule update
+
+Then run
+
+    pip install -r requirements.txt
+
+(Make sure you've activated your virtualenv if you're using one - you should really be.)
 
 It also relies on the Google Map API, so in order to view the maps you will need a Google API key:
 
