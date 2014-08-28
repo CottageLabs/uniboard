@@ -8,6 +8,7 @@ dist/*
 
 app.cfg
 .idea
+deploy/newrelic.ini
 
 # Test uploads
 portality/user_uploads/*
