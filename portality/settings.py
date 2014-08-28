@@ -10,7 +10,7 @@ IMAGES_FOLDER = os.path.join(BASE_FILE_PATH, 'user_uploads')
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 
 #Host url
-LOCALHOST_URL = "http://uniboard.ooz.cottagelabs/"
+LOCALHOST_URL = "http://www.brunel.uni-board.co.uk"
 
 #Price checks
 PRICE_CHECK_BOOK = 60
