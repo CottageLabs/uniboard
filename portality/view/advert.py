@@ -71,7 +71,6 @@ class ValidFloat(object):
             try:
                 field.data = float(field.data)
             except ValueError:
-                print 'oops'
                 raise ValidationError('This is not a valid number.')
 
 class SubmitAd(Form):

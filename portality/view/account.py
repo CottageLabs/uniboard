@@ -240,8 +240,8 @@ def forgot():
             sep = ""
         reset_url = request.url_root + sep + "account/reset/" + reset_token
 
-        to = [account.data['email'], app.config['ADMIN_EMAIL']]
-        fro = app.config['ADMIN_EMAIL']
+        to = [account.data['email'], app.config['FEEDBACK_EMAIL']]
+        fro = app.config['FEEDBACK_EMAIL']
         subject = app.config.get("SERVICE_NAME", "") + " - password reset"
         text = "A password reset request for account '" + account.id + "' has been received and processed.\n\n"
         text += "Please visit " + reset_url + " and enter your new password.\n\n"
@@ -364,8 +364,8 @@ def register():
             sep = ""
         activation_url = request.url_root + sep + "account/activate/" + activation_token
 
-        to = [account.data['email'], app.config['ADMIN_EMAIL']]
-        fro = app.config['ADMIN_EMAIL']
+        to = [account.data['email'], app.config['FEEDBACK_EMAIL']]
+        fro = app.config['FEEDBACK_EMAIL']
         subject = app.config.get("SERVICE_NAME", "") + " - new password"
         text = "Welcome to UniBoard, '" + account.email + "'!\n\n"
         text += "Please visit " + activation_url + " to set a password for your account.\n\n"
