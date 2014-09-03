@@ -17,6 +17,18 @@ advert_expired@cottagelabs.com delete
 
 '''
 
+def create_deactivated():
+    advert = Advert()
+    advert.set_owner('advert_deactivated@cottagelabs.com')
+    advert.set_title('Hippy')
+    advert.set_authors('Pony')
+    advert.set_price(50)
+    advert.set_expires((datetime.now() - timedelta(days=365)).strftime(DATE_FORMAT))
+    advert.mark_deactivated()
+    advert.save()
+    print advert.owner
+    return advert
+
 def create_expired():
     advert = Advert()
     advert.set_owner('advert_expired@cottagelabs.com')
@@ -54,6 +66,7 @@ def create_still_okay():
 expired = create_expired()
 soon_expiring = create_soon_expiring()
 still_okay = create_still_okay()
+deleted = create_deactivated()
 sleep(2)
 
 expire_email(testing=True)
