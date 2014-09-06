@@ -186,7 +186,14 @@ class AdvertDAO(esprit.dao.DomainObject):
     @classmethod
     def categories_and_subjects(cls):
         q = {
-            "query" : { "match_all" : {} },
+            "query" : {
+                "bool" : {
+                    "must" : [
+                        {"term" : {"admin.deleted" : False}},
+                        {"term" : {"admin.deactivated" : False}}
+                    ]
+                }
+            },
             "size" : 0,
             "facets" : {
                 "categories" : {"terms" : {"field" : "category.exact", "size" : 1000, "order" : "term"}},
