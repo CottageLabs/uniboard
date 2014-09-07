@@ -13,7 +13,7 @@ def create_app():
     configure_app(app)
     if app.config.get('INITIALISE_INDEX',False): initialise_index(app)
     setup_jinja(app)
-    setup_error_email(app)
+    setup_error_logging(app)
     login_manager.setup_app(app)
     return app
 
@@ -36,17 +36,38 @@ def initialise_index(app):
             r = esprit.raw.put_mapping(conn, key, mapping)
             print key, r.status_code
 
+def setup_error_logging(app):
+    if not app.debug:
+        # Custom logging WILL BE IGNORED by Flask if app.debug == True -
+        # even if you remove the condition above this comment.
+        import logging, sys
+        ADMINS = app.config.get('ADMINS', [])
+        if not ADMINS:
+            e = app.config.get('ADMIN_EMAIL')
+            if e:
+                if isinstance(e, basestring):
+                    ADMINS = [e]
+                elif isinstance(e, list):
+                    ADMINS = e
+        if ADMINS and not app.config.get('SUPPRESS_ERROR_EMAILS'):
+            from logging.handlers import SMTPHandler
+            import platform
+            hostname = platform.uname()[1]
+            mail_handler = SMTPHandler('mailtrap.io',
+                                       'server-error@' + hostname,
+                                       ADMINS,
+                                       'Uniboard Flask Error',
+                                       credentials=('17847d564f257fd8f', 'dc4018be4e84eb')
+                           )
+            mail_handler.setLevel(logging.ERROR)
+            app.logger.addHandler(mail_handler)
 
-def setup_error_email(app):
-    ADMINS = app.config.get('ADMINS', '')
-    if not app.debug and ADMINS:
-        import logging
-        from logging.handlers import SMTPHandler
-        mail_handler = SMTPHandler('127.0.0.1',
-                                   'server-error@no-reply.com',
-                                   ADMINS, 'error')
-        mail_handler.setLevel(logging.ERROR)
-        app.logger.addHandler(mail_handler)
+        # send errors to stderr, supervisord will capture them in the app's
+        # error log
+        send_errors_to_supervisor = logging.StreamHandler(sys.stderr)
+        send_errors_to_supervisor.setLevel(logging.ERROR)
+        app.logger.addHandler(send_errors_to_supervisor)
+
 
 def setup_jinja(app):
     '''Add jinja extensions and other init-time config as needed.'''
