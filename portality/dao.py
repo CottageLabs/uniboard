@@ -2,6 +2,7 @@ import esprit
 from portality.core import app
 from datetime import datetime, timedelta
 
+
 class AccountDAO(esprit.dao.DomainObject):
     __type__ = 'account'
     __conn__ = esprit.raw.Connection(app.config['ELASTIC_SEARCH_HOST'], app.config['ELASTIC_SEARCH_DB'])
@@ -9,11 +10,11 @@ class AccountDAO(esprit.dao.DomainObject):
     @classmethod
     def pull_by_email(cls, email):
         res = cls.query(q='email:"' + email + '"')
-        if res.get('hits',{}).get('total',0) == 1:
+        if res.get('hits', {}).get('total', 0) == 1:
             return cls(res['hits']['hits'][0]['_source'])
         else:
             return None
-    
+
     @classmethod
     def get_by_reset_token(cls, reset_token, not_expired=True):
         res = cls.query(q='reset_token.exact:"' + reset_token + '"')
@@ -54,7 +55,7 @@ class AccountDAO(esprit.dao.DomainObject):
     def prefix_query(cls, field, prefix, size=5):
         # example of a prefix query
         # {
-        #     "query": {"prefix" : { "bibjson.publisher" : "ope" } },
+        # "query": {"prefix" : { "bibjson.publisher" : "ope" } },
         #     "size": 0,
         #     "facets" : {
         #       "publisher" : { "terms" : {"field" : "bibjson.publisher.exact", "size": 5} }
@@ -71,10 +72,10 @@ class AccountDAO(esprit.dao.DomainObject):
         facet_field = query_field + app.config['FACET_FIELD']
 
         q = {
-            "query": {"prefix" : { query_field : prefix } },
+            "query": {"prefix": {query_field: prefix}},
             "size": 0,
-            "facets" : {
-              field : { "terms" : {"field" : facet_field, "size": size} }
+            "facets": {
+                field: {"terms": {"field": facet_field, "size": size}}
             }
         }
 
@@ -90,6 +91,7 @@ class AccountDAO(esprit.dao.DomainObject):
             # terms will now go to the front of the result list
             result.append({"id": term['term'], "text": term['term']})
         return result
+
 
 class AdvertDAO(esprit.dao.DomainObject):
     __type__ = 'advert'
@@ -116,10 +118,10 @@ class AdvertDAO(esprit.dao.DomainObject):
     @classmethod
     def get_by_owner(cls, owner_id):
         query = {
-            "query" : {
-                "term" : {"owner.exact" : owner_id}
+            "query": {
+                "term": {"owner.exact": owner_id}
             },
-            "sort" : [{"last_updated" : {"order" : "desc"}}],
+            "sort": [{"last_updated": {"order": "desc"}}],
         }
         return cls.iterate(query)
 
@@ -139,7 +141,7 @@ class AdvertDAO(esprit.dao.DomainObject):
     def prefix_query(cls, field, prefix, size=5):
         # example of a prefix query
         # {
-        #     "query": {"prefix" : { "bibjson.publisher" : "ope" } },
+        # "query": {"prefix" : { "bibjson.publisher" : "ope" } },
         #     "size": 0,
         #     "facets" : {
         #       "publisher" : { "terms" : {"field" : "bibjson.publisher.exact", "size": 5} }
@@ -156,10 +158,10 @@ class AdvertDAO(esprit.dao.DomainObject):
         facet_field = query_field + app.config['FACET_FIELD']
 
         q = {
-            "query": {"prefix" : { query_field : prefix } },
+            "query": {"prefix": {query_field: prefix}},
             "size": 0,
-            "facets" : {
-              field : { "terms" : {"field" : facet_field, "size": size} }
+            "facets": {
+                field: {"terms": {"field": facet_field, "size": size}}
             }
         }
 
@@ -212,14 +214,20 @@ class AdvertDAO(esprit.dao.DomainObject):
     def get_latest_with_image(cls, number):
         query = {
             "size": number,
-            "sort" : [{ "last_updated" : "desc" }],
+            "sort": [{"last_updated": "desc"}],
             "query": {
                 "filtered": {
                     "query": {
-                        "match": { "admin.abuse" : 0 }
+                        "bool": {
+                            "must": [
+                                    {"term": {"admin.deleted": False}},
+                                    {"term": {"admin.deactivated": False}},
+                                    {"term": {"admin.abuse": 0}}
+                            ]
+                        }
                     },
                     "filter": {
-                        "exists": { "field": "image_id"}
+                        "exists": {"field": "image_id"}
                     }
                 }
             }
