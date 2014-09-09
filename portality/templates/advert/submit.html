@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
-{% set edit = request.path.endswith("edit") %}
-{% set is_book = advert and advert.category == "Book" %}
+{% set edit = request.path.endswith("edit") or mode == "edit"%}
+{% set is_book = (advert and advert.category == "Book") or category == "Book" %}
 
 {% block content %}
 {% from "_formhelpers.html" import render_field %}
@@ -75,7 +75,8 @@
 
                     <input id="book_price" name="price" class="book_price" placeholder="e.g. 19.50" style="width: 100px" type="text"
                            {% if form.price.data %}
-                           value="{{form.price.data}}"
+                           {# value="{{form.price.data}}" #}
+                            value="{{ '{0:0.2f}'.format(form.price.data|float) }}"
                            {% else %}
                             value=""
                             {% endif %}>
@@ -185,7 +186,8 @@
                      <span class="add-on">£</span>
                       <input id="general_price" name="price" class="general_price" placeholder="e.g. 19.50" style="width: 100px" type="text"
                            {% if genform.price.data %}
-                           value="{{genform.price.data}}"
+                           {# value="{{genform.price.data}}" #}
+                            value="{{ '{0:0.2f}'.format(genform.price.data|float) }}"
                            {% else %}
                             value=""
                             {% endif %}>

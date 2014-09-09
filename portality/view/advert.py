@@ -105,6 +105,9 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']
 
+class XWalkException(Exception):
+    pass
+
 def xwalk_book(form, advert):
     if not advert:
         advert = models.Advert()
@@ -145,8 +148,7 @@ def xwalk_book(form, advert):
                 lat, lon = current_user.location
                 advert.set_location(lat, lon)
             else:
-                flash("We do not have an address for your account. If you wish to use this option, please edit your information under My Account.", 'error')
-                return render_template('advert/submit.html', form=form)
+                raise XWalkException("We do not have an address for your account. If you wish to use this option, please edit your information under My Account.")
         elif form.location.data == 'uni':
             mail = current_user.id.split('@')
             domain = mail[-1]
@@ -205,8 +207,7 @@ def xwalk_generic(form, advert):
                 lat, lon = current_user.location
                 advert.set_location(lat, lon)
             else:
-                flash("We do not have an address for your account. If you wish to use this option, please edit your information under My Account.", 'error')
-                return render_template('advert/submit.html', form=form)
+                raise XWalkException("We do not have an address for your account. If you wish to use this option, please edit your information under My Account.")
         elif form.location.data == 'uni':
             mail = current_user.id.split('@')
             domain = mail[-1]
@@ -279,9 +280,14 @@ def adsubmit(ad_id=None):
                 flash('Error while submitting', 'error')
                 bookform = SubmitAd()
                 return render_template('advert/submit.html', form=bookform, advert=advert, genform=genform)
-            advert = xwalk_generic(genform, advert)
-            flash('Advert saved successfully', 'success')
-            return redirect(url_for('.details', ad_id=advert.id))
+            try:
+                advert = xwalk_generic(genform, advert)
+                flash('Advert saved successfully', 'success')
+                return redirect(url_for('.details', ad_id=advert.id))
+            except XWalkException as e:
+                flash(e.message, "error")
+                bookform = SubmitAd()
+                return render_template('advert/submit.html', form=bookform, advert=advert, genform=genform, mode="edit")
         else:
             # we have a book
             bookform = SubmitAd(request.form, advert)
@@ -289,9 +295,14 @@ def adsubmit(ad_id=None):
                 flash('Error while submitting', 'error')
                 genform = GeneralAd()
                 return render_template('advert/submit.html', form=bookform, advert=advert, genform=genform)
-            advert = xwalk_book(bookform, advert)
-            flash('Advert saved successfully', 'success')
-            return redirect(url_for('.details', ad_id=advert.id))
+            try:
+                advert = xwalk_book(bookform, advert)
+                flash('Advert saved successfully', 'success')
+                return redirect(url_for('.details', ad_id=advert.id))
+            except XWalkException as e:
+                flash(e.message, "error")
+                genform = GeneralAd()
+                return render_template('advert/submit.html', form=bookform, advert=advert, genform=genform, mode="edit", category="Book")
 
 login_manager.login_view = "account.login"
 
