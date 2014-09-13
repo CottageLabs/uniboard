@@ -65,6 +65,10 @@ def howitworks():
 def about():
     return render_template("about.html")
 
+@app.route("/terms")
+def terms():
+    return render_template("terms.html")
+
 @app.route('/autocomplete/<doc_type>/<field_name>', methods=["GET", "POST"])
 def autocomplete(doc_type, field_name):
     prefix = request.args.get('q', '').lower()
