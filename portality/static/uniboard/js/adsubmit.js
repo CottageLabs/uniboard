@@ -131,7 +131,7 @@ jQuery(document).ready(function($) {
                         $(preview_selector).show();
 
                         // Revoke ObjectURL
-                        URL.revokeObjectURL(imgURL);
+                        // URL.revokeObjectURL(imgURL);
                     }
                     catch (e) {
                         try {
