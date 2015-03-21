@@ -22,6 +22,7 @@ SECRET_KEY = "default-key"
 # contact info
 ADMIN_NAME = "UniBoard"
 ADMIN_EMAIL = "sysadmin@cottagelabs.com"
+BCC_EMAIL = "emanuil@cottagelabs.com"
 ADMINS = ["emanuil@cottagelabs.com", "richard@cottagelabs.com"]
 SUPPRESS_ERROR_EMAILS = False  # should be set to False in production and True in staging
 

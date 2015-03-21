@@ -14,9 +14,9 @@ def expire_email(testing=False):
                 print item.owner
                 if not testing:
                     activation_link = app.config['LOCALHOST_URL'] + "/advert/" + item.id + "/reactivate"
-                    to = [item.owner, app.config['ADMIN_EMAIL']]
-                    fro = app.config['ADMIN_EMAIL']
-                    subject = app.config.get("SERVICE_NAME", "") + item.title + " - expires soon"
+                    to = [item.owner, app.config['BCC_EMAIL']]
+                    fro = app.config['FEEDBACK_EMAIL']
+                    subject = app.config.get("SERVICE_NAME", "") + ': ' + item.title + " - expires soon"
                     text = "Hello, " + item.owner + "!\n\n"
                     text += "Your advert " + item.title + " expires soon."
                     text += "Please visit " + activation_link + " if you want to keep it up for another week.\n\n"

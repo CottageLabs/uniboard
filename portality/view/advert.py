@@ -344,7 +344,7 @@ def contact(ad_id):
 
     if request.method == 'POST' and form.validate():
 
-        to = [owner, app.config['ADMIN_EMAIL']]
+        to = [owner, app.config['BCC_EMAIL']]
         fro = current_user.id
         subject = form.about.data + ' on ' + app.config.get("SERVICE_NAME", "")
         text = form.message.data
